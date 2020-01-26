@@ -5,3 +5,4 @@ New features 1.0.0.4:
 
 * Smaller Panels, buttons rearranged and renamed
 * An object gets the target in Primitive mode when clicked on it
+* Extrude meshes by using the up/down arrow keys
