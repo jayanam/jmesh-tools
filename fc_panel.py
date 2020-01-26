@@ -5,7 +5,7 @@ class FC_PT_Panel(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_label = "Booleans"
-    bl_category = "JMesh tools"
+    bl_category = "JMesh"
     
     def draw(self, context):
         # global custom_icons;
