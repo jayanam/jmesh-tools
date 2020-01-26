@@ -5,7 +5,7 @@ class FC_PT_Primitive_Panel(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_label = "Primitives"
-    bl_category = "Fast Carve"
+    bl_category = "JMesh tools"
    
     def draw(self, context):
         

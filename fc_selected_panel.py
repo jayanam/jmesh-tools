@@ -8,7 +8,7 @@ class FC_PT_Selected_Panel(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_label = "Selected objects"
-    bl_category = "Fast Carve"
+    bl_category = "JMesh tools"
     
     def has_bevel_modifier(self, obj):
         if obj is None:
