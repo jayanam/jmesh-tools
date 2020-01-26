@@ -60,7 +60,7 @@ class Polyline_Shape(Shape):
         self.add_action(Action(self.get_prim_id(),  "Primitive",          "Polyline"),  None)
         self.add_action(Action("O",                 "Operation",          bool_mode),   None)
         self.build_move_action()
-        self.add_action(Action("E",                 "Extrude",            ""),          ShapeState.CREATED)
+        self.build_extrude_action()
         self.add_action(Action("Left Click",        "Add line",           ""),          ShapeState.PROCESSING)
         self.add_action(Action("Ctrl + Left Click", "Start",              ""),          ShapeState.NONE)
 

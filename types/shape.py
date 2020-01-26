@@ -231,12 +231,17 @@ class Shape:
         self._state = value
         self.build_actions()
 
+    def build_extrude_action(self):
+        if not self._is_extruding:
+            self.add_action(Action("E",       "Extrude",            ""), ShapeState.CREATED)
+        else:
+            self.add_action(Action("Up, Down Arrow",  "Extrude",     ""), ShapeState.CREATED) 
+
     def build_move_action(self):
         if not self._is_moving:
             self.add_action(Action("G",       "Move",               ""), ShapeState.CREATED)
         else:
             self.add_action(Action("X or Y",  "Move Axis lock",     ""), ShapeState.CREATED)            
-
 
     def build_actions(self):
         self._actions.clear()
@@ -331,6 +336,7 @@ class Shape:
     def start_extrude(self, mouse_pos_2d, context):
         self._extrude_pos = mouse_pos_2d[0]
         self._is_extruding = True
+        self.build_actions()
         return True
 
     def stop_extrude(self, context):
@@ -355,25 +361,17 @@ class Shape:
     def handle_mouse_wheel(self, inc, context):
         return False
 
+    def handle_extrude(self, is_up_key, context):
+        if self.is_extruding():
+            if is_up_key:
+                self._extrusion += 0.1
+            else:
+                self._extrusion -= 0.1
+
+        self.extrude_vertices(context)
+
 
     def handle_mouse_move(self, mouse_pos_2d, mouse_pos_3d, event, context):
-
-        if self.is_extruding():
-            
-            diff = self._extrude_pos - mouse_pos_2d[0]
-
-            if(diff > 0):
-                self._extrusion -= 0.1
-            elif (diff < 0):
-                self._extrusion += 0.1
-            
-            self.extrude_vertices(context)
-
-            # change direction of mouse?
-            if not ((diff * self._extrusion) > 0):
-                self._extrude_pos = mouse_pos_2d[0]
-
-            return True
 
         if self._vertex_moving is not None:
            self._vertices[self._vertex_moving] = mouse_pos_3d

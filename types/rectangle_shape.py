@@ -176,7 +176,7 @@ class Rectangle_Shape(Shape):
         self.add_action(Action("O",                 "Operation",           bool_mode),   None)
         self.build_move_action()
         self.add_action(Action("R",                 "Rotate",             ""),          ShapeState.CREATED)
-        self.add_action(Action("E",                 "Extrude",            ""),          ShapeState.CREATED)
+        self.build_extrude_action()
         self.add_action(Action("F",                 "From Center", from_center),        ShapeState.NONE)
         self.add_action(Action("Left Click",        "Set 2nd point",      ""),          ShapeState.PROCESSING)
         self.add_action(Action("Ctrl + Left Click", "Start",              ""),          ShapeState.NONE)

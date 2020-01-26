@@ -233,6 +233,11 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                     result = "RUNNING_MODAL"             
 
             # try to extrude the shape
+            if self.shape.is_extruding() and (event.type == "DOWN_ARROW" or event.type == "UP_ARROW"):
+                self.shape.handle_extrude(event.type == "UP_ARROW", context)
+                self.create_batch()
+                result = "RUNNING_MODAL"                   
+
             if event.type == "E":
                 mouse_pos_2d = (event.mouse_region_x, event.mouse_region_y)
 

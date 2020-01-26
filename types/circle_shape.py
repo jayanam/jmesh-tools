@@ -122,8 +122,7 @@ class Circle_Shape(Shape):
         self.add_action(Action("O",                 "Operation",           bool_mode),   None)
 
         self.build_move_action()
-
-        self.add_action(Action("E",                 "Extrude",            ""),          ShapeState.CREATED)
+        self.build_extrude_action()
         self.add_action(Action("C",                 "Center",             center_type), ShapeState.NONE)
         self.add_action(Action("Left Click",        "Create",             ""),          ShapeState.PROCESSING)
         self.add_action(Action("Ctrl + Left Click", "Start",              ""),          ShapeState.NONE)
