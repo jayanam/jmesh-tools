@@ -15,11 +15,11 @@ class FC_PT_Panel(Panel):
         
         # Carver Target
         row = layout.row()
-        layout.prop_search(context.scene, "carver_target", context.scene, "objects", text="Target")
+        col = row.column()
+        col.prop_search(context.scene, "carver_target", context.scene, "objects", text="Target")
 
-        # Selected as target
-        row = layout.row()
-        row.operator('object.bool_target', icon='MOD_BOOLEAN')
+        col = row.column()  
+        col.operator('object.bool_target', text='', icon='BACK')
 
         if context.mode != "SCULPT":
             
@@ -27,20 +27,22 @@ class FC_PT_Panel(Panel):
             row = layout.row()
 
             # Bool diff button
-            row = layout.row()
-            row.operator('object.bool_diff', text='Difference', icon='MOD_BOOLEAN')
+            col = row.column()
+            col.operator('object.bool_diff', text='Difference', icon='MOD_BOOLEAN')
             
             # Bool union button
-            row = layout.row()
-            row.operator('object.bool_union', text='Union', icon='MOD_BOOLEAN')
+            col = row.column()
+            col.operator('object.bool_union', text='Union', icon='MOD_BOOLEAN')
             
-            # Bool Slice button
             row = layout.row()
-            row.operator('object.bool_slice', text='Slice', icon='MOD_BOOLEAN')
+
+            # Bool Slice button
+            col = row.column()
+            col.operator('object.bool_slice', text='Slice', icon='MOD_BOOLEAN')
             
             # Bool intersect button
-            row = layout.row()
-            row.operator('object.bool_intersect', text='Intersect', icon='MOD_BOOLEAN')
+            col = row.column()
+            col.operator('object.bool_intersect', text='Intersect', icon='MOD_BOOLEAN')
             
             # Apply immediately
             row = layout.row()
