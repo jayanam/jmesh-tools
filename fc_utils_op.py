@@ -1,4 +1,6 @@
 import bpy
+import bmesh
+
 from bpy.types import Operator
 from bpy.props import StringProperty
 
@@ -32,6 +34,44 @@ class FC_MirrorOperator(Operator):
         bpy.ops.object.modifier_add(type='MIRROR')    
         
         bpy.context.scene.cursor.location = cursor_location
+
+        return {'FINISHED'}
+
+class FC_CurveConvertOperator(Operator):
+    bl_idname = "view3d.curve_convert"
+    bl_label = "Curve to Mesh"
+    bl_description = "Convert curves to meshes and fill holes" 
+    bl_options = {'REGISTER', 'UNDO'}   
+
+    @classmethod
+    def poll(cls, context): 
+
+        if context.object is None:
+            return False
+
+        if context.object.mode != "OBJECT":
+            return False
+   
+        return True
+
+    def execute(self, context): 
+
+        # Get all selected curves
+        selected_curves = [c for c in context.selected_objects if c.type == "CURVE"]
+
+        # Convert selected curves to meshes      
+        bpy.ops.object.convert(target='MESH')
+        bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+
+        # Fill the selected curve-meshes
+        for obj in selected_curves:
+
+            me = obj.data
+            bm = bmesh.from_edit_mesh(me)
+
+            ret = bmesh.ops.edgeloop_fill(bm, edges=[e for e in bm.edges if e.is_boundary])
+
+        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
         return {'FINISHED'}
 

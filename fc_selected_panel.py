@@ -107,3 +107,6 @@ class FC_PT_Selected_Panel(Panel):
 
         col = row.column()
         col.operator('view3d.snap_active', text='Cursor to Active', icon='PIVOT_CURSOR')
+
+        row = layout.row()
+        row.operator('view3d.curve_convert', text='Curve to mesh & fill', icon='LINENUMBERS_OFF')
