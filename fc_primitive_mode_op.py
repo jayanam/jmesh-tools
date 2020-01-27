@@ -171,9 +171,10 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             mouse_pos_2d = (event.mouse_region_x, event.mouse_region_y)
 
             # If an object is hit, set it as target
-            hit, hit_obj = self.shape.is_object_hit(mouse_pos_2d, context)
-            if hit:
-                context.scene.carver_target = hit_obj
+            if event.ctrl:
+                hit, hit_obj = self.shape.is_object_hit(mouse_pos_2d, context)
+                if hit:
+                    context.scene.carver_target = hit_obj
 
             mouse_pos_2d, mouse_pos_3d = self.get_snapped_mouse_pos(mouse_pos_2d, context)
 
