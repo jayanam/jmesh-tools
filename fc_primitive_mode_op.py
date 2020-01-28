@@ -310,7 +310,8 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         # TODO: Make this configurable
         obj_data = context.active_object.data
         obj_data.bevel_depth = 0.05
-        obj_data.resolution_u = 12
+        obj_data.resolution_u = 24
+        obj_data.bevel_resolution = 12
         obj_data.fill_mode = 'FULL'  
 
         bez_points = curve.data.splines[0].bezier_points

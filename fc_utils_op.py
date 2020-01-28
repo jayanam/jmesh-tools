@@ -57,7 +57,7 @@ class FC_CurveConvertOperator(Operator):
     def execute(self, context): 
 
         # Get all selected curves
-        selected_curves = [c for c in context.selected_objects if c.type == "CURVE"]
+        selected_curves = [c for c in context.selected_objects if c.type == "CURVE" and c.visible_get()]
 
         # Convert selected curves to meshes      
         bpy.ops.object.convert(target='MESH')
