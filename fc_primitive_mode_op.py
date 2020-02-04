@@ -241,8 +241,9 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
             if event.type == "E":
                 mouse_pos_2d = (event.mouse_region_x, event.mouse_region_y)
+                mouse_pos_3d = self.get_3d_for_mouse(mouse_pos_2d, context)
 
-                if self.shape.start_extrude(mouse_pos_2d, context):
+                if self.shape.start_extrude(mouse_pos_2d, mouse_pos_3d, context):
                     self.create_batch()
                     result = "RUNNING_MODAL"
 

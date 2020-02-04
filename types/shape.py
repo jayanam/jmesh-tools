@@ -100,7 +100,7 @@ class Shape:
         self._hit = None
         self._normal = None
         self._actions = []
-        self._extrude_pos = 0
+        self._extrude_pos = None
 
     def can_start_from_center(self):
         return False
@@ -333,14 +333,14 @@ class Shape:
         self._is_rotating = False
         self._rotation = 0.0
 
-    def start_extrude(self, mouse_pos_2d, context):
-        self._extrude_pos = mouse_pos_2d[0]
+    def start_extrude(self, mouse_pos_2d, mouse_pos_3d, context):
+        self._extrude_pos = mouse_pos_2d
         self._is_extruding = True
         self.build_actions()
         return True
 
     def stop_extrude(self, context):
-        self._extrude_pos = 0
+        self._extrude_pos = None
         self._is_extruding = False
 
     def can_set_center_type(self):
@@ -348,7 +348,7 @@ class Shape:
 
     def extrude_vertices(self, context):
 
-        dir = self.get_dir() * self._extrusion
+        dir = self._extrusion * self.get_dir()
 
         for index, vertex3d in enumerate(self._vertices):    
             if not self._is_extruded:
@@ -357,9 +357,6 @@ class Shape:
                 self._vertices_extruded[index] = vertex3d + dir
 
         self._is_extruded = True
-
-    def handle_mouse_wheel(self, inc, context):
-        return False
 
     def handle_extrude(self, is_up_key, context):
         if self.is_extruding():
@@ -371,8 +368,27 @@ class Shape:
         self.extrude_vertices(context)
 
 
+    def handle_mouse_wheel(self, inc, context):
+        return False
+
     def handle_mouse_move(self, mouse_pos_2d, mouse_pos_3d, event, context):
 
+        if mouse_pos_2d and self.is_extruding():
+            dir = self.get_dir()
+            mouse_3d = region_2d_to_location_3d(self._view_context.region, self._view_context, mouse_pos_2d, dir)
+            ext_3d = region_2d_to_location_3d(self._view_context.region, self._view_context, self._extrude_pos, dir)
+
+            diff_vec = (ext_3d - mouse_3d)
+
+            dot_prod = diff_vec.dot(dir.orthogonal())
+
+            self._extrusion = dot_prod
+
+            self.extrude_vertices(context)
+            return True
+
+        # self._last_pos_x = mouse_pos_2d[0]
+        
         if self._vertex_moving is not None:
            self._vertices[self._vertex_moving] = mouse_pos_3d
            return True
