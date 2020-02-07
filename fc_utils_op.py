@@ -46,10 +46,10 @@ class FC_CurveConvertOperator(Operator):
     @classmethod
     def poll(cls, context): 
 
-        if context.object is None:
+        if len(context.selected_objects) < 1:
             return False
 
-        if context.object.mode != "OBJECT":
+        if context.active_object.mode != "OBJECT":
             return False
    
         return True
@@ -59,19 +59,21 @@ class FC_CurveConvertOperator(Operator):
         # Get all selected curves
         selected_curves = [c for c in context.selected_objects if c.type == "CURVE" and c.visible_get()]
 
-        # Convert selected curves to meshes      
-        bpy.ops.object.convert(target='MESH')
-        bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+        if len(selected_curves) > 0:
 
-        # Fill the selected curve-meshes
-        for obj in selected_curves:
+            # Convert selected curves to meshes      
+            bpy.ops.object.convert(target='MESH')
+            bpy.ops.object.mode_set(mode='EDIT', toggle=False)
 
-            me = obj.data
-            bm = bmesh.from_edit_mesh(me)
+            # Fill the selected curve-meshes
+            for obj in selected_curves:
 
-            ret = bmesh.ops.edgeloop_fill(bm, edges=[e for e in bm.edges if e.is_boundary])
+                me = obj.data
+                bm = bmesh.from_edit_mesh(me)
 
-        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+                ret = bmesh.ops.edgeloop_fill(bm, edges=[e for e in bm.edges if e.is_boundary])
+
+            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
         return {'FINISHED'}
 
@@ -151,19 +153,27 @@ class FC_SymmetrizeOperator(Operator):
     @classmethod
     def poll(cls, context):
 
+        if context.mode == "SCULPT":
+            return True
+
         if context.active_object == None:
             return False
         
         mode = context.active_object.mode       
-        return len(context.selected_objects) == 1 and mode == "OBJECT"
+        return len(context.selected_objects) == 1 and (mode == "OBJECT")
     
 
     def execute(self, context):
         
-        bpy.ops.object.mode_set(mode="EDIT")
-        bpy.ops.mesh.select_all(action='SELECT')
-        bpy.ops.mesh.symmetrize(direction=self.sym_axis)
-        bpy.ops.object.mode_set(mode="OBJECT")
+        if context.mode == "OBJECT":
+            bpy.ops.object.mode_set(mode="EDIT")
+            bpy.ops.mesh.select_all(action='SELECT')
+            bpy.ops.mesh.symmetrize(direction=self.sym_axis)
+            bpy.ops.object.mode_set(mode="OBJECT")
+
+        elif context.mode == "SCULPT":
+            bpy.context.scene.tool_settings.sculpt.symmetrize_direction = self.sym_axis
+            bpy.ops.sculpt.symmetrize()
         
         return {'FINISHED'}
 

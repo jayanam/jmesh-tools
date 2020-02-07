@@ -94,7 +94,7 @@ class Circle_Shape(Shape):
             blf.position(2, pos_text[0], pos_text[1], 0)
             blf.draw(2, "r: {0:.3f}".format(self._radius))
 
-    def get_point_size(self):
+    def get_point_size(self, context):
         if self._radius <= 0.2:
             return 3
         elif self._radius <= 0.3:
@@ -102,7 +102,7 @@ class Circle_Shape(Shape):
         elif self._radius <= 0.5:
             return 7
         else:
-            return super().get_point_size()
+            return super().get_point_size(context)
         
     def can_set_center_type(self):
         return True

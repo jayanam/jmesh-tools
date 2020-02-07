@@ -2,7 +2,7 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 0, 1, 4),
+    "version": (1, 0, 2, 0),
     "blender": (2, 80, 0),
     "location": "View3D",
     "category": "Object"}
@@ -80,13 +80,21 @@ center_items = [ ("Mouse",     "Mouse", "", 0),
                  ("3D Cursor", "3D cursor", "", 1)
                ]
 
+shape_input_method = [ ("Click", "Click", "", 0),
+                       ("Draw",  "Draw", "", 1)
+                     ]
+
 bpy.types.Scene.bool_mode = bpy.props.EnumProperty(items=mode_items, 
                                                    name="Operation",
                                                    default="Create")
 
 bpy.types.Scene.center_type = bpy.props.EnumProperty(items=center_items, 
-                                                   name="Center_TYpe",
+                                                   name="Center_Type",
                                                    default="Mouse")
+
+bpy.types.Scene.shape_input_method = bpy.props.EnumProperty(items=shape_input_method, 
+                                                   name="Input_Method",
+                                                   default="Click")
 
 primitive_types = [ ("Polyline",   "Polyline",  "", 0),
                     ("Circle",     "Circle",    "", 1),

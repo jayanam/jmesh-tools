@@ -8,8 +8,7 @@ class FC_PT_Panel(Panel):
     bl_category = "JMesh"
     
     def draw(self, context):
-        # global custom_icons;
-        
+       
         layout = self.layout
         scene = context.scene
         

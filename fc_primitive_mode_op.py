@@ -161,7 +161,10 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
         # Left mouse button is released
         if event.value == "RELEASE" and event.type == "LEFTMOUSE":
-            self.shape.set_vertex_moving(None)
+
+            mouse_pos_2d = (event.mouse_region_x, event.mouse_region_y)
+            self.shape.handle_mouse_release(mouse_pos_2d, event, context)
+
         
         # Left mouse button is pressed
         if event.value == "PRESS" and event.type == "LEFTMOUSE":
@@ -246,6 +249,15 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                 if self.shape.start_extrude(mouse_pos_2d, mouse_pos_3d, context):
                     self.create_batch()
                     result = "RUNNING_MODAL"
+
+            # toggle input method
+            if event.type == "I":
+                context.scene.shape_input_method = next_enum(context.scene.shape_input_method, 
+                                                    context.scene, "shape_input_method")
+
+                self.shape.build_actions()
+
+                result = "RUNNING_MODAL"
 
             # toggle bool mode
             if event.type == "O":
@@ -528,6 +540,6 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         else:
             self.shader.uniform_float("color", (0.1, 0.3, 0.7, 1.0))
 
-        bgl.glPointSize(self.shape.get_point_size())
+        bgl.glPointSize(self.shape.get_point_size(context))
         self.batch_points.draw(self.shader)
 
