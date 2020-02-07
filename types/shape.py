@@ -7,6 +7,7 @@ from math import sin, cos, pi, radians
 from mathutils import Vector, geometry
 
 from mathutils.geometry import intersect_line_plane
+from mathutils.geometry import intersect_point_line
 
 from ..utils.fc_view_3d_utils import *
 
@@ -378,18 +379,23 @@ class Shape:
 
     def handle_mouse_move(self, mouse_pos_2d, mouse_pos_3d, event, context):
 
-        if mouse_pos_2d and self.is_extruding():
+        if self.is_extruding():
+
             dir = self.get_dir()
-            #region = context.region
-            #rv3d = context.space_data.region_3d
-            mouse_3d = region_2d_to_location_3d(self._view_context.region, self._view_context, mouse_pos_2d, Vector())
-            ext_3d = region_2d_to_location_3d(self._view_context.region, self._view_context, self._extrude_pos, Vector())
+            region = context.region
+            rv3d = context.space_data.region_3d
 
-            diff_vec = (ext_3d - mouse_3d)
+            mxy = event.mouse_region_x, event.mouse_region_y
+            mpos_3d = region_2d_to_location_3d(region, rv3d, mxy, self._vertices[0])
 
-            dot_prod = diff_vec.dot(dir.orthogonal())
+            isect_pt, length = intersect_point_line(
+                mpos_3d,
+                self._vertices[0],
+                self._vertices[0] + dir)
 
-            self._extrusion = dot_prod
+            self._extrusion = length
+
+            print(str(length))
 
             self.extrude_vertices(context)
             return True
