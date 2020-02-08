@@ -20,19 +20,19 @@ class FC_PT_Panel(Panel):
         col = row.column()  
         col.operator('object.bool_target', text='', icon='BACK')
 
-        if context.mode != "SCULPT":
-            
-            # New row
-            row = layout.row()
+        # New row
+        row = layout.row()
 
-            # Bool diff button
-            col = row.column()
-            col.operator('object.bool_diff', text='Difference', icon='MOD_BOOLEAN')
-            
-            # Bool union button
-            col = row.column()
-            col.operator('object.bool_union', text='Union', icon='MOD_BOOLEAN')
-            
+        # Bool diff button
+        col = row.column()
+        col.operator('object.bool_diff', text='Difference', icon='MOD_BOOLEAN')
+        
+        # Bool union button
+        col = row.column()
+        col.operator('object.bool_union', text='Union', icon='MOD_BOOLEAN')
+
+        if context.mode != "SCULPT":
+                        
             row = layout.row()
 
             # Bool Slice button
