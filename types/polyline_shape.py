@@ -24,7 +24,6 @@ class Polyline_Shape(Shape):
     def is_draw_input(self, context):
         return context.scene.shape_input_method == "Draw"
 
-
     def handle_mouse_press(self, mouse_pos_2d, mouse_pos_3d, event, context):
 
         super().handle_mouse_press(mouse_pos_2d, mouse_pos_3d, event, context)

@@ -278,7 +278,8 @@ class Shape:
         return self._extrusion
 
     def add_vertex(self, vertex):
-        self._vertices.append(vertex)
+        if vertex not in self._vertices:
+            self._vertices.append(vertex)
 
     def reset(self):
         self._vertices.clear()
