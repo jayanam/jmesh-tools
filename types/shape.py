@@ -395,8 +395,6 @@ class Shape:
 
             self._extrusion = length
 
-            print(str(length))
-
             self.extrude_vertices(context)
             return True
 
