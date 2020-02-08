@@ -21,7 +21,7 @@ class FC_MirrorOperator(Operator):
             return False
         
         mode = context.active_object.mode       
-        return len(context.selected_objects) == 1 and mode == "OBJECT"
+        return len(context.selected_objects) == 1 and (mode == "OBJECT" or mode == "SCULPT")
     
     def execute(self, context):
         
@@ -31,7 +31,8 @@ class FC_MirrorOperator(Operator):
         
         bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
         
-        bpy.ops.object.modifier_add(type='MIRROR')    
+        mirror_mod = context.object.modifiers.new(type="MIRROR", name="FC_Mirror")
+        mirror_mod.use_clip = True
         
         bpy.context.scene.cursor.location = cursor_location
 

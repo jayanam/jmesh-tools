@@ -66,11 +66,7 @@ class FC_PT_Selected_Panel(Panel):
             # Circular Array
             col = row.column()
             col.operator('object.fc_circle_array_mode_op', text='Circle Array', icon='MOD_ARRAY')
-
-            # Mirror                       
-            row = layout.row()
-            row.operator('object.mirror', text='Mirror', icon='MOD_MIRROR')
-            
+           
             row = layout.row()
             col = row.column()
             col.operator('view3d.origin_active', text='Set Origin', icon='PIVOT_CURSOR')
@@ -85,6 +81,10 @@ class FC_PT_Selected_Panel(Panel):
             row.operator('view3d.dissolve_edges', text='Dissolve edges', icon='LINENUMBERS_OFF')
 
 
+        # Mirror                       
+        row = layout.row()
+        row.operator('object.mirror', text='Mirror', icon='MOD_MIRROR')
+        
         # symmetrize negative
         row = layout.row()
         split = row.split(factor=0.33)
