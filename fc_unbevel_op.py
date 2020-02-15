@@ -44,6 +44,11 @@ class FC_UnBevelOperator(Operator):
                 modifier_to_remove = target_obj.modifiers.get("Bevel")
                 if(not modifier_to_remove is None):
                     target_obj.modifiers.remove(modifier_to_remove)
+
+                # Remove the Weighted Normal modifier if exists
+                modifier_to_remove = target_obj.modifiers.get("Weighted Normal")
+                if(modifier_to_remove is not None):
+                    target_obj.modifiers.remove(modifier_to_remove)
                              
                 # switch to edit mode and select sharp edges
                 bpy.ops.object.editmode_toggle()

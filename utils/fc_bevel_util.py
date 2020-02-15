@@ -38,6 +38,11 @@ def execute_bevel(bevel_objects):
         modifier_to_remove = target_obj.modifiers.get("Bevel")
         if(modifier_to_remove is not None):
             target_obj.modifiers.remove(modifier_to_remove)
+
+        # Remove the Weighted Normal modifier if exists
+        modifier_to_remove = target_obj.modifiers.get("Weighted Normal")
+        if(modifier_to_remove is not None):
+            target_obj.modifiers.remove(modifier_to_remove)
             
         # Add a new bevel modifier
         bpy.ops.object.modifier_add(type = 'BEVEL')
@@ -45,11 +50,13 @@ def execute_bevel(bevel_objects):
         # get the last added modifier
         bevel = target_obj.modifiers[-1]
         bevel.limit_method = 'WEIGHT'
-        #bevel.edge_weight_method = 'LARGEST'
         bevel.use_clamp_overlap = False
         bevel.width = width
         bevel.segments = 3
         bevel.profile = 0.7
+
+        # add a weighted normal modifier after the bevel
+        bpy.ops.object.modifier_add(type='WEIGHTED_NORMAL')
         
         # switch to edit mode and select sharp edges
         bpy.ops.object.editmode_toggle()
