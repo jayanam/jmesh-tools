@@ -57,6 +57,8 @@ def execute_bevel(bevel_objects):
 
         # add a weighted normal modifier after the bevel
         bpy.ops.object.modifier_add(type='WEIGHTED_NORMAL')
+        weighted_mod = target_obj.modifiers[-1]
+        weighted_mod.keep_sharp = True
         
         # switch to edit mode and select sharp edges
         bpy.ops.object.editmode_toggle()
