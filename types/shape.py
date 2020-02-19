@@ -19,6 +19,8 @@ from bpy_extras.view3d_utils import (
 
 from .action import Action
 
+from .enums import *
+
 
 class ShapeState(Enum):
     NONE = 0
@@ -252,6 +254,9 @@ class Shape:
 
     def build_actions(self):
         self._actions.clear()
+
+    def set_next_input_method(self, context):
+        pass
 
     def add_action(self, action, shape_state=None):
         if(self.state == shape_state or shape_state == None):

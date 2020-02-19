@@ -252,9 +252,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
             # toggle input method
             if event.type == "I":
-                context.scene.shape_input_method = next_enum(context.scene.shape_input_method, 
-                                                    context.scene, "shape_input_method")
-
+                self.shape.set_next_input_method(context)
                 self.shape.build_actions()
 
                 result = "RUNNING_MODAL"
@@ -315,10 +313,16 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         if context.object is not None:
             bpy.ops.object.mode_set(mode='OBJECT')
 
+        curve_shape = self.shape
         bpy.ops.curve.primitive_bezier_curve_add(enter_editmode=True, location=(0, 0, 0))
 
+        if not curve_shape.is_2_points_input():
+            num_cuts = curve_shape.get_cuts()
+            if num_cuts > 0:
+                bpy.ops.curve.subdivide(number_cuts=num_cuts)
+
         curve = context.active_object
-        curve_shape = self.shape
+        
 
         # TODO: Make this configurable
         obj_data = context.active_object.data
@@ -330,18 +334,30 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         bez_points = curve.data.splines[0].bezier_points
         point_count = len(bez_points) - 1
 
-        norm_start = curve_shape.get_normal_start()
-        norm_end = curve_shape.get_normal_end()
+        # 2-Points are added
+        if curve_shape.is_2_points_input():
+            norm_start = curve_shape.get_normal_start()
+            norm_end = curve_shape.get_normal_end()
 
-        bez_points[0].co = curve_shape.get_start_point()
-        if norm_start is not None:
-            bez_points[0].handle_right = bez_points[0].co + norm_start
-            bez_points[0].handle_left = bez_points[0].co - norm_start
+            bez_points[0].co = curve_shape.get_start_point()
+            if norm_start is not None:
+                bez_points[0].handle_right = bez_points[0].co + norm_start
+                bez_points[0].handle_left = bez_points[0].co - norm_start
 
-        bez_points[point_count].co = curve_shape.get_end_point()
-        if norm_end is not None:
-            bez_points[point_count].handle_right = bez_points[point_count].co - norm_end
-            bez_points[point_count].handle_left = bez_points[point_count].co + norm_end
+            bez_points[point_count].co = curve_shape.get_end_point()
+            if norm_end is not None:
+                bez_points[point_count].handle_right = bez_points[point_count].co - norm_end
+                bez_points[point_count].handle_left = bez_points[point_count].co + norm_end
+
+        # Multiple points add
+        else:
+            norm_start = curve_shape.get_normal_start()
+            norm_end = curve_shape.get_normal_end()
+
+            for index, point in enumerate(curve_shape.get_points()):
+                bez_points[index].co = point
+                bez_points[index].handle_right = point
+                bez_points[index].handle_left = point
 
         self.shape.reset()
 

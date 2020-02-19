@@ -82,6 +82,10 @@ class Polyline_Shape(Shape):
             return 3
         return super().get_point_size(context)
 
+    def set_next_input_method(self, context):
+        context.scene.shape_input_method = next_enum(context.scene.shape_input_method, 
+                                                    context.scene, "shape_input_method")
+
     def build_actions(self):
         super().build_actions()
         bool_mode = bpy.context.scene.bool_mode

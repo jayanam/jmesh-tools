@@ -2,7 +2,7 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 0, 2, 8),
+    "version": (1, 0, 3, 0),
     "blender": (2, 80, 0),
     "location": "View3D",
     "category": "Object"}
@@ -84,6 +84,10 @@ shape_input_method = [ ("Click", "Click", "", 0),
                        ("Draw",  "Draw", "", 1)
                      ]
 
+curve_input_method = [ ("2-Points", "2-Points", "", 0),
+                       ("Points",   "Points", "", 1)
+                     ]
+
 bpy.types.Scene.bool_mode = bpy.props.EnumProperty(items=mode_items, 
                                                    name="Operation",
                                                    default="Create")
@@ -95,6 +99,10 @@ bpy.types.Scene.center_type = bpy.props.EnumProperty(items=center_items,
 bpy.types.Scene.shape_input_method = bpy.props.EnumProperty(items=shape_input_method, 
                                                    name="Input_Method",
                                                    default="Click")
+
+bpy.types.Scene.curve_input_method = bpy.props.EnumProperty(items=curve_input_method, 
+                                                   name="Curve_Input_Method",
+                                                   default="2-Points")
 
 primitive_types = [ ("Polyline",   "Polyline",  "", 0),
                     ("Circle",     "Circle",    "", 1),
