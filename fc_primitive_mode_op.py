@@ -310,58 +310,71 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             self.create_curve(context)
 
     def create_curve(self, context):
+        curve_shape = self.shape
+        if curve_shape.is_2_points_input():
+            self.create_bezier(context)
+        else:
+            self.create_path(context)
+
+    def set_bevel(self, curve):
+        obj_data = curve.data
+        obj_data.bevel_depth = 0.05
+        obj_data.resolution_u = 24
+        obj_data.bevel_resolution = 12
+        obj_data.fill_mode = 'FULL'  
+
+
+    def create_path(self, context):
+        if context.object is not None:
+            bpy.ops.object.mode_set(mode='OBJECT')
+
+        curve_shape = self.shape
+        bpy.ops.curve.primitive_nurbs_path_add(enter_editmode=True)
+
+        self.set_bevel(context.active_object)
+
+        bpy.ops.curve.select_all(action='SELECT')
+        bpy.ops.curve.delete()
+
+        for point in curve_shape.get_points():
+            bpy.ops.curve.vertex_add(location=point)
+
+        self.shape.reset()
+
+
+    def create_bezier(self, context):
         if context.object is not None:
             bpy.ops.object.mode_set(mode='OBJECT')
 
         curve_shape = self.shape
         bpy.ops.curve.primitive_bezier_curve_add(enter_editmode=True, location=(0, 0, 0))
 
-        if not curve_shape.is_2_points_input():
-            num_cuts = curve_shape.get_cuts()
-            if num_cuts > 0:
-                bpy.ops.curve.subdivide(number_cuts=num_cuts)
-
         curve = context.active_object
         
-
-        # TODO: Make this configurable
-        obj_data = context.active_object.data
-        obj_data.bevel_depth = 0.05
-        obj_data.resolution_u = 24
-        obj_data.bevel_resolution = 12
-        obj_data.fill_mode = 'FULL'  
+        self.set_bevel(curve)
 
         bez_points = curve.data.splines[0].bezier_points
         point_count = len(bez_points) - 1
 
-        # 2-Points are added
-        if curve_shape.is_2_points_input():
-            norm_start = curve_shape.get_normal_start()
-            norm_end = curve_shape.get_normal_end()
+        norm_start = curve_shape.get_normal_start()
+        norm_end = curve_shape.get_normal_end()
 
-            bez_points[0].co = curve_shape.get_start_point()
-            if norm_start is not None:
-                bez_points[0].handle_right = bez_points[0].co + norm_start
-                bez_points[0].handle_left = bez_points[0].co - norm_start
+        bez_points[0].co = curve_shape.get_start_point()
+        if norm_start is not None:
+            bez_points[0].handle_right = bez_points[0].co + norm_start
+            bez_points[0].handle_left = bez_points[0].co - norm_start
 
-            bez_points[point_count].co = curve_shape.get_end_point()
-            if norm_end is not None:
-                bez_points[point_count].handle_right = bez_points[point_count].co - norm_end
-                bez_points[point_count].handle_left = bez_points[point_count].co + norm_end
-
-        # Multiple points add
-        else:
-            norm_start = curve_shape.get_normal_start()
-            norm_end = curve_shape.get_normal_end()
-
-            for index, point in enumerate(curve_shape.get_points()):
-                bez_points[index].co = point
-                bez_points[index].handle_right = point
-                bez_points[index].handle_left = point
+        bez_points[point_count].co = curve_shape.get_end_point()
+        if norm_end is not None:
+            bez_points[point_count].handle_right = bez_points[point_count].co - norm_end
+            bez_points[point_count].handle_left = bez_points[point_count].co + norm_end
 
         self.shape.reset()
 
 
+    def get_direction(self, v1, v2):
+        dir = v2 - v1
+        return dir
 
     def create_mesh(self, context):
         try:
