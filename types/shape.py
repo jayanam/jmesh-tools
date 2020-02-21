@@ -95,6 +95,7 @@ class Shape:
         self._is_extruding = False
         self._move_offset = 0.0
         self._move_axis = None
+        self._extrude_axis = None
         self._rotation = 0.0
         self._extrusion = 0.0
         self._view_context = None
@@ -198,11 +199,21 @@ class Shape:
         self._vertex_moving = idx
         return True
 
-    def get_dir(self):
-        if not self._snap_to_target or self._normal == None:
-            view_rot = self._view_context.view_rotation
-            return get_view_direction_by_rot_matrix(view_rot)
 
+    def get_dir(self):
+
+        if self._extrude_axis == "X":
+            return Vector((1,0,0))
+        elif self._extrude_axis == "Y":
+            return Vector((0,1,0))
+        elif self._extrude_axis == "Z":
+            return Vector((0,0,1))
+
+        else:
+            if not self._snap_to_target or self._normal == None:
+                view_rot = self._view_context.view_rotation
+                return get_view_direction_by_rot_matrix(view_rot)
+        
         return -self._normal
 
     def get_view_context(self):
@@ -242,14 +253,16 @@ class Shape:
                                    ""), ShapeState.CREATED)
         else:
             self.add_action(
-                Action("Up, Down Arrow",  "Extrude",     ""), ShapeState.CREATED)
+                Action("Up, Down Arrow",  "Extrude",     ""), ShapeState.CREATED)        
+            self.add_action(
+                Action("X, Y, Z or N",  "Extrude Axis",    ""), ShapeState.CREATED)
 
     def build_move_action(self):
         if not self._is_moving:
             self.add_action(Action("G",       "Move",
                                    ""), ShapeState.CREATED)
         else:
-            self.add_action(Action("X or Y",  "Move Axis lock",
+            self.add_action(Action("X, Y or N",  "Move Axis lock",
                                    ""), ShapeState.CREATED)
 
     def build_actions(self):
@@ -337,7 +350,10 @@ class Shape:
         return self._mouse_pos_2d
 
     def set_move_axis(self, axis):
-        self._move_axis = axis
+        if axis == "N":
+            self._move_axis = None
+        else:
+            self._move_axis = axis
 
     def start_rotate(self, mouse_pos, context):
         return False
@@ -345,6 +361,12 @@ class Shape:
     def stop_rotate(self, context):
         self._is_rotating = False
         self._rotation = 0.0
+
+    def set_extrude_axis(self, axis):
+        if axis == "N":
+            self._extrude_axis = None
+        else:
+            self._extrude_axis = axis
 
     def start_extrude(self, mouse_pos_2d, mouse_pos_3d, context):
         self._extrude_pos = mouse_pos_2d

@@ -91,7 +91,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         
         self.draw_handle_2d = None
         self.draw_handle_3d = None
-        self.draw_event  = None
+        self.draw_event  = None 
 
     def get_snapped_mouse_pos(self, mouse_pos_2d, context):
 
@@ -222,9 +222,10 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                 if self.shape.start_move(mouse_pos_3d):
                     result = "RUNNING_MODAL"
 
-            if event.type in ["X", "Y"]:
-                self.shape.set_move_axis(event.type)
-                result = "RUNNING_MODAL"
+            if self.shape.is_moving():
+                if event.type in ["X", "Y", "N"]:
+                    self.shape.set_move_axis(event.type)
+                    result = "RUNNING_MODAL"
 
             # try to rotate the shape
             if event.type == "R":
@@ -237,10 +238,15 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                     result = "RUNNING_MODAL"             
 
             # try to extrude the shape
-            if self.shape.is_extruding() and (event.type == "DOWN_ARROW" or event.type == "UP_ARROW"):
-                self.shape.handle_extrude(event.type == "UP_ARROW", context)
-                self.create_batch()
-                result = "RUNNING_MODAL"                   
+            if self.shape.is_extruding():
+                if (event.type == "DOWN_ARROW" or event.type == "UP_ARROW"):
+                    self.shape.handle_extrude(event.type == "UP_ARROW", context)
+                    self.create_batch()
+                    result = "RUNNING_MODAL"
+                elif (event.type in ["X", "Y", "Z", "N"]):
+                    self.shape.set_extrude_axis(event.type)
+                    self.create_batch()
+                    result = "RUNNING_MODAL"
 
             if event.type == "E":
                 mouse_pos_2d = (event.mouse_region_x, event.mouse_region_y)
@@ -370,11 +376,6 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             bez_points[point_count].handle_left = bez_points[point_count].co + norm_end
 
         self.shape.reset()
-
-
-    def get_direction(self, v1, v2):
-        dir = v2 - v1
-        return dir
 
     def create_mesh(self, context):
         try:
