@@ -144,7 +144,7 @@ class Shape:
                 origin, origin + direction, self._hit, self._normal)
 
         if result is not None:
-            result += self._normal.normalized() * 0.01
+            result += self._normal.normalized() * scene.snap_offset
 
         return result
 

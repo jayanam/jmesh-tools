@@ -69,6 +69,8 @@ bpy.types.Scene.extrude_mesh  = BoolProperty(name="Extrude mesh",
                                       description="Extrude the mesh after creation",
                                       default = True)
 
+bpy.types.Scene.snap_offset = bpy.props.FloatProperty( name="Snap_offset", description="Offset for primitive snap", default = 0.01)
+
 mode_items = [ ("Create",     "Create", "", 0),
                ("Difference", "Difference", "", 1),
                ("Union",      "Union", "", 2),

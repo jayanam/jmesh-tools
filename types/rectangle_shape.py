@@ -134,7 +134,7 @@ class Rectangle_Shape(Shape):
                 tmp_vertices_2d.append((x,y))
                 
                 if not self._snap_to_target:
-                    direction = get_view_direction_by_rot_matrix(self._view_context.view_rotation) * context.scene.draw_distance
+                    direction = get_view_direction_by_rot_matrix(self._view_context.view_rotation) # * context.scene.snap_offset
                     self._vertices[i] = get_3d_vertex_for_2d(self._view_context, (x,y), -direction)
                 else:
                     self._vertices[i] = self.get_3d_for_2d((x,y), context) 

@@ -13,13 +13,16 @@ class FC_PT_Primitive_Panel(Panel):
 
         row = layout.row()
         col = row.column()
-        col.prop(context.scene, "use_snapping", text="Snap grid")
-
-        col = row.column()
         col.prop(context.scene, "snap_to_target", text="Snap to mesh")
 
+        col = row.column()
+        col.prop(context.scene, "snap_offset", text="Offset")
+
+        row = layout.row()
+        col = row.column()
+        col.prop(context.scene, "use_snapping", text="Snap to grid")
+
         if context.scene.primitive_type != "Curve":   
-            row = layout.row()
             col = row.column()
             col.prop(context.scene, "extrude_mesh", text="Extrude")
 
