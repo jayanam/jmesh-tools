@@ -25,7 +25,7 @@ def execute_bevel(bevel_objects):
         bpy.context.view_layer.objects.active = target_obj
         
         # Apply the scale before beveling
-        bpy.ops.object.transform_apply(scale=True)
+        bpy.ops.object.transform_apply(scale=True, location=False, rotation=False)
         
         # Set smooth shading for the target object
         bpy.ops.object.shade_smooth()
