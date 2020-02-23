@@ -81,7 +81,7 @@ def execute_slice_op(context, target_obj):
      
     # store active object
     current_obj = context.active_object
-    bpy.ops.object.transform_apply(scale=True)
+    bpy.ops.object.transform_apply(scale=True, location=False, rotation=False)
     
     # clone target
     select_active(target_obj)  
@@ -130,7 +130,7 @@ def execute_boolean_op(context, target_obj, bool_method = 0):
 
     # store active object
     current_obj = context.object
-    bpy.ops.object.transform_apply(scale=True)
+    bpy.ops.object.transform_apply(scale=True, location=False, rotation=False)
     
     # make target the active object
     select_active(target_obj)
