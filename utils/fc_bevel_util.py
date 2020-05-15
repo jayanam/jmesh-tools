@@ -8,6 +8,29 @@ def try_find_bevel_op(bevel_objects):
             return bevel_mod
     return None
 
+def has_bevel_mod(obj):
+    bevel_mod = obj.modifiers.get("Bevel")
+    return bevel_mod is not None
+
+def apply_sharp_edges():
+
+    # Set smooth shading for the target object
+    bpy.ops.object.shade_smooth()
+
+    # switch to edit mode and select sharp edges
+    bpy.ops.object.editmode_toggle()
+    
+    bpy.context.tool_settings.mesh_select_mode = (False, True, False)
+
+    bpy.ops.mesh.select_all(action='DESELECT')
+    bpy.ops.mesh.edges_select_sharp()
+    
+    # Mark edges as sharp
+    bpy.ops.mesh.mark_sharp()
+    bpy.ops.transform.edge_bevelweight(value=1)
+
+    # Back to object mode
+    bpy.ops.object.editmode_toggle()
 
 def execute_bevel(bevel_objects):
     if len(bevel_objects) == 0:
@@ -26,10 +49,7 @@ def execute_bevel(bevel_objects):
         
         # Apply the scale before beveling
         bpy.ops.object.transform_apply(scale=True, location=False, rotation=False)
-        
-        # Set smooth shading for the target object
-        bpy.ops.object.shade_smooth()
-        
+               
         # Set the data to autosmooth
         bpy.context.object.data.use_auto_smooth = True
         bpy.context.object.data.auto_smooth_angle = 1.0472
@@ -60,17 +80,4 @@ def execute_bevel(bevel_objects):
         weighted_mod = target_obj.modifiers[-1]
         weighted_mod.keep_sharp = True
         
-        # switch to edit mode and select sharp edges
-        bpy.ops.object.editmode_toggle()
-        
-        bpy.context.tool_settings.mesh_select_mode = (False, True, False)
-
-        bpy.ops.mesh.select_all(action='DESELECT')
-        bpy.ops.mesh.edges_select_sharp()
-        
-        # Mark edges as sharp
-        bpy.ops.mesh.mark_sharp()
-        bpy.ops.transform.edge_bevelweight(value=1)
-
-        # Back to object mode
-        bpy.ops.object.editmode_toggle()
+        apply_sharp_edges()

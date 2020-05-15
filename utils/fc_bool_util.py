@@ -1,13 +1,15 @@
 import bpy
 from bpy.props import *
 
+from . fc_bevel_util import *
+
 import bmesh
 
 def can_apply_bool(obj, context):
     target = context.scene.carver_target
     if target is None:
         return False
-
+ 
     bool_mod = target.modifiers.get("FC_BOOL")
     if bool_mod is None:
         return False
@@ -64,6 +66,9 @@ def bool_mod_and_apply(obj, bool_method, allow_delete = True):
     
     if is_apply_immediate():
         bpy.ops.object.modifier_apply(modifier=bool_mod.name)
+
+        if has_bevel_mod(active_obj):
+            apply_sharp_edges()
 
         if is_delete_after_apply() and allow_delete:
             select_active(obj)
