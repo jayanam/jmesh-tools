@@ -235,7 +235,14 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
                 if self.shape.start_rotate(mouse_pos_3d, context):
                     self.create_batch()
-                    result = "RUNNING_MODAL"             
+                    result = "RUNNING_MODAL"
+
+            # Try set mirror type for primitives
+            if event.type == "M":
+                if self.shape.is_none():
+                    self.shape.set_next_mirror(context)
+                    self.shape.build_actions()
+                    result = "RUNNING_MODAL"
 
             # try to extrude the shape
             if self.shape.is_extruding():
@@ -406,13 +413,23 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                 bm.verts.new(v)
             
             bm.verts.index_update()
-
             bm.faces.new(bm.verts)
+
+            if self.shape.has_mirror:
+                # Add faces for the mirrored vertices
+                mirror_verts = []
+                for v in self.shape.vertices_mirror:
+                    mirror_verts.append(bm.verts.new(v))
+                
+                bm.verts.index_update()
+                bm.faces.new(mirror_verts)
 
             # Extrude mesh if extrude mesh option is enabled
             self.extrude_mesh(context, bm, is_bool_create)
 
-            bm.to_mesh(mesh)  
+            bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+
+            bm.to_mesh(mesh)
             bm.free()
 
             bpy.context.view_layer.objects.active = obj
@@ -490,12 +507,21 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         
         points = self.shape.get_vertices_copy(mouse_pos)
 
+        points_mirror = self.shape.get_vertices_mirror_copy(mouse_pos)
+
         extrude_points = self.shape.get_vertices_extruded_copy(mouse_pos)
+
+        extrude_points_m = self.shape.get_vertices_extruded_mirror_copy(mouse_pos)
 
         extrude_lines = []
         for index, vertex in enumerate(extrude_points):
             extrude_lines.append(points[index])
             extrude_lines.append(vertex)
+
+        extrude_lines_m = []
+        for index, vertex in enumerate(extrude_points_m):
+            extrude_lines_m.append(points_mirror[index])
+            extrude_lines_m.append(vertex)
 
         self.shader = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
          
@@ -508,6 +534,17 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         self.batch_lines_extruded = batch_for_shader(self.shader, 'LINES', 
             {"pos": extrude_lines})
 
+        # Mirror batches
+        self.batch_mirror = batch_for_shader(self.shader, 'LINE_LOOP', 
+            {"pos": points_mirror})
+
+        self.batch_extruded_m = batch_for_shader(self.shader, 'LINE_LOOP', 
+            {"pos": extrude_points_m})
+
+        self.batch_lines_extruded_m = batch_for_shader(self.shader, 'LINES', 
+            {"pos": extrude_lines_m})
+
+        # Batch for points
         self.batch_points = batch_for_shader(self.shader, 'POINTS', {"pos": points})
 
     def draw_action_line(self, action, pos_y):
@@ -559,14 +596,16 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             self.shader.uniform_float("color", (0.2, 0.5, 0.8, 1.0))
             bgl.glLineWidth(2)
             self.batch_extruded.draw(self.shader)
+            self.batch_extruded_m.draw(self.shader)
 
             bgl.glLineWidth(1)
             self.batch_lines_extruded.draw(self.shader)
+            self.batch_lines_extruded_m.draw(self.shader)
 
             bgl.glLineWidth(3)
             self.shader.uniform_float("color", (0.1, 0.3, 0.7, 1.0))
             self.batch.draw(self.shader)
-
+            self.batch_mirror.draw(self.shader)
         else:
             self.shader.uniform_float("color", (0.1, 0.3, 0.7, 1.0))
 

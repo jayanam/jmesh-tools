@@ -57,6 +57,11 @@ class Circle_Shape(Shape):
         self._vertices = [rot_mat @ Vector(point) + 
                           self._center + offset for point in points]
 
+        if self.has_mirror:
+            self._vertices_m.clear()
+            for v in self._vertices:
+                self.add_vertex_mirror(v)
+
         self._vertices_2d = [get_2d_vertex(context, vertex) for vertex in self._vertices]
 
     def handle_mouse_press(self, mouse_pos_2d, mouse_pos_3d, event, context):
@@ -119,7 +124,10 @@ class Circle_Shape(Shape):
         center_type = bpy.context.scene.center_type
 
         self.add_action(Action(self.get_prim_id(),  "Primitive",          "Circle"),    None)
-        self.add_action(Action("O",                 "Operation",           bool_mode),   None)
+        self.add_action(Action("O",                 "Operation",          bool_mode),   None)
+
+        mirror_type = bpy.context.scene.mirror_primitive
+        self.add_action(Action("M",                 "Mirror",             mirror_type),    ShapeState.NONE)
 
         self.build_move_action()
         self.build_extrude_action()

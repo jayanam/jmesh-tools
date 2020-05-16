@@ -89,6 +89,10 @@ class Shape:
         self._vertices_2d = []
         self._vertices = []
         self._vertices_extruded = []
+
+        self._vertices_m = []
+        self._vertices_extruded_m = []
+
         self._vertex_moving = None
         self._is_moving = False
         self._is_rotating = False
@@ -227,8 +231,16 @@ class Shape:
         return self._vertices
 
     @property
+    def vertices_mirror(self):
+        return self._vertices_m
+
+    @property
     def vertices_extruded(self):
         return self._vertices_extruded
+
+    @property
+    def vertices_extruded_mirror(self):
+        return self._vertices_extruded_m
 
     @property
     def vertices_2d(self):
@@ -271,6 +283,10 @@ class Shape:
     def set_next_input_method(self, context):
         pass
 
+    def set_next_mirror(self, context):
+        context.scene.mirror_primitive = next_enum(context.scene.mirror_primitive, 
+                                                    context.scene, "mirror_primitive")
+
     def add_action(self, action, shape_state=None):
         if(self.state == shape_state or shape_state == None):
             self.actions.append(action)
@@ -299,10 +315,36 @@ class Shape:
         if vertex not in self._vertices:
             self._vertices.append(vertex)
 
+    @property
+    def has_mirror(self):
+        return bpy.context.scene.mirror_primitive != "None"
+
+    @property
+    def mirror_type(self):
+        return bpy.context.scene.mirror_primitive
+
+    def get_vertex_mirror(self, vertex3d):
+        if self.mirror_type == "X":
+            vm = Vector((-vertex3d.x, vertex3d.y, vertex3d.z))
+        elif self.mirror_type == "Y":
+            vm = Vector((vertex3d.x, -vertex3d.y, vertex3d.z))
+        else:
+            vm = Vector((vertex3d.x, vertex3d.y, -vertex3d.z))
+
+        return vm 
+
+    def add_vertex_mirror(self, vertex3d):
+        if self.has_mirror:
+            vm = self.get_vertex_mirror(vertex3d)
+            self._vertices_m.append(vm)
+
     def reset(self):
         self._vertices.clear()
         self._vertices_extruded.clear()
         self._vertices_2d.clear()
+        self._vertices_m.clear()
+        self._vertices_extruded_m.clear()
+
         self.state = ShapeState.NONE
 
     def close(self):
@@ -313,6 +355,12 @@ class Shape:
 
     def get_vertices_extruded_copy(self, mouse_pos=None):
         return self._vertices_extruded.copy()
+
+    def get_vertices_extruded_mirror_copy(self, mouse_pos=None):
+        return self._vertices_extruded_m.copy()
+
+    def get_vertices_mirror_copy(self, mouse_pos = None):
+        return self._vertices_m.copy()
 
     def start_move(self, mouse_pos):
         if self.is_created() and mouse_pos is not None:
@@ -391,6 +439,12 @@ class Shape:
             else:
                 self._vertices_extruded[index] = vertex3d + dir
 
+        for index, vertex3d in enumerate(self._vertices_m):
+            if not self._is_extruded:
+                self._vertices_extruded_m.append(vertex3d + dir)
+            else:
+                self._vertices_extruded_m[index] = vertex3d + dir
+
         self._is_extruded = True
 
     def handle_extrude(self, is_up_key, context):
@@ -435,6 +489,11 @@ class Shape:
             self._vertices = [vertex + diff for vertex in self._vertices]
             self._vertices_extruded = [
                 vertex + diff for vertex in self._vertices_extruded]
+
+            self._vertices_m = [vertex + diff for vertex in self._vertices_m]
+            self._vertices_extruded_m = [
+            vertex + diff for vertex in self._vertices_extruded_m]
+
             self._move_offset = mouse_pos_3d
             return True
 

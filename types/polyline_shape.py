@@ -21,6 +21,14 @@ class Polyline_Shape(Shape):
 
         return result
 
+    def get_vertices_mirror_copy(self, mouse_pos = None):
+        result = self._vertices_m.copy()
+
+        if mouse_pos is not None and self.is_processing():
+            result.append(self.get_vertex_mirror(mouse_pos))
+
+        return result
+
     def is_draw_input(self, context):
         return context.scene.shape_input_method == "Draw"
 
@@ -43,12 +51,16 @@ class Polyline_Shape(Shape):
 
             self.add_vertex(mouse_pos_3d)
             self._vertices_2d.append(get_2d_vertex(context, mouse_pos_3d))
+            self.add_vertex_mirror(mouse_pos_3d)
+
             self.state = ShapeState.PROCESSING
             return False
 
         elif self.is_processing() and event.ctrl and self.can_close():
             self.add_vertex(mouse_pos_3d)
             self._vertices_2d.append(get_2d_vertex(context, mouse_pos_3d))
+            self.add_vertex_mirror(mouse_pos_3d)
+
             self.close()
             return False
 
@@ -91,9 +103,13 @@ class Polyline_Shape(Shape):
         bool_mode = bpy.context.scene.bool_mode
         input_method = bpy.context.scene.shape_input_method
 
-        self.add_action(Action(self.get_prim_id(),  "Primitive",          "Polyline"),   None)
-        self.add_action(Action("O",                 "Operation",          bool_mode),    None)
+        self.add_action(Action(self.get_prim_id(),  "Primitive",   "Polyline"),   None)
+        self.add_action(Action("O",                 "Operation",   bool_mode),    None)
         self.add_action(Action("I",                 "Input",       input_method), None)
+        
+        mirror_type = bpy.context.scene.mirror_primitive
+        self.add_action(Action("M",                 "Mirror",      mirror_type),    ShapeState.NONE)
+
         self.build_move_action()
         self.build_extrude_action()
 

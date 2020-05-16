@@ -63,7 +63,6 @@ class Rectangle_Shape(Shape):
                 self._vertices_2d[2] = (cx + w, cy - h)
                 self._vertices_2d[3] = (cx - w, cy - h)
                 
-
             else:
                 self._vertex3 = mouse_pos_3d
                 self._vertices_2d[2] = mouse_pos_2d
@@ -88,9 +87,7 @@ class Rectangle_Shape(Shape):
 
     def stop_move(self, context):
         super().stop_move(context)
-
         self.calc_center_2d()
-
 
     def create_rect(self, context):
         rv3d      = context.space_data.region_3d
@@ -113,7 +110,14 @@ class Rectangle_Shape(Shape):
             vertex4 = get_3d_vertex(context, self._vertices_2d[3])
         
         self._vertices.extend([self._vertex1, vertex2, self._vertex3, vertex4])
-        
+
+        if self.has_mirror:
+            self._vertices_m.clear()
+            self.add_vertex_mirror(self._vertex1)
+            self.add_vertex_mirror(vertex2)
+            self.add_vertex_mirror(self._vertex3)
+            self.add_vertex_mirror(vertex4)
+ 
     def start_rotate(self, mouse_pos, context):
         if self.is_created():
            
@@ -174,6 +178,10 @@ class Rectangle_Shape(Shape):
 
         self.add_action(Action(self.get_prim_id(),  "Primitive",          "Rectangle"), None)
         self.add_action(Action("O",                 "Operation",           bool_mode),   None)
+
+        mirror_type = bpy.context.scene.mirror_primitive
+        self.add_action(Action("M",                 "Mirror",      mirror_type),    ShapeState.NONE)
+
         self.build_move_action()
         self.add_action(Action("R",                 "Rotate",             ""),          ShapeState.CREATED)
         self.build_extrude_action()
