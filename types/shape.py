@@ -338,6 +338,11 @@ class Shape:
             vm = self.get_vertex_mirror(vertex3d)
             self._vertices_m.append(vm)
 
+    def reset_extrude(self):
+        self._is_extruded = False
+        self._vertices_extruded.clear()
+        self._vertices_extruded_m.clear()
+
     def reset(self):
         self._vertices.clear()
         self._vertices_extruded.clear()

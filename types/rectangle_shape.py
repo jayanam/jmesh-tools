@@ -182,6 +182,7 @@ class Rectangle_Shape(Shape):
         mirror_type = bpy.context.scene.mirror_primitive
         self.add_action(Action("M",                 "Mirror",      mirror_type),    ShapeState.NONE)
 
+        self.add_action(Action("Right Click",       "Reset",              ""),          ShapeState.CREATED)
         self.build_move_action()
         self.add_action(Action("R",                 "Rotate",             ""),          ShapeState.CREATED)
         self.build_extrude_action()

@@ -159,6 +159,12 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             if self.shape.handle_mouse_move(mouse_pos_2d, mouse_pos_3d, event, context):
                 self.create_batch(mouse_pos_3d)
 
+        if event.value == "PRESS" and event.type == "RIGHTMOUSE":
+            if self.shape.is_created():
+                self.shape.state = ShapeState.PROCESSING
+                self.shape.reset_extrude()
+                result = "RUNNING_MODAL"
+
         # Left mouse button is released
         if event.value == "RELEASE" and event.type == "LEFTMOUSE":
 
