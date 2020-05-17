@@ -26,5 +26,8 @@ class FC_PT_Primitive_Panel(Panel):
             col = row.column()
             col.prop(context.scene, "extrude_mesh", text="Extrude")
 
+            row = layout.row()
+            row.prop(context.scene, "extrude_immediate", text="Extrude immediately")
+
         row = layout.row()
         row.operator("object.fc_primitve_mode_op", text="Primitive Mode")

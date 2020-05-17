@@ -36,6 +36,7 @@ class Rectangle_Shape(Shape):
 
         elif self.is_processing():
             self.state = ShapeState.CREATED
+            self.start_extrude_immediate(mouse_pos_2d, mouse_pos_3d, context)
             return False
 
         elif self.is_created() and event.ctrl:

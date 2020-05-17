@@ -44,7 +44,8 @@ class Polyline_Shape(Shape):
             return False
 
         if self.is_draw_input(context) and event.ctrl and self.state == ShapeState.PROCESSING:
-            self.close()
+            if self.close():
+                self.start_extrude_immediate(mouse_pos_2d, mouse_pos_3d, context)
             return False
 
         if (self.is_none() and event.ctrl) or (self.is_processing() and not event.ctrl):
@@ -61,7 +62,8 @@ class Polyline_Shape(Shape):
             self._vertices_2d.append(get_2d_vertex(context, mouse_pos_3d))
             self.add_vertex_mirror(mouse_pos_3d)
 
-            self.close()
+            if self.close():
+                self.start_extrude_immediate(mouse_pos_2d, mouse_pos_3d, context)
             return False
 
         elif self.is_created() and event.ctrl:

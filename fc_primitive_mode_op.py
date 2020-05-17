@@ -575,7 +575,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         blf.size(1, 16, 72)
 
         size = 20
-        pos_y = 160 # self.get_actions_height(size)
+        pos_y = 180 # self.get_actions_height(size)
 
         self.draw_action_line(self.shape.actions[0], pos_y)
 

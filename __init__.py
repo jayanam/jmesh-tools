@@ -2,7 +2,7 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 1, 1, 0),
+    "version": (1, 2, 0, 0),
     "blender": (2, 80, 0),
     "location": "View3D",
     "category": "Object"}
@@ -68,6 +68,11 @@ bpy.types.WindowManager.in_primitive_mode = BoolProperty(name="Primitive Mode",
 bpy.types.Scene.extrude_mesh  = BoolProperty(name="Extrude mesh", 
                                       description="Extrude the mesh after creation",
                                       default = True)
+
+bpy.types.Scene.extrude_immediate    = BoolProperty(
+                                      name="Extrude Immediately", 
+                                      description="Extrude primitive immediately after creation",
+                                      default = False)
 
 bpy.types.Scene.snap_offset = bpy.props.FloatProperty( name="Snap_offset", description="Offset for primitive snap", default = 0.01)
 

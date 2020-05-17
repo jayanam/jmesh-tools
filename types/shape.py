@@ -320,6 +320,10 @@ class Shape:
         return bpy.context.scene.mirror_primitive != "None"
 
     @property
+    def extrude_immediate(self):
+        return bpy.context.scene.extrude_immediate == True
+
+    @property
     def mirror_type(self):
         return bpy.context.scene.mirror_primitive
 
@@ -420,6 +424,11 @@ class Shape:
             self._extrude_axis = None
         else:
             self._extrude_axis = axis
+
+    def start_extrude_immediate(self, mouse_pos_2d, mouse_pos_3d, context):
+        if self.extrude_immediate:
+            self.start_extrude(mouse_pos_2d, mouse_pos_3d, context)
+
 
     def start_extrude(self, mouse_pos_2d, mouse_pos_3d, context):
         self._extrude_pos = mouse_pos_2d
