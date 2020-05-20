@@ -107,7 +107,7 @@ class Polyline_Shape(Shape):
 
         self.add_action(Action(self.get_prim_id(),  "Primitive",   "Polyline"),   None)
         self.add_action(Action("O",                 "Operation",   bool_mode),    None)
-        self.add_action(Action("I",                 "Input",       input_method), None)
+        self.add_action(Action("I",                 "Input",       input_method), ShapeState.NONE)
         
         mirror_type = bpy.context.scene.mirror_primitive
         self.add_action(Action("M",                 "Mirror",      mirror_type),    ShapeState.NONE)
