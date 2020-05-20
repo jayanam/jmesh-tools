@@ -504,14 +504,28 @@ class Shape:
             self._vertices_extruded = [
                 vertex + diff for vertex in self._vertices_extruded]
 
-            self._vertices_m = [vertex + diff for vertex in self._vertices_m]
-            self._vertices_extruded_m = [
-            vertex + diff for vertex in self._vertices_extruded_m]
+            if self.has_mirror:
+                diff_m = self.get_mirror_diff(diff)
+                self._vertices_m = [vertex + diff_m for vertex in self._vertices_m]
+                self._vertices_extruded_m = [
+                vertex + diff_m for vertex in self._vertices_extruded_m]
 
             self._move_offset = mouse_pos_3d
             return True
 
         return False
+
+    def get_mirror_diff(self, diff):
+        diff_m = diff.copy()
+
+        if self.mirror_type == "X":
+            diff_m.x = -diff_m.x
+        elif self.mirror_type == "Y":
+            diff_m.y = -diff_m.y
+        else:
+            diff_m.z = -diff_m.z
+
+        return diff_m 
 
     def handle_mouse_press(self, mouse_pos_2d, mouse_pos_3d, event, context):
         self._mouse_pressed = True
