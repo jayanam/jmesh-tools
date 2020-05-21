@@ -135,7 +135,7 @@ class Circle_Shape(Shape):
         mirror_type = bpy.context.scene.mirror_primitive
         self.add_action(Action("M",                 "Mirror",             mirror_type),    ShapeState.NONE)
 
-        self.add_action(Action("S",                 "Size",               ""),          ShapeState.CREATED)
+        self.add_action(Action("S",                 "Scale",               ""),          ShapeState.CREATED)
         self.build_move_action()
         self.build_extrude_action()
         self.add_action(Action("C",                 "Center",             center_type), ShapeState.NONE)
