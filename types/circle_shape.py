@@ -55,6 +55,7 @@ class Circle_Shape(Shape):
 
         rot_mat = view_rot
 
+        offset = Vector()
         if self._snap_to_target and self._normal != None:
             rot_mat = self._normal.to_track_quat('Z', 'X').to_matrix()
             offset = self._normal.normalized() * context.scene.snap_offset
