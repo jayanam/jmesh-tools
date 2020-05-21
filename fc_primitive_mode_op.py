@@ -159,12 +159,6 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             if self.shape.handle_mouse_move(mouse_pos_2d, mouse_pos_3d, event, context):
                 self.create_batch(mouse_pos_3d)
 
-        if event.value == "PRESS" and event.type == "RIGHTMOUSE":
-            if self.shape.is_created():
-                self.shape.state = ShapeState.PROCESSING
-                self.shape.reset_extrude()
-                result = "RUNNING_MODAL"
-
         # Left mouse button is released
         if event.value == "RELEASE" and event.type == "LEFTMOUSE":
 
@@ -189,6 +183,9 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
             if self.shape.is_moving():
                 self.shape.stop_move(context)
+
+            if self.shape.is_sizing():
+                self.shape.stop_size(context)
 
             if self.shape.is_extruding():
                 self.shape.stop_extrude(context)
@@ -218,6 +215,16 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
         # Keyboard
         if event.value == "PRESS":
+
+            if event.type == "S":
+                mouse_pos_2d = (event.mouse_region_x, event.mouse_region_y)
+                mouse_pos_2d, mouse_pos_3d = self.get_snapped_mouse_pos(mouse_pos_2d, context)
+
+                if self.shape.start_size(mouse_pos_3d):
+
+                    # TODO: Also size the extrusion?
+                    self.shape.reset_extrude()
+                    result = "RUNNING_MODAL"
 
             # try to move the shape
             if event.type == "G":

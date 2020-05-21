@@ -23,17 +23,23 @@ class Circle_Shape(Shape):
 
     def handle_mouse_move(self, mouse_pos_2d, mouse_pos_3d, event, context):
 
-        if self.is_processing():
+        if self.is_processing() or self._is_sizing:
 
             # Distance center to mouse pos
             self._radius = (self._mouse_start_3d - mouse_pos_3d).length
          
             self.create_circle(context)
             return True
-           
+
+        if self.is_moving():
+            diff = mouse_pos_3d - self._move_offset
+            self._center += diff
+            self._mouse_start_3d = self._center.copy()
+
         result = super().handle_mouse_move(mouse_pos_2d, mouse_pos_3d, event, context)
 
         return result
+
 
     def create_circle(self, context):
 
@@ -48,7 +54,6 @@ class Circle_Shape(Shape):
         for i in range(segments-1)]
 
         rot_mat = view_rot
-        offset = Vector((0,0,0))
 
         if self._snap_to_target and self._normal != None:
             rot_mat = self._normal.to_track_quat('Z', 'X').to_matrix()
@@ -90,7 +95,7 @@ class Circle_Shape(Shape):
         return False
 
     def draw_text(self):
-        if self.is_processing():
+        if self.is_processing() or self.is_sizing():
             self.init_text()
             
             rv3d = self._view_context.region_3d
@@ -130,7 +135,7 @@ class Circle_Shape(Shape):
         mirror_type = bpy.context.scene.mirror_primitive
         self.add_action(Action("M",                 "Mirror",             mirror_type),    ShapeState.NONE)
 
-        self.add_action(Action("Right Click",       "Reset",              ""),          ShapeState.CREATED)
+        self.add_action(Action("S",                 "Size",               ""),          ShapeState.CREATED)
         self.build_move_action()
         self.build_extrude_action()
         self.add_action(Action("C",                 "Center",             center_type), ShapeState.NONE)

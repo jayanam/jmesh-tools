@@ -95,9 +95,10 @@ class Shape:
 
         self._vertex_moving = None
         self._is_moving = False
+        self._is_sizing = False
         self._is_rotating = False
         self._is_extruding = False
-        self._move_offset = 0.0
+        self._move_offset = Vector()
         self._move_axis = None
         self._extrude_axis = None
         self._rotation = 0.0
@@ -173,6 +174,9 @@ class Shape:
 
     def is_moving(self):
         return self._is_moving
+
+    def is_sizing(self):
+        return self._is_sizing
 
     def is_rotating(self):
         return self._is_rotating
@@ -371,6 +375,17 @@ class Shape:
     def get_vertices_mirror_copy(self, mouse_pos = None):
         return self._vertices_m.copy()
 
+    def start_size(self, mouse_pos):
+        if self.is_created() and mouse_pos is not None:
+            self._is_sizing = True
+            self.build_actions()
+            return True
+        return False
+
+    def stop_size(self, context):
+        self._is_sizing = False
+        self.build_actions()
+
     def start_move(self, mouse_pos):
         if self.is_created() and mouse_pos is not None:
             self._is_moving = True
@@ -390,7 +405,7 @@ class Shape:
 
         self._move_axis = None
         self._is_moving = False
-        self._move_offset = 0.0
+        self._move_offset = Vector()
         self.build_actions()
 
     def get_mouse_pos_2d(self, x, y):
@@ -509,7 +524,7 @@ class Shape:
                 self._vertices_m = [vertex + diff_m for vertex in self._vertices_m]
                 self._vertices_extruded_m = [
                 vertex + diff_m for vertex in self._vertices_extruded_m]
-
+                        
             self._move_offset = mouse_pos_3d
             return True
 
