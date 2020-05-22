@@ -25,6 +25,9 @@ class Shape_Gizmo:
       elif x >= gp[0] + 15 and x <= gp[0] + 30 and y <= gp[1] and y >= gp[1] - 15:
         return "X"
 
+      elif x >= gp[0] and x <= gp[0] + 14 and y <= gp[1] and y >= gp[1] - 15:
+        return "N"
+
     return None
 
   def mouse_down(self, context, mouse_pos_2d, mouse_pos_3d): 
@@ -64,16 +67,29 @@ class Shape_Gizmo:
 
     #    /\
     #    -- 
-    self.coords_up = [(x, y), (x + 7,  y + 15), (x + 15, y)]
-    batch_gizmo_up = batch_for_shader(self.shader_2d, 'TRIS', {"pos" : self.coords_up })
+    coords_up = [(x, y), (x + 7,  y + 15), (x + 15, y)]
+    batch_gizmo_up = batch_for_shader(self.shader_2d, 'TRIS', {"pos" : coords_up })
 
     self.shader_2d.uniform_float("color", (0.3, 0.56, 0.94, 1.0))
     batch_gizmo_up.draw(self.shader_2d)
 
     #    |\
     #    |/ 
-    self.coords_right = [(x_r, y_r), (x_r + 15,  y_r + 7), (x_r, y_r + 15)]
-    batch_gizmo_right = batch_for_shader(self.shader_2d, 'TRIS', {"pos" : self.coords_right})
+    coords_right = [(x_r, y_r), (x_r + 15,  y_r + 7), (x_r, y_r + 15)]
+    batch_gizmo_right = batch_for_shader(self.shader_2d, 'TRIS', {"pos" : coords_right})
 
     self.shader_2d.uniform_float("color", (0.51, 0.78, 0.17, 1.0))
     batch_gizmo_right.draw(self.shader_2d)
+
+    #   0  1
+    #   ----
+    #   |  |
+    #   ----
+    #   2  3
+    indices = ((0, 1, 2), (2, 1, 3))
+    coords_middle = [(x + 1, y_r + 1), (x_r - 1,  y_r + 1), (x + 1, y_r + 14), (x_r - 1, y_r + 14)]
+    batch_gizmo_middle = batch_for_shader(self.shader_2d, 'TRIS', {"pos" : coords_middle}, indices=indices)
+
+    self.shader_2d.uniform_float("color", (0.9, 0.9, 0.9, 1.0))
+    batch_gizmo_middle.draw(self.shader_2d)
+
