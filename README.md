@@ -13,7 +13,12 @@ Blender 2.8 / 2.9 mesh and hard surface utilities addon (before it was Fast Carv
 
 ### 1.2.4.0:
 
+* Gizmo for Polyline primitive added
+
+### 1.2.4.0:
+
 * Gizmo added for primitives to move in X and Y direction
+  for Circle and Rectangle
 
 ### 1.1.0.0
 
