@@ -569,5 +569,11 @@ class Shape:
     def draw_text(self):
         pass
 
+    def get_gizmo_pos(self):
+        return None
+
+    def draw_gizmo(self, context):
+        pass
+
     def get_point_size(self, context):
         return 10

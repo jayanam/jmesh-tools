@@ -21,6 +21,13 @@ class Circle_Shape(Shape):
 
         return False
 
+    def start_size(self, mouse_pos):
+
+        if super().start_size(mouse_pos):
+            self._mouse_start_3d = mouse_pos
+            return True
+        return False
+
     def handle_mouse_move(self, mouse_pos_2d, mouse_pos_3d, event, context):
 
         if self.is_processing() or self._is_sizing:
@@ -95,6 +102,20 @@ class Circle_Shape(Shape):
 
         return False
 
+    def get_gizmo_anchor_vertex(self):
+        return self._center
+
+    def get_gizmo_pos(self):
+        if self.is_created():
+
+            rv3d = self._view_context.region_3d
+            region = self._view_context.region
+            pos_2d_center = location_3d_to_region_2d(region, rv3d, self.get_gizmo_anchor_vertex())
+
+            return pos_2d_center
+
+        return None
+
     def draw_text(self):
         if self.is_processing() or self.is_sizing():
             self.init_text()
@@ -103,7 +124,7 @@ class Circle_Shape(Shape):
             region = self._view_context.region
             pos_text = location_3d_to_region_2d(region, rv3d, self._center)
 
-            blf.position(2, pos_text[0], pos_text[1], 0)
+            blf.position(2, pos_text[0] + 16, pos_text[1] + 5, 0)
             blf.draw(2, "r: {0:.3f}".format(self._radius))
 
     def get_point_size(self, context):

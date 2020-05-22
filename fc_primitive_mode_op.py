@@ -26,6 +26,8 @@ from .types.curve_shape import *
 
 from .types.enums import *
 
+from .types.shape_gizmo import *
+
 # Primitive mode operator
 class FC_Primitive_Mode_Operator(bpy.types.Operator):
     bl_idname = "object.fc_primitve_mode_op"
@@ -52,6 +54,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         self.draw_event  = None
         self.shape = Polyline_Shape()
 
+
         self.create_batch(None)
                 
     def invoke(self, context, event):
@@ -64,7 +67,9 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         if context.object is not None:
             self.current_mode = context.object.mode
 
-        self.create_shape(context)                 
+        self.create_shape(context)    
+
+        self.shape_gizmo = Shape_Gizmo()       
 
         self.register_handlers(args, context)
                    
@@ -165,23 +170,28 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             mouse_pos_2d = (event.mouse_region_x, event.mouse_region_y)
             self.shape.handle_mouse_release(mouse_pos_2d, event, context)
 
+            self.shape_gizmo.mouse_up(context, mouse_pos_2d)
+
         
         # Left mouse button is pressed
         if event.value == "PRESS" and event.type == "LEFTMOUSE":
 
             self.create_shape(context)
 
-            mouse_pos_2d = (event.mouse_region_x, event.mouse_region_y)
+            mouse_pos_2d_r = (event.mouse_region_x, event.mouse_region_y)
 
             # If an object is hit, set it as target
             if event.ctrl:
-                hit, hit_obj = self.shape.is_object_hit(mouse_pos_2d, context)
+                hit, hit_obj = self.shape.is_object_hit(mouse_pos_2d_r, context)
                 if hit:
                     context.scene.carver_target = hit_obj
 
-            mouse_pos_2d, mouse_pos_3d = self.get_snapped_mouse_pos(mouse_pos_2d, context)
+            mouse_pos_2d, mouse_pos_3d = self.get_snapped_mouse_pos(mouse_pos_2d_r, context)
 
-            if self.shape.is_moving():
+            if self.shape_gizmo.mouse_down(context, mouse_pos_2d_r, mouse_pos_3d):
+                result = "RUNNING_MODAL"
+
+            if self.shape.is_moving() and not self.shape_gizmo.is_dragging():
                 self.shape.stop_move(context)
 
             if self.shape.is_sizing():
@@ -196,7 +206,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             if self.shape.is_processing():
                 result = "RUNNING_MODAL"
 
-            if self.shape.is_created():
+            if self.shape.is_created() and not self.shape_gizmo.is_dragging():
                 if self.shape.set_vertex_moving(mouse_pos_3d):
                     result = "RUNNING_MODAL"
 
@@ -537,7 +547,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             extrude_lines_m.append(vertex)
 
         self.shader = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
-         
+
         self.batch = batch_for_shader(self.shader, 'LINE_LOOP', 
             {"pos": points})
 
@@ -577,6 +587,8 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
     def draw_callback_2d(self, op, context):
 
         self.shape.draw_text()
+
+        self.shape_gizmo.draw(self.shape)
 
         # Draw text for primitive mode
         blf.size(1, 16, 72)
