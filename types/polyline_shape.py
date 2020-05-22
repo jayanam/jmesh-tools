@@ -91,6 +91,9 @@ class Polyline_Shape(Shape):
 
         return result
 
+    def get_gizmo_anchor_vertex(self):
+        return self._vertices[0]
+
     def get_point_size(self, context):
         if self.is_draw_input(context):
             return 3

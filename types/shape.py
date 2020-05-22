@@ -569,7 +569,20 @@ class Shape:
     def draw_text(self):
         pass
 
+    def get_gizmo_anchor_vertex(self):
+        return None
+
     def get_gizmo_pos(self):
+        if self.is_created():
+
+            rv3d = self._view_context.region_3d
+            region = self._view_context.region
+            pos_2d = location_3d_to_region_2d(region, rv3d, self.get_gizmo_anchor_vertex())
+            pos_2d.y -= 16
+            pos_2d.x += 16
+
+            return pos_2d
+
         return None
 
     def draw_gizmo(self, context):
