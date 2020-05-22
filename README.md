@@ -11,7 +11,7 @@ Blender 2.8 / 2.9 mesh and hard surface utilities addon (before it was Fast Carv
 
 ## New features:
 
-### 1.2.4.0:
+### 1.2.5.0:
 
 * Gizmo for Polyline primitive added
 
