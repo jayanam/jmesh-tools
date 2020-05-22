@@ -15,6 +15,10 @@ Blender 2.8 / 2.9 mesh and hard surface utilities addon (before it was Fast Carv
 
 * Gizmo added for primitives to move in X and Y direction
 
+### 1.1.0.0
+
+* Mirror for primitives added
+
 ### 1.0.0.4:
 
 * Smaller Panels, buttons rearranged and renamed
