@@ -208,7 +208,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             if self.shape.is_processing():
                 result = RM
 
-            if self.shape.is_created() and not gizmo_action:
+            if self.shape.is_created() and not gizmo_action and not event.ctrl:
                 if self.shape.set_vertex_moving(mouse_pos_3d):
                     result = RM
 
