@@ -305,7 +305,7 @@ class Shape:
         if(self.state == ShapeState.NONE):
             return "Exit"
         else:
-            return "Undo"
+            return "Abort"
 
     @property
     def actions(self):
@@ -350,6 +350,9 @@ class Shape:
         self._is_extruded = False
         self._vertices_extruded.clear()
         self._vertices_extruded_m.clear()
+
+    def to_center(self, axis = "N"):
+        pass
 
     def reset(self):
         self._vertices.clear()

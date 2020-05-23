@@ -115,6 +115,11 @@ class Circle_Shape(Shape):
 
         return None
 
+    def to_center(self, axis):
+        self._center = Vector((0, 0, 0))
+        self.create_circle(bpy.context)
+
+
     def draw_text(self):
         if self.is_processing() or self.is_sizing():
             self.init_text()

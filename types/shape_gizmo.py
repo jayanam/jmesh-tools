@@ -1,19 +1,13 @@
 import bgl
-import blf
-
 import gpu
 
 from gpu_extras.batch import batch_for_shader
 
 class Shape_Gizmo:
 
-
   def __init__(self):
-
-    self.__is_drag = False
-            
+    self.__is_drag = False    
     self.shader_2d = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
-
 
   def get_axis(self, x, y):
     gp = self.shape.get_gizmo_pos()
@@ -30,13 +24,19 @@ class Shape_Gizmo:
 
     return None
 
-  def mouse_down(self, context, mouse_pos_2d, mouse_pos_3d): 
+  def mouse_down(self, context, event, mouse_pos_2d, mouse_pos_3d): 
     axis = self.get_axis(mouse_pos_2d[0], mouse_pos_2d[1])
     if axis is not None:
-      self.__is_drag = True  
-      self.shape.start_move(mouse_pos_3d)
-      self.shape.set_move_axis(axis)
-      return True
+
+      # If control key is pressed then try to center the primitive
+      if event.ctrl and axis == "N":
+        self.shape.to_center(axis)
+        return True
+      else:
+        self.__is_drag = True  
+        self.shape.start_move(mouse_pos_3d)
+        self.shape.set_move_axis(axis)
+        return True
     
     return False
     
@@ -92,4 +92,3 @@ class Shape_Gizmo:
 
     self.shader_2d.uniform_float("color", (0.9, 0.9, 0.9, 1.0))
     batch_gizmo_middle.draw(self.shader_2d)
-

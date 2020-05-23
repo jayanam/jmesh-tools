@@ -127,6 +127,8 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             context.area.tag_redraw()
 
         result = "PASS_THROUGH"
+
+        RM = "RUNNING_MODAL"
                               
         if event.type == "ESC" and event.value == "PRESS":
 
@@ -138,8 +140,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             if was_none:
 
                 self.unregister_handlers(context)
-
-                return {'FINISHED'}
+                return { "FINISHED" }
 
         # The mouse wheel is moved
         if not self.shape.is_none():
@@ -152,7 +153,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                     mouse_pos_3d = self.get_3d_for_mouse(mouse_pos_2d, context)
                     
                     self.create_batch(mouse_pos_3d)
-                    result = "RUNNING_MODAL"
+                    result = RM
 
         # The mouse is moved
         if event.type == "MOUSEMOVE" and not self.shape.is_none():
@@ -188,8 +189,9 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
             mouse_pos_2d, mouse_pos_3d = self.get_snapped_mouse_pos(mouse_pos_2d_r, context)
 
-            if self.shape_gizmo.mouse_down(context, mouse_pos_2d_r, mouse_pos_3d):
-                result = "RUNNING_MODAL"
+            gizmo_action = self.shape_gizmo.mouse_down(context, event, mouse_pos_2d_r, mouse_pos_3d)
+            if gizmo_action:
+                result = RM
 
             if self.shape.is_moving() and not self.shape_gizmo.is_dragging():
                 self.shape.stop_move(context)
@@ -204,22 +206,23 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                 self.shape.stop_rotate(context)
 
             if self.shape.is_processing():
-                result = "RUNNING_MODAL"
+                result = RM
 
-            if self.shape.is_created() and not self.shape_gizmo.is_dragging():
+            if self.shape.is_created() and not gizmo_action:
                 if self.shape.set_vertex_moving(mouse_pos_3d):
-                    result = "RUNNING_MODAL"
+                    result = RM
 
-            if self.shape.handle_mouse_press(mouse_pos_2d, mouse_pos_3d, event, context):
+            if not gizmo_action:
+                if self.shape.handle_mouse_press(mouse_pos_2d, mouse_pos_3d, event, context):
 
-                self.create_object(context)
+                    self.create_object(context)
 
-            else:
-                # So that the direction is defined during shape
-                # creation, not when it is extruded
-                if self.shape.is_processing():
-                    view_context = ViewContext(context)
-                    self.shape.set_view_context(view_context)
+                else:
+                    # So that the direction is defined during shape
+                    # creation, not when it is extruded
+                    if self.shape.is_processing():
+                        view_context = ViewContext(context)
+                        self.shape.set_view_context(view_context)
                 
             self.create_batch(mouse_pos_3d)
 
@@ -234,7 +237,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
                     # TODO: Also size the extrusion?
                     self.shape.reset_extrude()
-                    result = "RUNNING_MODAL"
+                    result = RM
 
             # try to move the shape
             if event.type == "G":
@@ -243,12 +246,12 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                 mouse_pos_2d, mouse_pos_3d = self.get_snapped_mouse_pos(mouse_pos_2d, context)
 
                 if self.shape.start_move(mouse_pos_3d):
-                    result = "RUNNING_MODAL"
+                    result = RM
 
             if self.shape.is_moving():
                 if event.type in ["X", "Y", "N"]:
                     self.shape.set_move_axis(event.type)
-                    result = "RUNNING_MODAL"
+                    result = RM
 
             # try to rotate the shape
             if event.type == "R":
@@ -258,25 +261,25 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
                 if self.shape.start_rotate(mouse_pos_3d, context):
                     self.create_batch()
-                    result = "RUNNING_MODAL"
+                    result = RM
 
             # Try set mirror type for primitives
             if event.type == "M":
                 if self.shape.is_none():
                     self.shape.set_next_mirror(context)
                     self.shape.build_actions()
-                    result = "RUNNING_MODAL"
+                    result = RM
 
             # try to extrude the shape
             if self.shape.is_extruding():
                 if (event.type == "DOWN_ARROW" or event.type == "UP_ARROW"):
                     self.shape.handle_extrude(event.type == "UP_ARROW", context)
                     self.create_batch()
-                    result = "RUNNING_MODAL"
+                    result = RM
                 elif (event.type in ["X", "Y", "Z", "N"]):
                     self.shape.set_extrude_axis(event.type)
                     self.create_batch()
-                    result = "RUNNING_MODAL"
+                    result = RM
 
             if event.type == "E":
                 mouse_pos_2d = (event.mouse_region_x, event.mouse_region_y)
@@ -284,14 +287,14 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
                 if self.shape.start_extrude(mouse_pos_2d, mouse_pos_3d, context):
                     self.create_batch()
-                    result = "RUNNING_MODAL"
+                    result = RM
 
             # toggle input method
             if event.type == "I":
                 self.shape.set_next_input_method(context)
                 self.shape.build_actions()
 
-                result = "RUNNING_MODAL"
+                result = RM
 
             # toggle bool mode
             if event.type == "O":
@@ -300,19 +303,19 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
                 self.shape.build_actions()
 
-                result = "RUNNING_MODAL"
+                result = RM
 
             if event.type == "C":
                 if self.shape.can_set_center_type():
                     context.scene.center_type = next_enum(context.scene.center_type, context.scene, "center_type")
                     self.shape.build_actions()
-                    result = "RUNNING_MODAL"
+                    result = RM
 
             if event.type == "F":
                 if self.shape.can_start_from_center():
                     context.scene.start_center = not context.scene.start_center
                     self.shape.build_actions()
-                    result = "RUNNING_MODAL"
+                    result = RM
                            
             # toggle primitve  
             if event.type == "P":
@@ -321,7 +324,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                                                         context.scene, "primitive_type")
 
                     self.create_shape(context)
-                    result = "RUNNING_MODAL"
+                    result = RM
              
         return { result }
 
