@@ -37,7 +37,7 @@ def execute_bevel(bevel_objects):
         return
 
     # Default value for bevel
-    width = 0.01
+    width = 0.007
 
     bevel_op = try_find_bevel_op(bevel_objects)
     if(bevel_op is not None):
