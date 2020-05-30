@@ -7,7 +7,7 @@ class Circle_Shape(Shape):
         self._center = None
         self._radius = 0
         self._mouse_start_3d = None
-        self._segments = 24
+        self._segments = 32
 
     def handle_mouse_wheel(self, inc, context):
         if self.is_processing():
@@ -165,9 +165,9 @@ class Circle_Shape(Shape):
         self.build_move_action()
         self.build_extrude_action()
         self.add_action(Action("C",                 "Center",             center_type), ShapeState.NONE)
+        self.add_action(Action("Mouse wheel",       "Segments",           str(self._segments)), ShapeState.PROCESSING)
         self.add_action(Action("Left Click",        "Create",             ""),          ShapeState.PROCESSING)
         self.add_action(Action("Ctrl + Left Click", "Start",              ""),          ShapeState.NONE)
         self.add_action(Action("Ctrl + Left Click", "Apply",              ""),          ShapeState.CREATED)
         self.add_action(Action("Left Drag",         "Move points",        ""),          ShapeState.CREATED)
-        self.add_action(Action("Mouse wheel",       "Segments",           str(self._segments)), ShapeState.PROCESSING)
         self.add_action(Action("Esc",               self.get_esc_title(), ""),          None)
