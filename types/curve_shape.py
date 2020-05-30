@@ -6,6 +6,9 @@ class Curve_Shape(Shape):
         super().__init__()
         self._normals = [None, None]
 
+    def __str__(self):
+        return "Curve"
+
     def can_close(self):
         return len(self._vertices) >= 2
 

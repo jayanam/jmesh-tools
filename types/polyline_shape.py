@@ -2,6 +2,9 @@ from .shape import *
 
 class Polyline_Shape(Shape):
 
+    def __str__(self):
+        return "Polyline"
+
     def can_close(self):
         return len(self._vertices) > 1
 

@@ -410,6 +410,18 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
         self.shape.reset()
 
+    def add_bool_obj_to_collection(self, context, obj):
+
+        # Ensure collection exists
+        coll_name = "JM Bool Pending"
+        if coll_name not in bpy.data.collections:
+            new_collection = bpy.data.collections.new(coll_name)
+            context.scene.collection.children.link(new_collection)
+        else:
+            new_collection = bpy.data.collections[coll_name]
+
+        new_collection.objects.link(obj)
+
     def create_mesh(self, context):
         try:
 
@@ -420,10 +432,13 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
             # Create a mesh and an object and 
             # add the object to the scene collection
-            mesh = bpy.data.meshes.new("MyMesh")
-            obj  = bpy.data.objects.new("MyObject", mesh)
+            mesh = bpy.data.meshes.new(str(self.shape) + "_Mesh")
+            obj  = bpy.data.objects.new(str(self.shape) + "_Object", mesh)
 
-            bpy.context.scene.collection.objects.link(obj)
+            if is_apply_immediate() or is_bool_create:
+                bpy.context.scene.collection.objects.link(obj)
+            else:
+                self.add_bool_obj_to_collection(context, obj)
             
             bpy.ops.object.select_all(action='DESELECT')
 
@@ -483,6 +498,10 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                     if is_apply_immediate():
                         bpy.ops.object.delete()
                         select_active(target_obj)
+                    else:
+                        obj.hide_set(True)
+
+
         except RuntimeError:
             pass
         finally:

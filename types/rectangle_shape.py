@@ -10,6 +10,8 @@ class Rectangle_Shape(Shape):
         self._vertices_2d = [None, None, None, None]
         self._center_2d = None
 
+    def __str__(self):
+        return "Rect"
 
     def can_start_from_center(self):
         return True

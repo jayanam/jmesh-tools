@@ -354,6 +354,9 @@ class Shape:
     def to_center(self, axis = "N"):
         pass
 
+    def __str__(self):
+        return "Shape"
+
     def reset(self):
         self._vertices.clear()
         self._vertices_extruded.clear()

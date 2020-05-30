@@ -9,6 +9,9 @@ class Circle_Shape(Shape):
         self._mouse_start_3d = None
         self._segments = 32
 
+    def __str__(self):
+        return "Circle"
+
     def handle_mouse_wheel(self, inc, context):
         if self.is_processing():
             self._segments += inc
