@@ -5,7 +5,7 @@ Blender 2.8 / 2.9 mesh and hard surface utilities addon (before it was Fast Carv
 
 * Download the zip file from github (Green button, Download zip)
 * Open Blender >= 2.8x
-* Go to Edit -> Preferecnes -> Click Install button and navigate to the zip file you downloaded
+* Go to Edit -> Preferences -> Click Install button and navigate to the zip file you downloaded
 * JMesh Tools appears in the addon list -> Activate it (Checkbox)
 * JMesh panel is now visible in the side bar (N key to open it)
 
