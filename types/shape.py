@@ -401,13 +401,16 @@ class Shape:
             return True
         return False
 
-    def stop_move(self, context):
-
+    def vertices_3d_to_2d(self, context):
         for index, vertex_3d in enumerate(self._vertices):
             rv3d = self._view_context.region_3d
             region = self._view_context.region
             self._vertices_2d[index] = location_3d_to_region_2d(
                 region, rv3d, vertex_3d)
+
+    def stop_move(self, context):
+
+        self.vertices_3d_to_2d(context)
 
         self._move_axis = None
         self._is_moving = False
@@ -517,6 +520,7 @@ class Shape:
 
         if self._vertex_moving is not None:
             self._vertices[self._vertex_moving] = mouse_pos_3d
+            self.vertex_moved(context)
             return True
 
         if self.is_created() and self._is_moving:
@@ -530,11 +534,19 @@ class Shape:
                 self._vertices_m = [vertex + diff_m for vertex in self._vertices_m]
                 self._vertices_extruded_m = [
                 vertex + diff_m for vertex in self._vertices_extruded_m]
+
+            self.vertices_moved(diff)
                         
             self._move_offset = mouse_pos_3d
             return True
 
         return False
+
+    def vertex_moved(self, context):
+        pass
+
+    def vertices_moved(self, diff):
+        pass
 
     def get_mirror_diff(self, diff):
         diff_m = diff.copy()
