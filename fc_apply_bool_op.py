@@ -42,3 +42,46 @@ class FC_ApplyBoolOperator(Operator):
                 bpy.ops.object.delete()    
 
         return {'FINISHED'}
+
+class FC_ApplyAllBoolOperator(Operator):
+    bl_idname = "object.apply_all_bool"
+    bl_label = "Apply all Booleans"
+    bl_description = "Apply all pending bool operators" 
+    bl_options = {'REGISTER', 'UNDO'} 
+
+    @classmethod
+    def poll(cls, context):
+ 
+        for obj in context.selected_objects:
+            for modifier in obj.modifiers:
+                if modifier.name.startswith("FC_BOOL"):
+                    return True
+         
+    def execute(self, context):
+        
+        obj2delete = []
+        active_obj = bpy.context.view_layer.objects.active
+              
+        for obj in context.selected_objects:
+            for modifier in obj.modifiers:
+                if modifier.name.startswith("FC_BOOL"):
+
+                    # API change 2.8: bpy.context.scene.objects.active = obj
+                    bpy.context.view_layer.objects.active = obj
+                    bpy.ops.object.modifier_apply(modifier=modifier.name)
+
+                    if is_delete_after_apply():
+                        modifier.object.hide_set(False)
+                        obj2delete.append(modifier.object)
+
+        bpy.ops.object.select_all(action='DESELECT')
+
+        if is_delete_after_apply():
+            for obj in obj2delete:
+                obj.select_set(True)
+                bpy.ops.object.delete()    
+
+        active_obj.select_set(True)
+        bpy.context.view_layer.objects.active = active_obj
+
+        return {'FINISHED'}

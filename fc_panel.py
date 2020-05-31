@@ -51,6 +51,10 @@ class FC_PT_Panel(Panel):
             row = layout.row()
             layout.prop(context.scene, "delete_on_apply")
             
-            # Apply all booleans
+            # Apply selected booleans
             row = layout.row()
             row.operator('object.apply_bool',icon='MOD_BOOLEAN')
+
+            # Apply all pending booleans
+            row = layout.row()
+            row.operator('object.apply_all_bool',icon='MOD_BOOLEAN')
