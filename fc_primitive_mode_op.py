@@ -122,6 +122,9 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
         return mouse_pos_3d
 
+    def is_mouse_valid(self, mouse_pos_2d):
+        return mouse_pos_2d is not None and mouse_pos_2d[0] >= 0 and mouse_pos_2d[1] >= 0
+
     def modal(self, context, event):
         if context.area:
             context.area.tag_redraw()
@@ -160,10 +163,11 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             
             mouse_pos_2d = self.shape.get_mouse_pos_2d(event.mouse_region_x, event.mouse_region_y)
 
-            mouse_pos_2d, mouse_pos_3d = self.get_snapped_mouse_pos(mouse_pos_2d, context)
+            if self.is_mouse_valid(mouse_pos_2d):
+                mouse_pos_2d, mouse_pos_3d = self.get_snapped_mouse_pos(mouse_pos_2d, context)
 
-            if self.shape.handle_mouse_move(mouse_pos_2d, mouse_pos_3d, event, context):
-                self.create_batch(mouse_pos_3d)
+                if self.shape.handle_mouse_move(mouse_pos_2d, mouse_pos_3d, event, context):
+                    self.create_batch(mouse_pos_3d)
 
         # Left mouse button is released
         if event.value == "RELEASE" and event.type == "LEFTMOUSE":
@@ -177,54 +181,56 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         # Left mouse button is pressed
         if event.value == "PRESS" and event.type == "LEFTMOUSE":
 
-            self.create_shape(context)
-
             mouse_pos_2d_r = (event.mouse_region_x, event.mouse_region_y)
 
-            # If an object is hit, set it as target
-            if event.ctrl:
-                hit, hit_obj = self.shape.is_object_hit(mouse_pos_2d_r, context)
-                if hit:
-                    context.scene.carver_target = hit_obj
+            if self.is_mouse_valid(mouse_pos_2d_r):
 
-            mouse_pos_2d, mouse_pos_3d = self.get_snapped_mouse_pos(mouse_pos_2d_r, context)
+                self.create_shape(context)
+                
+                # If an object is hit, set it as target
+                if event.ctrl:
+                    hit, hit_obj = self.shape.is_object_hit(mouse_pos_2d_r, context)
+                    if hit:
+                        context.scene.carver_target = hit_obj
 
-            gizmo_action = self.shape_gizmo.mouse_down(context, event, mouse_pos_2d_r, mouse_pos_3d)
-            if gizmo_action:
-                result = RM
+                mouse_pos_2d, mouse_pos_3d = self.get_snapped_mouse_pos(mouse_pos_2d_r, context)
 
-            if self.shape.is_moving() and not self.shape_gizmo.is_dragging():
-                self.shape.stop_move(context)
-
-            if self.shape.is_sizing():
-                self.shape.stop_size(context)
-
-            if self.shape.is_extruding():
-                self.shape.stop_extrude(context)
-
-            if self.shape.is_rotating():
-                self.shape.stop_rotate(context)
-
-            if self.shape.is_processing():
-                result = RM
-
-            if self.shape.is_created() and not gizmo_action and not event.ctrl:
-                if self.shape.set_vertex_moving(mouse_pos_3d):
+                gizmo_action = self.shape_gizmo.mouse_down(context, event, mouse_pos_2d_r, mouse_pos_3d)
+                if gizmo_action:
                     result = RM
 
-            if not gizmo_action:
-                if self.shape.handle_mouse_press(mouse_pos_2d, mouse_pos_3d, event, context):
+                if self.shape.is_moving() and not self.shape_gizmo.is_dragging():
+                    self.shape.stop_move(context)
 
-                    self.create_object(context)
+                if self.shape.is_sizing():
+                    self.shape.stop_size(context)
 
-                else:
-                    # So that the direction is defined during shape
-                    # creation, not when it is extruded
-                    if self.shape.is_processing():
-                        view_context = ViewContext(context)
-                        self.shape.set_view_context(view_context)
-                
-            self.create_batch(mouse_pos_3d)
+                if self.shape.is_extruding():
+                    self.shape.stop_extrude(context)
+
+                if self.shape.is_rotating():
+                    self.shape.stop_rotate(context)
+
+                if self.shape.is_processing():
+                    result = RM
+
+                if self.shape.is_created() and not gizmo_action and not event.ctrl:
+                    if self.shape.set_vertex_moving(mouse_pos_3d):
+                        result = RM
+
+                if not gizmo_action:
+                    if self.shape.handle_mouse_press(mouse_pos_2d, mouse_pos_3d, event, context):
+
+                        self.create_object(context)
+
+                    else:
+                        # So that the direction is defined during shape
+                        # creation, not when it is extruded
+                        if self.shape.is_processing():
+                            view_context = ViewContext(context)
+                            self.shape.set_view_context(view_context)
+                    
+                self.create_batch(mouse_pos_3d)
 
         # Keyboard
         if event.value == "PRESS":
