@@ -11,6 +11,10 @@ Blender 2.8 / 2.9 mesh and hard surface utilities addon (before it was Fast Carv
 
 ## New features:
 
+### 1.2.8.2:
+
+* Rectangle gizmo is centered for rectangle, when vertices are moved it is recalculated
+
 ### 1.2.8.1:
 
 * Apply selected pending booleans
