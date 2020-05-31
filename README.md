@@ -11,6 +11,11 @@ Blender 2.8 / 2.9 mesh and hard surface utilities addon (before it was Fast Carv
 
 ## New features:
 
+### 1.2.8.1:
+
+* Apply selected pending booleans
+* Apply all pending booleans of a target
+
 ### 1.2.5.0:
 
 * Gizmo for Polyline primitive added
