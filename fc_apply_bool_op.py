@@ -32,7 +32,8 @@ class FC_ApplyBoolOperator(Operator):
                         bpy.ops.object.modifier_apply(modifier=modifier.name)
 
                         if is_delete_after_apply():
-                            obj2delete.append(modifier.object)
+                            if modifier.object not in obj2delete:
+                                obj2delete.append(modifier.object)
 
         bpy.ops.object.select_all(action='DESELECT')
 
