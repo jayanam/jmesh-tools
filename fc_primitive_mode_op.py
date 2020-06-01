@@ -54,7 +54,6 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         self.draw_event  = None
         self.shape = Polyline_Shape()
 
-
         self.create_batch(None)
                 
     def invoke(self, context, event):
@@ -141,7 +140,6 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             self.create_batch(None)
 
             if was_none:
-
                 self.unregister_handlers(context)
                 return { "FINISHED" }
 
@@ -186,7 +184,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             if self.is_mouse_valid(mouse_pos_2d_r):
 
                 self.create_shape(context)
-                
+
                 # If an object is hit, set it as target
                 if event.ctrl:
                     hit, hit_obj = self.shape.is_object_hit(mouse_pos_2d_r, context)
