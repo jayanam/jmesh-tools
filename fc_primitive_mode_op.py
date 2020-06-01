@@ -501,10 +501,10 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                     # delete the bool object if apply immediate is checked
                     if is_apply_immediate():
                         bpy.ops.object.delete()
-                        select_active(target_obj)
                     else:
                         obj.hide_set(True)
 
+                    select_active(target_obj)
 
         except RuntimeError:
             pass

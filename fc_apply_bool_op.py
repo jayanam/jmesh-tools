@@ -23,17 +23,18 @@ class FC_ApplyBoolOperator(Operator):
         active_obj = bpy.context.view_layer.objects.active
               
         for obj in context.view_layer.objects:
-            for modifier in obj.modifiers:
+            for modifier in obj.modifiers[:]:
                 if modifier.name.startswith("FC_BOOL"):
 
                     # API change 2.8: bpy.context.scene.objects.active = obj
                     if modifier.object in context.selected_objects:
-                        bpy.context.view_layer.objects.active = obj
-                        bpy.ops.object.modifier_apply(modifier=modifier.name)
 
                         if is_delete_after_apply():
                             if modifier.object not in obj2delete:
                                 obj2delete.append(modifier.object)
+
+                        bpy.context.view_layer.objects.active = obj
+                        bpy.ops.object.modifier_apply(modifier=modifier.name)
 
         bpy.ops.object.select_all(action='DESELECT')
 
@@ -74,14 +75,14 @@ class FC_ApplyAllBoolOperator(Operator):
             for modifier in obj.modifiers[:]:
                 if modifier.name.startswith("FC_BOOL"):
 
-                    # Apply all modifiers with this object
-                    self.apply_all_modifiers_with_object(context, modifier.name, modifier.object)
-
                     if is_delete_after_apply():
                         if modifier.object is not None:
                             modifier.object.hide_set(False)
                             if modifier.object not in obj2delete:
                                 obj2delete.append(modifier.object)
+                                
+                    # Apply all modifiers with this object
+                    self.apply_all_modifiers_with_object(context, modifier.name, modifier.object)
 
         bpy.ops.object.select_all(action='DESELECT')
 
