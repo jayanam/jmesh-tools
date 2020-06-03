@@ -21,6 +21,8 @@ from .action import Action
 
 from .enums import *
 
+from ..widgets.bl_ui_textbox import *
+
 
 class ShapeState(Enum):
     NONE = 0
@@ -113,6 +115,29 @@ class Shape:
         self._actions = []
         self._extrude_pos = None
         self._mouse_pressed = False
+        self._input_size = None
+
+    def input_handle_event(self, event):
+        if self._input_size is not None:
+            if self._input_size.handle_event(event):
+                return True
+
+        return False
+
+    def input_draw(self):
+         if self._input_size is not None:
+             self._input_size.draw()    
+
+    def open_input(self, context, input_changed_func):
+        self._input_size = BL_UI_Textbox(500, 500, 100, 24)
+        self._input_size.init(context)
+        self._input_size.set_text_changed(input_changed_func)
+
+    def close_input(self):
+        self._input_size = None
+
+    def apply_input(self, context):
+        self.close_input()
 
     def can_start_from_center(self):
         return False

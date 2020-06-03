@@ -28,6 +28,8 @@ from .types.enums import *
 
 from .types.shape_gizmo import *
 
+from .widgets.bl_ui_textbox import *
+
 # Primitive mode operator
 class FC_Primitive_Mode_Operator(bpy.types.Operator):
     bl_idname = "object.fc_primitve_mode_op"
@@ -124,6 +126,13 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
     def is_mouse_valid(self, mouse_pos_2d):
         return mouse_pos_2d is not None and mouse_pos_2d[0] >= 0 and mouse_pos_2d[1] >= 0
 
+    def on_input_changed(self, textbox, context, event):
+        if event.type == "ESC":
+            self.shape.close_input()
+        elif event.type == "RET":
+            self.shape.apply_input(context)
+            self.create_batch()
+
     def modal(self, context, event):
         if context.area:
             context.area.tag_redraw()
@@ -131,6 +140,9 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         result = "PASS_THROUGH"
 
         RM = "RUNNING_MODAL"
+
+        if self.shape.input_handle_event(event):
+            return { RM }
                               
         if event.type == "ESC" and event.value == "PRESS":
 
@@ -236,6 +248,10 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             if event.type == "S":
                 mouse_pos_2d = (event.mouse_region_x, event.mouse_region_y)
                 mouse_pos_2d, mouse_pos_3d = self.get_snapped_mouse_pos(mouse_pos_2d, context)
+
+                # if event.ctrl:
+                #     self.shape.open_input(context, self.on_input_changed)
+                #     result = RM
 
                 if self.shape.start_size(mouse_pos_3d):
 
@@ -605,7 +621,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             blf.position(1, 115, pos_y , 1)
             blf.draw(1, ": " + action.content) 
 
-        blf.color(1, 0, 0.5, 1, 1)
+        blf.color(1, 0, 0.2, 1, 1)
         blf.position(1, 250, pos_y, 1)
         blf.draw(1, action.id)
 
@@ -615,6 +631,8 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         self.shape.draw_text()
 
         self.shape_gizmo.draw(self.shape)
+
+        self.shape.input_draw()
 
         # Draw text for primitive mode
         blf.size(1, 16, 72)

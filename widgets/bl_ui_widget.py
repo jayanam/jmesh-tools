@@ -103,8 +103,14 @@ class BL_UI_Widget:
                 self.mouse_exit(event, x, y)
 
             return False
+
+        elif event.value == 'PRESS' and (event.ascii != '' or event.type in self.get_input_keys()):
+            return self.text_input(event)
                         
-        return False                 
+        return False 
+
+    def get_input_keys(self)                :
+        return []
 
     def get_area_height(self):
         return self.context.area.height    
@@ -120,6 +126,9 @@ class BL_UI_Widget:
             return True
            
         return False      
+
+    def text_input(self, event):       
+        return False
 
     def mouse_down(self, x, y):       
         return self.is_in_rect(x,y)

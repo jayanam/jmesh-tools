@@ -28,8 +28,8 @@ class FC_Circle_Array_Mode_Operator(BL_UI_OT_draw_operator):
         self.lbl_item_count.text_color = (0.9, 0.9, 0.9, 1.0)
 
         self.ud_item_count = BL_UI_Up_Down(110, 15)
-        self.ud_item_count.color = (0.2, 0.8, 0.8, 0.8)
-        self.ud_item_count.hover_color = (0.2, 0.9, 0.9, 1.0)
+        self.ud_item_count.color = (0.3, 0.56, 0.94, 1.0)
+        self.ud_item_count.hover_color = (0.3, 0.56, 0.94, 0.8)
         self.ud_item_count.min = 1.0
         self.ud_item_count.max = 50.0
         self.ud_item_count.decimals = 0

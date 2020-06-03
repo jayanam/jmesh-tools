@@ -30,8 +30,8 @@ class FC_Array_Mode_Operator(BL_UI_OT_draw_operator):
         self.lbl_item_count.text_color = (0.9, 0.9, 0.9, 1.0)
 
         self.ud_item_count = BL_UI_Up_Down(110, 15)
-        self.ud_item_count.color = (0.2, 0.8, 0.8, 0.8)
-        self.ud_item_count.hover_color = (0.2, 0.9, 0.9, 1.0)
+        self.ud_item_count.color = (0.3, 0.56, 0.94, 1.0)
+        self.ud_item_count.hover_color = (0.3, 0.56, 0.94, 0.8)
         self.ud_item_count.min = 1.0
         self.ud_item_count.max = 50.0
         self.ud_item_count.decimals = 0
@@ -54,8 +54,8 @@ class FC_Array_Mode_Operator(BL_UI_OT_draw_operator):
         self.lbl_item_off_z.text_color = (0.9, 0.9, 0.9, 1.0)
 
         self.sl_item_distance_x = BL_UI_Slider(110, 60, 150, 30)
-        self.sl_item_distance_x.color = (0.2, 0.8, 0.8, 0.8)
-        self.sl_item_distance_x.hover_color = (0.2, 0.9, 0.9, 1.0)
+        self.sl_item_distance_x.color = (0.3, 0.56, 0.94, 1.0)
+        self.sl_item_distance_x.hover_color = (0.3, 0.56, 0.94, 0.8)
         self.sl_item_distance_x.min = 0.0
         self.sl_item_distance_x.max = 10.0
         self.sl_item_distance_x.decimals = 1
@@ -64,8 +64,8 @@ class FC_Array_Mode_Operator(BL_UI_OT_draw_operator):
         self.sl_item_distance_x.set_value_change(self.on_item_distance_change)
 
         self.sl_item_distance_y = BL_UI_Slider(110, 100, 150, 30)
-        self.sl_item_distance_y.color = (0.2, 0.8, 0.8, 0.8)
-        self.sl_item_distance_y.hover_color = (0.2, 0.9, 0.9, 1.0)
+        self.sl_item_distance_y.color = (0.3, 0.56, 0.94, 1.0)
+        self.sl_item_distance_y.hover_color = (0.3, 0.56, 0.94, 0.8)
         self.sl_item_distance_y.min = 0.0
         self.sl_item_distance_y.max = 10.0
         self.sl_item_distance_y.decimals = 1
@@ -74,8 +74,8 @@ class FC_Array_Mode_Operator(BL_UI_OT_draw_operator):
         self.sl_item_distance_y.set_value_change(self.on_item_distance_change)
 
         self.sl_item_distance_z = BL_UI_Slider(110, 140, 150, 30)
-        self.sl_item_distance_z.color = (0.2, 0.8, 0.8, 0.8)
-        self.sl_item_distance_z.hover_color = (0.2, 0.9, 0.9, 1.0)
+        self.sl_item_distance_z.color = (0.3, 0.56, 0.94, 1.0)
+        self.sl_item_distance_z.hover_color = (0.3, 0.56, 0.94, 0.8)
         self.sl_item_distance_z.min = 0.0
         self.sl_item_distance_z.max = 10.0
         self.sl_item_distance_z.decimals = 1
