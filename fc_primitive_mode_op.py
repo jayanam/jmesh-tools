@@ -181,11 +181,15 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         # Left mouse button is pressed
         if event.value == "PRESS" and event.type == "LEFTMOUSE":
 
+
             mouse_pos_2d_r = (event.mouse_region_x, event.mouse_region_y)
 
             if self.is_mouse_valid(mouse_pos_2d_r):
 
                 self.create_shape(context)
+
+                if self.shape.is_input_active():
+                    return { RM }
 
                 # If an object is hit, set it as target
                 if event.ctrl:
@@ -198,6 +202,11 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                 gizmo_action = self.shape_gizmo.mouse_down(context, event, mouse_pos_2d_r, mouse_pos_3d)
                 if gizmo_action:
                     result = RM
+
+                for shape_action in self.shape._shape_actions:
+                    if shape_action.mouse_down(context, event, mouse_pos_2d_r, mouse_pos_3d):
+                        if self.shape.open_input(context, shape_action):
+                            result = RM
 
                 if self.shape.is_moving() and not self.shape_gizmo.is_dragging():
                     self.shape.stop_move(context)
@@ -214,11 +223,11 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                 if self.shape.is_processing():
                     result = RM
 
-                if self.shape.is_created() and not gizmo_action and not event.ctrl:
+                if self.shape.is_created() and not gizmo_action and not event.ctrl and not self.shape.is_input_active():
                     if self.shape.set_vertex_moving(mouse_pos_3d):
                         result = RM
 
-                if not gizmo_action:
+                if not gizmo_action and not self.shape.is_input_active():
                     if self.shape.handle_mouse_press(mouse_pos_2d, mouse_pos_3d, event, context):
 
                         self.create_object(context)
@@ -238,10 +247,6 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             if event.type == "S":
                 mouse_pos_2d = (event.mouse_region_x, event.mouse_region_y)
                 mouse_pos_2d, mouse_pos_3d = self.get_snapped_mouse_pos(mouse_pos_2d, context)
-
-                # if event.ctrl:
-                #     if self.shape.open_input(context):
-                #         result = RM
 
                 if self.shape.start_size(mouse_pos_3d):
 
@@ -579,6 +584,8 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
         self.shape.input_draw()
 
+        self.shape.shape_actions_draw()
+
         # Draw text for primitive mode
         blf.size(1, 16, 72)
 
@@ -601,3 +608,5 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
     def draw_callback_3d(self, op, context):
         
         self.shape.draw(context)
+
+        self.shape.set_shape_actions_position()

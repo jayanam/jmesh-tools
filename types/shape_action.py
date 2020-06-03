@@ -1,27 +1,36 @@
+import gpu
+from gpu_extras.batch import batch_for_shader
+
 class Shape_Action:
 
-  def __init__(self, tag):
-    self.shader_2d = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
-    self._tag = tag
-    self._x = 0
-    self._y = 0
+  def __init__(self):
+    self._shader = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
+    self.set_position(0, 0)
 
   def mouse_down(self, context, event, mouse_pos_2d, mouse_pos_3d) -> bool:
-    return True
+    x = mouse_pos_2d[0]
+    y = mouse_pos_2d[1]
+
+    if x >= self._x and x <= self._x + 14 and y <= self._y and y >= self._y - 14:
+      return True
+
+    return False
+
+  def get_position(self):
+    return (self._x, self._y)
+
+  def set_position(self, x, y):
+    self._x = x
+    self._y = y
+
+    x_r = x + 14
+    y_r = y - 14
+
+    indices = ((0, 1, 2), (2, 0, 3))
+    coords_middle = [(x, y - 7), (x + 7,  y_r), (x_r, y - 7), (x + 7, y)]
+    self._batch = batch_for_shader(self._shader, 'TRIS', {"pos" : coords_middle}, indices=indices)
 
   def draw(self):
-
-    self.shader_2d.bind()
-
-    x = gizmo_pos[0]
-    y = gizmo_pos[1]
-
-    x_r = x + 15
-    y_r = y - 15
-
-    indices = ((0, 1, 2), (2, 1, 3))
-    coords_middle = [(x + 1, y_r + 1), (x_r - 1,  y_r + 1), (x + 1, y_r + 14), (x_r - 1, y_r + 14)]
-    batch_gizmo_middle = batch_for_shader(self.shader_2d, 'TRIS', {"pos" : coords_middle}, indices=indices)
-
-    self.shader_2d.uniform_float("color", (0.9, 0.9, 0.9, 1.0))
-    batch_gizmo_middle.draw(self.shader_2d)
+    self._shader.bind()
+    self._shader.uniform_float("color", (0.9, 0.0, 0.0, 1.0))
+    self._batch.draw(self._shader)

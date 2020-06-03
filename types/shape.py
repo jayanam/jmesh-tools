@@ -56,9 +56,11 @@ class Shape:
         self._extrude_pos = None
         self._mouse_pressed = False
         self._input_size = None
+        self._shape_actions = []
 
         self.shader = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
         self.create_batch()
+
 
 
     def create_batch(self, mouse_pos = None):
@@ -129,6 +131,16 @@ class Shape:
         bgl.glPointSize(self.get_point_size(context))
         self.batch_points.draw(self.shader)
 
+    def add_shape_action(self, shape_action):
+        self._shape_actions.append(shape_action)
+
+    def shape_actions_draw(self):
+        for action in self._shape_actions:
+            action.draw()
+
+    def set_shape_actions_position(self):
+        pass
+
     def input_handle_event(self, event):
         if self._input_size is not None:
             if self._input_size.handle_event(event):
@@ -136,14 +148,21 @@ class Shape:
 
         return False
 
+    def is_input_active(self):
+        return self._input_size is not None
+
     def input_draw(self):
          if self._input_size is not None:
              self._input_size.draw()    
 
-    def open_input(self, context) -> bool:
+    def open_input(self, context, shape_action) -> bool:
         if self.is_created():
-            self._input_size = BL_UI_Textbox(500, 500, 100, 24)
+            self._input_size = BL_UI_Textbox(0, 0, 100, 24)
             self._input_size.init(context)
+            
+            pos = shape_action.get_position()
+            self._input_size.set_location(pos[0] - 3, self._input_size.get_area_height() - pos[1] - 3)
+
             self._input_size.set_text_changed(self.on_input_changed)
             return True
 
@@ -411,7 +430,7 @@ class Shape:
         self._vertices_2d.clear()
         self._vertices_m.clear()
         self._vertices_extruded_m.clear()
-
+        self._shape_actions.clear()
         self.state = ShapeState.NONE
         self.create_batch()
 

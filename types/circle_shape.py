@@ -7,19 +7,13 @@ class Circle_Shape(Shape):
         self._center = None
         self._radius = 0
         self._mouse_start_3d = None
-        self._segments = 32
+        self._segments = 32       
 
     def __str__(self):
         return "Circle"
 
-    def open_input(self, context) -> bool:
-        if super().open_input(context):
-        
-            rv3d = self._view_context.region_3d
-            region = self._view_context.region
-            pos_2d = location_3d_to_region_2d(region, rv3d, self._center)
-
-            self._input_size.set_location(pos_2d[0],self._input_size.get_area_height() - pos_2d[1] + 20)
+    def open_input(self, context, shape_action) -> bool:
+        if super().open_input(context, shape_action):
             self._input_size.text = "{:.3f}".format(self._radius)
             return True
 
@@ -63,6 +57,7 @@ class Circle_Shape(Shape):
             diff = mouse_pos_3d - self._move_offset
             self._center += diff
             self._mouse_start_3d = self._center.copy()
+            self.set_shape_actions_position()
 
         result = super().handle_mouse_move(mouse_pos_2d, mouse_pos_3d, event, context)
 
@@ -115,6 +110,9 @@ class Circle_Shape(Shape):
         elif self.is_processing():
 
             self.state = ShapeState.CREATED
+
+            shape_action = Shape_Action()
+            self.add_shape_action(shape_action)
             self.start_extrude_immediate(mouse_pos_2d, mouse_pos_3d, context)
             return False
 
@@ -122,6 +120,11 @@ class Circle_Shape(Shape):
             return True
 
         return False
+
+    def set_shape_actions_position(self):
+        for shape_action in self._shape_actions:
+            gizmo_pos = self.get_gizmo_pos()
+            shape_action.set_position(gizmo_pos[0], gizmo_pos[1] - 22)
 
     def get_gizmo_anchor_vertex(self):
         return self._center
