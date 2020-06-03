@@ -1,13 +1,13 @@
+import blf
+import bgl
+import gpu
+from gpu_extras.batch import batch_for_shader
+
 from enum import Enum
 
-import blf
-
 from math import sin, cos, pi, radians
-
 from mathutils import Vector, geometry
-
-from mathutils.geometry import intersect_line_plane
-from mathutils.geometry import intersect_point_line
+from mathutils.geometry import intersect_line_plane, intersect_point_line
 
 from ..utils.fc_view_3d_utils import *
 
@@ -17,72 +17,12 @@ from bpy_extras.view3d_utils import (
     region_2d_to_vector_3d,
     region_2d_to_origin_3d)
 
+from .context_utils import *
 from .action import Action
-
+from .shape_action import *
 from .enums import *
 
 from ..widgets.bl_ui_textbox import *
-
-
-class ShapeState(Enum):
-    NONE = 0
-    PROCESSING = 1
-    CREATED = 2
-
-
-class ViewRegion():
-    def __init__(self, region):
-        self._width = region.width
-        self._height = region.height
-
-    @property
-    def width(self):
-        return self._width
-
-    @property
-    def height(self):
-        return self._height
-
-
-class ViewContext():
-
-    def __init__(self, context):
-        self._region_3d = context.space_data.region_3d
-        self._view_rot = self._region_3d.view_rotation.copy()
-        self._view_mat = self._region_3d.view_matrix.copy()
-        self._pers_mat = self._region_3d.perspective_matrix.copy()
-        self._view_pers = self._region_3d.view_perspective
-        self._is_perspective = self._region_3d.is_perspective
-        self._region = ViewRegion(context.region)
-
-    @property
-    def region(self):
-        return self._region
-
-    @property
-    def region_3d(self):
-        return self._region_3d
-
-    @property
-    def view_rotation(self):
-        return self._view_rot
-
-    @property
-    def view_perspective(self):
-        return self._view_pers
-
-    @property
-    def perspective_matrix(self):
-        return self._pers_mat
-
-    @property
-    def view_matrix(self):
-        return self._view_mat
-
-    @property
-    def is_perspective(self):
-        return self._is_perspective
-
 
 class Shape:
 
@@ -117,6 +57,78 @@ class Shape:
         self._mouse_pressed = False
         self._input_size = None
 
+        self.shader = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+        self.create_batch()
+
+
+    def create_batch(self, mouse_pos = None):
+        points = self.get_vertices_copy(mouse_pos)
+
+        points_mirror = self.get_vertices_mirror_copy(mouse_pos)
+
+        extrude_points = self.get_vertices_extruded_copy(mouse_pos)
+
+        extrude_points_m = self.get_vertices_extruded_mirror_copy(mouse_pos)
+
+        extrude_lines = []
+        for index, vertex in enumerate(extrude_points):
+            extrude_lines.append(points[index])
+            extrude_lines.append(vertex)
+
+        extrude_lines_m = []
+        for index, vertex in enumerate(extrude_points_m):
+            extrude_lines_m.append(points_mirror[index])
+            extrude_lines_m.append(vertex)
+
+        self.batch = batch_for_shader(self.shader, 'LINE_LOOP', 
+            {"pos": points})
+
+        self.batch_extruded = batch_for_shader(self.shader, 'LINE_LOOP', 
+            {"pos": extrude_points})
+
+        self.batch_lines_extruded = batch_for_shader(self.shader, 'LINES', 
+            {"pos": extrude_lines})
+
+        # Mirror batches
+        self.batch_mirror = batch_for_shader(self.shader, 'LINE_LOOP', 
+            {"pos": points_mirror})
+
+        self.batch_extruded_m = batch_for_shader(self.shader, 'LINE_LOOP', 
+            {"pos": extrude_points_m})
+
+        self.batch_lines_extruded_m = batch_for_shader(self.shader, 'LINES', 
+            {"pos": extrude_lines_m})
+
+        # Batch for points
+        self.batch_points = batch_for_shader(self.shader, 'POINTS', {"pos": points})
+
+    def draw(self, context):
+        self.shader.bind()
+
+        if self.connected_shape():
+
+            # Draw lines
+            bgl.glEnable(bgl.GL_LINE_SMOOTH)
+
+            self.shader.uniform_float("color", (0.2, 0.5, 0.8, 1.0))
+            bgl.glLineWidth(2)
+            self.batch_extruded.draw(self.shader)
+            self.batch_extruded_m.draw(self.shader)
+
+            bgl.glLineWidth(1)
+            self.batch_lines_extruded.draw(self.shader)
+            self.batch_lines_extruded_m.draw(self.shader)
+
+            bgl.glLineWidth(3)
+            self.shader.uniform_float("color", (0.1, 0.3, 0.7, 1.0))
+            self.batch.draw(self.shader)
+            self.batch_mirror.draw(self.shader)
+        else:
+            self.shader.uniform_float("color", (0.1, 0.3, 0.7, 1.0))
+
+        bgl.glPointSize(self.get_point_size(context))
+        self.batch_points.draw(self.shader)
+
     def input_handle_event(self, event):
         if self._input_size is not None:
             if self._input_size.handle_event(event):
@@ -128,16 +140,27 @@ class Shape:
          if self._input_size is not None:
              self._input_size.draw()    
 
-    def open_input(self, context, input_changed_func):
-        self._input_size = BL_UI_Textbox(500, 500, 100, 24)
-        self._input_size.init(context)
-        self._input_size.set_text_changed(input_changed_func)
+    def open_input(self, context) -> bool:
+        if self.is_created():
+            self._input_size = BL_UI_Textbox(500, 500, 100, 24)
+            self._input_size.init(context)
+            self._input_size.set_text_changed(self.on_input_changed)
+            return True
+
+        return False
+
+    def on_input_changed(self, textbox, context, event):
+        if event.type == "ESC":
+            self.close_input()
+        elif event.type == "RET":
+            self.apply_input(context)
 
     def close_input(self):
         self._input_size = None
 
     def apply_input(self, context):
         self.close_input()
+        self.create_batch()
 
     def can_start_from_center(self):
         return False
@@ -390,6 +413,7 @@ class Shape:
         self._vertices_extruded_m.clear()
 
         self.state = ShapeState.NONE
+        self.create_batch()
 
     def close(self):
         return False

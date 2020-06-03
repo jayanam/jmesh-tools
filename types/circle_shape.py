@@ -12,21 +12,23 @@ class Circle_Shape(Shape):
     def __str__(self):
         return "Circle"
 
-    def open_input(self, context, input_changed_func):
-        super().open_input(context, input_changed_func)
+    def open_input(self, context) -> bool:
+        if super().open_input(context):
         
-        rv3d = self._view_context.region_3d
-        region = self._view_context.region
-        pos_2d = location_3d_to_region_2d(region, rv3d, self._center)
+            rv3d = self._view_context.region_3d
+            region = self._view_context.region
+            pos_2d = location_3d_to_region_2d(region, rv3d, self._center)
 
-        self._input_size.set_location(pos_2d[0],self._input_size.get_area_height() - pos_2d[1] + 20)
-        self._input_size.text = "{:.3f}".format(self._radius)
+            self._input_size.set_location(pos_2d[0],self._input_size.get_area_height() - pos_2d[1] + 20)
+            self._input_size.text = "{:.3f}".format(self._radius)
+            return True
+
+        return False
 
     def apply_input(self, context):
         self._radius = float(self._input_size.text)
         self.create_circle(context)
-        self.close_input()
-
+        super().apply_input(context)
 
     def handle_mouse_wheel(self, inc, context):
         if self.is_processing():

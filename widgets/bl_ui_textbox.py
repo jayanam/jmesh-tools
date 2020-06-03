@@ -85,6 +85,7 @@ class BL_UI_Textbox(BL_UI_Widget):
 
         self.shader.bind()
         self.shader.uniform_float("color", self._carret_color)
+        bgl.glEnable(bgl.GL_LINE_SMOOTH)
         bgl.glLineWidth(2)
         self.batch_carret.draw(self.shader) 
 

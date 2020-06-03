@@ -55,8 +55,6 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         self.draw_handle_3d = None
         self.draw_event  = None
         self.shape = Polyline_Shape()
-
-        self.create_batch(None)
                 
     def invoke(self, context, event):
         args = (self, context)  
@@ -126,13 +124,6 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
     def is_mouse_valid(self, mouse_pos_2d):
         return mouse_pos_2d is not None and mouse_pos_2d[0] >= 0 and mouse_pos_2d[1] >= 0
 
-    def on_input_changed(self, textbox, context, event):
-        if event.type == "ESC":
-            self.shape.close_input()
-        elif event.type == "RET":
-            self.shape.apply_input(context)
-            self.create_batch()
-
     def modal(self, context, event):
         if context.area:
             context.area.tag_redraw()
@@ -149,7 +140,6 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             was_none = self.shape.is_none()
 
             self.shape.reset()
-            self.create_batch(None)
 
             if was_none:
                 self.unregister_handlers(context)
@@ -165,7 +155,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                     mouse_pos_2d = (event.mouse_region_x, event.mouse_region_y)
                     mouse_pos_3d = self.get_3d_for_mouse(mouse_pos_2d, context)
                     
-                    self.create_batch(mouse_pos_3d)
+                    self.shape.create_batch(mouse_pos_3d)
                     result = RM
 
         # The mouse is moved
@@ -177,7 +167,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                 mouse_pos_2d, mouse_pos_3d = self.get_snapped_mouse_pos(mouse_pos_2d, context)
 
                 if self.shape.handle_mouse_move(mouse_pos_2d, mouse_pos_3d, event, context):
-                    self.create_batch(mouse_pos_3d)
+                    self.shape.create_batch(mouse_pos_3d)
 
         # Left mouse button is released
         if event.value == "RELEASE" and event.type == "LEFTMOUSE":
@@ -240,7 +230,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                             view_context = ViewContext(context)
                             self.shape.set_view_context(view_context)
                     
-                self.create_batch(mouse_pos_3d)
+                self.shape.create_batch(mouse_pos_3d)
 
         # Keyboard
         if event.value == "PRESS":
@@ -250,8 +240,8 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                 mouse_pos_2d, mouse_pos_3d = self.get_snapped_mouse_pos(mouse_pos_2d, context)
 
                 # if event.ctrl:
-                #     self.shape.open_input(context, self.on_input_changed)
-                #     result = RM
+                #     if self.shape.open_input(context):
+                #         result = RM
 
                 if self.shape.start_size(mouse_pos_3d):
 
@@ -280,7 +270,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                 mouse_pos_3d = self.get_3d_for_mouse(mouse_pos_2d, context)
 
                 if self.shape.start_rotate(mouse_pos_3d, context):
-                    self.create_batch()
+                    self.shape.create_batch()
                     result = RM
 
             # Try set mirror type for primitives
@@ -294,11 +284,11 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             if self.shape.is_extruding():
                 if (event.type == "DOWN_ARROW" or event.type == "UP_ARROW"):
                     self.shape.handle_extrude(event.type == "UP_ARROW", context)
-                    self.create_batch()
+                    self.shape.create_batch()
                     result = RM
                 elif (event.type in ["X", "Y", "Z", "N"]):
                     self.shape.set_extrude_axis(event.type)
-                    self.create_batch()
+                    self.shape.create_batch()
                     result = RM
 
             if event.type == "E":
@@ -306,7 +296,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                 mouse_pos_3d = self.get_3d_for_mouse(mouse_pos_2d, context)
 
                 if self.shape.start_extrude(mouse_pos_2d, mouse_pos_3d, context):
-                    self.create_batch()
+                    self.shape.create_batch()
                     result = RM
 
             # toggle input method
@@ -563,54 +553,9 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             verts = [e for e in r['geom'] if isinstance(e, bmesh.types.BMVert)]
             bmesh.ops.translate(bm, vec=dir, verts=verts)
 
-
     def finish(self):
         self.unregister_handlers(bpy.context)
         return {"FINISHED"}
-
-    def create_batch(self, mouse_pos = None):
-        
-        points = self.shape.get_vertices_copy(mouse_pos)
-
-        points_mirror = self.shape.get_vertices_mirror_copy(mouse_pos)
-
-        extrude_points = self.shape.get_vertices_extruded_copy(mouse_pos)
-
-        extrude_points_m = self.shape.get_vertices_extruded_mirror_copy(mouse_pos)
-
-        extrude_lines = []
-        for index, vertex in enumerate(extrude_points):
-            extrude_lines.append(points[index])
-            extrude_lines.append(vertex)
-
-        extrude_lines_m = []
-        for index, vertex in enumerate(extrude_points_m):
-            extrude_lines_m.append(points_mirror[index])
-            extrude_lines_m.append(vertex)
-
-        self.shader = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
-
-        self.batch = batch_for_shader(self.shader, 'LINE_LOOP', 
-            {"pos": points})
-
-        self.batch_extruded = batch_for_shader(self.shader, 'LINE_LOOP', 
-            {"pos": extrude_points})
-
-        self.batch_lines_extruded = batch_for_shader(self.shader, 'LINES', 
-            {"pos": extrude_lines})
-
-        # Mirror batches
-        self.batch_mirror = batch_for_shader(self.shader, 'LINE_LOOP', 
-            {"pos": points_mirror})
-
-        self.batch_extruded_m = batch_for_shader(self.shader, 'LINE_LOOP', 
-            {"pos": extrude_points_m})
-
-        self.batch_lines_extruded_m = batch_for_shader(self.shader, 'LINES', 
-            {"pos": extrude_lines_m})
-
-        # Batch for points
-        self.batch_points = batch_for_shader(self.shader, 'POINTS', {"pos": points})
 
     def draw_action_line(self, action, pos_y):
         blf.color(1, 1, 1, 1, 1)
@@ -654,30 +599,5 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
 	# Draw handler to paint onto the screen
     def draw_callback_3d(self, op, context):
-
-        self.shader.bind()
-
-        if self.shape.connected_shape():
-
-            # Draw lines
-            bgl.glEnable(bgl.GL_LINE_SMOOTH)
-
-            self.shader.uniform_float("color", (0.2, 0.5, 0.8, 1.0))
-            bgl.glLineWidth(2)
-            self.batch_extruded.draw(self.shader)
-            self.batch_extruded_m.draw(self.shader)
-
-            bgl.glLineWidth(1)
-            self.batch_lines_extruded.draw(self.shader)
-            self.batch_lines_extruded_m.draw(self.shader)
-
-            bgl.glLineWidth(3)
-            self.shader.uniform_float("color", (0.1, 0.3, 0.7, 1.0))
-            self.batch.draw(self.shader)
-            self.batch_mirror.draw(self.shader)
-        else:
-            self.shader.uniform_float("color", (0.1, 0.3, 0.7, 1.0))
-
-        bgl.glPointSize(self.shape.get_point_size(context))
-        self.batch_points.draw(self.shader)
-
+        
+        self.shape.draw(context)
