@@ -25,11 +25,11 @@ class FC_PT_Panel(Panel):
 
         # Bool diff button
         col = row.column()
-        col.operator('object.bool_diff', text='Difference', icon='MOD_BOOLEAN')
+        col.operator('object.bool_diff', text='Difference', icon='SELECT_SUBTRACT')
         
         # Bool union button
         col = row.column()
-        col.operator('object.bool_union', text='Union', icon='MOD_BOOLEAN')
+        col.operator('object.bool_union', text='Union', icon='SELECT_EXTEND')
 
         if context.mode != "SCULPT":
                         
@@ -37,11 +37,11 @@ class FC_PT_Panel(Panel):
 
             # Bool Slice button
             col = row.column()
-            col.operator('object.bool_slice', text='Slice', icon='MOD_BOOLEAN')
+            col.operator('object.bool_slice', text='Slice', icon='SELECT_DIFFERENCE')
             
             # Bool intersect button
             col = row.column()
-            col.operator('object.bool_intersect', text='Intersect', icon='MOD_BOOLEAN')
+            col.operator('object.bool_intersect', text='Intersect', icon='SELECT_INTERSECT')
             
             # Apply immediately
             row = layout.row()
