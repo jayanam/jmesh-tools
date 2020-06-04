@@ -24,6 +24,14 @@ class BL_UI_Textbox(BL_UI_Widget):
         self._max_input_chars = 100
 
     @property
+    def carret_color(self):
+        return self._carret_color
+
+    @carret_color.setter
+    def carret_color(self, value):
+        self._carret_color = value
+
+    @property
     def text_color(self):
         return self._text_color
 
@@ -47,7 +55,6 @@ class BL_UI_Textbox(BL_UI_Widget):
     def text(self, value):
         self._text = value
         self._carret_pos = len(value)
-
         self.update_carret()
 
     @property
@@ -68,7 +75,6 @@ class BL_UI_Textbox(BL_UI_Widget):
         self.update_carret()
 
     def get_carret_pos_px(self):
-
         size_all = blf.dimensions(0, self._text)
         size_to_carret = blf.dimensions(0, self._text[:self._carret_pos])
         return self.x_screen + (self.width / 2.0) - (size_all[0] / 2.0) + size_to_carret[0]
@@ -101,7 +107,7 @@ class BL_UI_Textbox(BL_UI_Widget):
         self.shader.bind()
         self.shader.uniform_float("color", self._carret_color)
         bgl.glEnable(bgl.GL_LINE_SMOOTH)
-        bgl.glLineWidth(1)
+        bgl.glLineWidth(2)
         self.batch_carret.draw(self.shader)
 
     def set_colors(self):
@@ -114,10 +120,8 @@ class BL_UI_Textbox(BL_UI_Widget):
         blf.size(0, self._text_size, 72)
         size = blf.dimensions(0, self._text)
 
-        textpos_y = area_height - \
-            self._textpos[1] - (self.height + size[1]) / 2.0
-        blf.position(
-            0, self._textpos[0] + (self.width - size[0]) / 2.0, textpos_y + 1, 0)
+        textpos_y = area_height - self._textpos[1] - (self.height + size[1]) / 2.0
+        blf.position(0, self._textpos[0] + (self.width - size[0]) / 2.0, textpos_y + 1, 0)
 
         r, g, b, a = self._text_color
         blf.color(0, r, g, b, a)
