@@ -18,9 +18,10 @@ class BL_UI_Textbox(BL_UI_Widget):
 
         self._carret_pos = 0
 
-        self.text = "0"
+        self.text = ""
         self._text_size = 12
         self._textpos = [x, y]
+        self._max_input_chars = 100
 
     @property
     def text_color(self):
@@ -29,6 +30,14 @@ class BL_UI_Textbox(BL_UI_Widget):
     @text_color.setter
     def text_color(self, value):
         self._text_color = value
+
+    @property
+    def max_input_chars(self):
+        return self._max_input_chars
+
+    @max_input_chars.setter
+    def max_input_chars(self, value):
+        self._max_input_chars = value
 
     @property
     def text(self):
@@ -122,7 +131,7 @@ class BL_UI_Textbox(BL_UI_Widget):
 
         index = self._carret_pos
 
-        if event.ascii != '':
+        if event.ascii != '' and len(self._text) < self.max_input_chars:
             self._text = self._text[:index] + event.ascii + self._text[index:]
             self._carret_pos += 1
         elif event.type == 'BACK_SPACE':
