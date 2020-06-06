@@ -12,15 +12,21 @@ class Circle_Shape(Shape):
     def __str__(self):
         return "Circle"
 
-    def open_input(self, context, shape_action) -> bool:
-        if super().open_input(context, shape_action):
-            self._input_size.text = "{:.3f}".format(self._radius)
+    def open_input(self, context, shape_action, unitinfo) -> bool:
+        if super().open_input(context, shape_action, unitinfo):
+            unit_value = bu_to_unit(self._radius, unitinfo[1])
+
+            self._input_size.text = "{:.3f}".format(unit_value)
             return True
 
         return False
 
     def apply_input(self, context):
-        self._radius = float(self._input_size.text)
+        value = float(self._input_size.text)
+        unitinfo = get_current_units()
+
+        self._radius = unit_to_bu(value, unitinfo[1])
+        
         self.create_circle(context)
         super().apply_input(context)
 

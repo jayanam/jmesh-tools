@@ -205,7 +205,8 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
                 for shape_action in self.shape._shape_actions:
                     if shape_action.mouse_down(context, event, mouse_pos_2d_r, mouse_pos_3d):
-                        if self.shape.open_input(context, shape_action):
+                        unitinfo = get_current_units()
+                        if self.shape.open_input(context, shape_action, unitinfo):
                             result = RM
 
                 if self.shape.is_moving() and not self.shape_gizmo.is_dragging():

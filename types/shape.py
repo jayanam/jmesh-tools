@@ -157,15 +157,13 @@ class Shape:
          if self._input_size is not None:
              self._input_size.draw()    
 
-    def open_input(self, context, shape_action) -> bool:
+    def open_input(self, context, shape_action, unitinfo) -> bool:
         if self.is_created():
             
-            scale = get_current_units()
-
             self._input_size = BL_UI_Textbox(0, 0, 100, 24)
             self._input_size.max_input_chars = 12
             self._input_size.init(context)
-            # self._input_size.label = scale
+            self._input_size.label = unitinfo[0]
             
             pos = shape_action.get_position()
             self._input_size.set_location(pos[0] + 20, self._input_size.get_area_height() - pos[1] - 4)
