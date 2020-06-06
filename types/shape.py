@@ -24,6 +24,8 @@ from .enums import *
 
 from ..widgets.bl_ui_textbox import *
 
+from ..utils.unit_util import *
+
 class Shape:
 
     def __init__(self):
@@ -157,12 +159,16 @@ class Shape:
 
     def open_input(self, context, shape_action) -> bool:
         if self.is_created():
+            
+            scale = get_current_units()
+
             self._input_size = BL_UI_Textbox(0, 0, 100, 24)
             self._input_size.max_input_chars = 12
             self._input_size.init(context)
+            # self._input_size.label = scale
             
             pos = shape_action.get_position()
-            self._input_size.set_location(pos[0] + 18, self._input_size.get_area_height() - pos[1] - 3)
+            self._input_size.set_location(pos[0] + 20, self._input_size.get_area_height() - pos[1] - 4)
 
             self._input_size.set_text_changed(self.on_input_changed)
             return True
