@@ -1,6 +1,10 @@
 # JMesh Tools
 Blender 2.8 / 2.9 mesh and hard surface utilities addon (before it was Fast Carve).
 
+## Getting Started documentation
+
+http://jayanam.com/jmesh-tools-blender-addon-documentation/
+
 ## Installation:
 
 * Download the zip file from github (Green button, Download zip)
