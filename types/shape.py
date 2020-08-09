@@ -189,6 +189,12 @@ class Shape:
     def can_start_from_center(self):
         return False
 
+    def get_raycast_param(self, view_layer):        
+        if bpy.app.version >= (2, 91, 0):
+            return view_layer.depsgraph
+        else:
+            return view_layer       
+
     def get_start_from_center(self, context):
         return context.scene.start_center and self.can_start_from_center()
 
@@ -196,7 +202,8 @@ class Shape:
 
         origin, direction = get_origin_and_direction(pos_2d, context)
 
-        hit, hit_loc, norm, face, hit_obj, *_ = context.scene.ray_cast(context.view_layer, origin, direction)
+        ray_cast_param = self.get_raycast_param(context.view_layer)
+        hit, hit_loc, norm, face, hit_obj, *_ = context.scene.ray_cast(ray_cast_param, origin, direction)
 
         return hit, hit_obj
 
@@ -210,7 +217,8 @@ class Shape:
 
         # Try to hit an object in the scene
         if self._hit is None:
-            hit, self._hit, self._normal, face, hit_obj, *_ = scene.ray_cast(context.view_layer, origin, direction)
+            ray_cast_param = self.get_raycast_param(context.view_layer)
+            hit, self._hit, self._normal, face, hit_obj, *_ = scene.ray_cast(ray_cast_param, origin, direction)
             if hit:
                 self._snap_to_target = True
                 result = self._hit.copy()

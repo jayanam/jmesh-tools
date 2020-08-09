@@ -66,7 +66,8 @@ class Curve_Shape(Shape):
         origin      = region_2d_to_origin_3d(region,   region3D, mouse_pos_2d)
 
         # Get intersection with objects
-        hit, loc_hit, normal, face, *_ = scene.ray_cast(context.view_layer, origin, view_vector)
+        ray_cast_param = self.get_raycast_param(context.view_layer)
+        hit, loc_hit, normal, face, *_ = scene.ray_cast(ray_cast_param, origin, view_vector)
         if hit:
             mouse_pos_3d = loc_hit
 
