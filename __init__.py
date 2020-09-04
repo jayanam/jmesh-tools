@@ -191,6 +191,11 @@ def register():
    
     # add keymap entry
     kc = bpy.context.window_manager.keyconfigs.addon
+
+    if kc is None:
+        print('ERROR: CAN NOT REGISTER JMESH')
+        return
+
     km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
 
     kmi = km.keymap_items.new("object.fc_primitve_mode_op", 'P', 'PRESS', shift=True, ctrl=True)
