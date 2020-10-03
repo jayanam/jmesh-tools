@@ -1,5 +1,5 @@
 # JMesh Tools
-Blender 2.8 / 2.9 mesh and hard surface utilities addon (before it was Fast Carve).
+Blender 2.8 / 2.9 mesh and hard surface utilities addon (formerly Fast Carve).
 
 ## Getting Started documentation
 
