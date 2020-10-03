@@ -1,6 +1,7 @@
 import blf
 import bgl
 import gpu
+import bmesh
 from gpu_extras.batch import batch_for_shader
 
 from enum import Enum
@@ -54,6 +55,8 @@ class Shape:
         self._bvhtree = None
         self._hit = None
         self._normal = None
+        self._hit_face = -1
+        self._hit_obj = None
         self._actions = []
         self._extrude_pos = None
         self._mouse_pressed = False
@@ -218,7 +221,7 @@ class Shape:
         # Try to hit an object in the scene
         if self._hit is None:
             ray_cast_param = self.get_raycast_param(context.view_layer)
-            hit, self._hit, self._normal, face, hit_obj, *_ = scene.ray_cast(ray_cast_param, origin, direction)
+            hit, self._hit, self._normal, self._hit_face, self._hit_obj, *_ = scene.ray_cast(ray_cast_param, origin, direction)
             if hit:
                 self._snap_to_target = True
                 result = self._hit.copy()
@@ -434,7 +437,9 @@ class Shape:
     def set_center(self, axis, vec_center):
                 
         if axis == "N":
-            vec_center.zero()
+            face_center = get_face_center(self._hit_face, self._hit_obj)
+            vec_center.xyz = face_center.xyz
+            
         else:
             rot_mat = self._view_context._view_mat
 

@@ -41,6 +41,19 @@ def get_grid_snap_pos(pos, overlay3d):
 
     return mod
 
+def get_face_center(face_index, obj):
+    center = Vector((0,0,0))
+
+    if(face_index != -1):
+        bm = bmesh.new()
+        bm.from_mesh(obj.data) 
+        bm.faces.ensure_lookup_table()
+        
+        center = bm.faces[face_index].calc_center_median()
+        bm.free()
+
+    return center
+
 def get_view_rotation(context):
     rv3d      = context.space_data.region_3d
     view_rot  = rv3d.view_rotation
