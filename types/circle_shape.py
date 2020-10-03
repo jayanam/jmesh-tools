@@ -146,7 +146,8 @@ class Circle_Shape(Shape):
         return None
 
     def to_center(self, axis):
-        self._center = Vector((0, 0, 0))
+
+        self.set_center(axis, self._center)
         self.create_circle(bpy.context)
 
 

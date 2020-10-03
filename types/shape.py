@@ -431,6 +431,22 @@ class Shape:
         self._vertices_extruded.clear()
         self._vertices_extruded_m.clear()
 
+    def set_center(self, axis, vec_center):
+                
+        rot_mat = self._view_context._view_mat
+
+        v = rot_mat @ vec_center
+
+        if axis == "N":
+            vec_center = Vector((0,0,0))
+        else:
+            if axis == "X":
+                v = Vector((-v[0],0,0))
+            elif axis == "Y":
+                v = Vector((0,-v[1],0))
+
+            vec_center += rot_mat.inverted() @ v
+
     def to_center(self, axis = "N"):
         pass
 
@@ -481,6 +497,10 @@ class Shape:
             self.build_actions()
             return True
         return False
+
+    def vertices_3d_offset(self, vec_offset):
+        for vertex_3d in self._vertices:
+            vertex_3d += vec_offset
 
     def vertices_3d_to_2d(self, context):
         for index, vertex_3d in enumerate(self._vertices):
@@ -683,9 +703,6 @@ class Shape:
             return pos_2d
 
         return None
-
-    def draw_gizmo(self, context):
-        pass
 
     def get_point_size(self, context):
         return 10

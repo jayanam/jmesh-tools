@@ -189,8 +189,15 @@ class Rectangle_Shape(Shape):
     def get_height(self):
         return (self._vertices[0] - self._vertices[1]).length
 
-    def draw_gizmo(self, context):
-        pass
+    def to_center(self, axis):
+        old_center = self._center_3d.copy()
+        self.set_center(axis, self._center_3d)
+        self.vertices_3d_offset(self._center_3d - old_center)
+        self.vertices_3d_to_2d(bpy.context)
+        self.calc_center_2d()
+
+        self.create_rect(bpy.context)
+
 
     def draw_text(self):
         if self.is_processing():

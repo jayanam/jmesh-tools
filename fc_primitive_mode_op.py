@@ -572,7 +572,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             blf.position(1, 115, pos_y , 1)
             blf.draw(1, ": " + action.content) 
 
-        blf.color(1, 0, 0.2, 1, 1)
+        blf.color(1, 0, 0.5, 1, 1)
         blf.position(1, 250, pos_y, 1)
         blf.draw(1, action.id)
 

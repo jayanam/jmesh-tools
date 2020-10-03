@@ -29,7 +29,7 @@ class Shape_Gizmo:
     if axis is not None:
 
       # If control key is pressed then try to center the primitive
-      if event.ctrl and axis == "N":
+      if event.ctrl:
         self.shape.to_center(axis)
         return True
       else:
