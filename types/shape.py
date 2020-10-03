@@ -433,13 +433,13 @@ class Shape:
 
     def set_center(self, axis, vec_center):
                 
-        rot_mat = self._view_context._view_mat
-
-        v = rot_mat @ vec_center
-
         if axis == "N":
-            vec_center = Vector((0,0,0))
+            vec_center.zero()
         else:
+            rot_mat = self._view_context._view_mat
+
+            v = rot_mat @ vec_center
+
             if axis == "X":
                 v = Vector((-v[0],0,0))
             elif axis == "Y":
