@@ -18,6 +18,7 @@ class ViewContext():
         self._view_rot = self._region_3d.view_rotation.copy()
         self._view_mat = self._region_3d.view_matrix.copy()
         self._pers_mat = self._region_3d.perspective_matrix.copy()
+
         self._view_pers = self._region_3d.view_perspective
         self._is_perspective = self._region_3d.is_perspective
         self._region = ViewRegion(context.region)

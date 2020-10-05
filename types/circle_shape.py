@@ -106,7 +106,7 @@ class Circle_Shape(Shape):
 
         if self.is_none() and event.ctrl:
 
-            self._center = self.get_center(mouse_pos_3d, context).copy()
+            self._center = self.get_center(mouse_pos_3d, context)
 
             self._mouse_start_3d = mouse_pos_3d.copy()
 

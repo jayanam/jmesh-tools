@@ -441,7 +441,7 @@ class Shape:
             vec_center.xyz = face_center.xyz
             
         else:
-            rot_mat = self._view_context._view_mat
+            rot_mat = self._view_context._view_mat.to_3x3()
 
             v = rot_mat @ vec_center
 
