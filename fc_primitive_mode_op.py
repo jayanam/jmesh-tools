@@ -49,7 +49,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         if context.object == None:
             return True
 
-        return context.object.mode == "OBJECT" or context.object.mode == "SCULPT"
+        return True
 		
     def __init__(self):
         self.draw_handle_2d = None

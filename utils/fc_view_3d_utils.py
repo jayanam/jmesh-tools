@@ -44,14 +44,22 @@ def get_grid_snap_pos(pos, overlay3d):
 def get_face_center(face_index, obj):
     center = Vector((0,0,0))
 
+    current_mode = bpy.context.object.mode
+    is_obj  = (current_mode == "OBJECT")
+
     if(face_index != -1):
+
+        bpy.ops.object.mode_set(mode="OBJECT")
+
         bm = bmesh.new()
-        bm.from_mesh(obj.data) 
+        bm.from_mesh(obj.data)
         bm.faces.ensure_lookup_table()
-        
         center = bm.faces[face_index].calc_center_median()
         bm.free()
 
+        bpy.ops.object.mode_set(mode=current_mode)
+
+    
     return center
 
 def get_view_rotation(context):
