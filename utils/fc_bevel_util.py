@@ -12,6 +12,18 @@ def has_bevel_mod(obj):
     bevel_mod = obj.modifiers.get("Bevel")
     return bevel_mod is not None
 
+# Sets the bevel viewport display and returns the old state
+def set_bevel_display(obj, enabled):
+    if not has_bevel_mod(obj):
+        return False
+
+    bevel_mod = obj.modifiers.get("Bevel")
+    result = bevel_mod.show_viewport
+    bevel_mod.show_viewport = enabled
+
+    return result
+
+
 def apply_sharp_edges():
 
     # Set smooth shading for the target object

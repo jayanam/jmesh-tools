@@ -16,6 +16,7 @@ from bpy_extras import view3d_utils
 import mathutils
 
 from .utils.fc_bool_util import select_active, execute_boolean_op, execute_slice_op, is_apply_immediate
+from .utils.fc_bevel_util import *
 from .utils.fc_view_3d_utils import *
 
 from .types.shape import *
@@ -191,13 +192,26 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                 if self.shape.is_input_active():
                     return { RM }
 
+                old_bevel_state = False
+
                 # If an object is hit, set it as target
                 if event.ctrl:
                     hit, hit_obj = self.shape.is_object_hit(mouse_pos_2d_r, context)
                     if hit:
                         context.scene.carver_target = hit_obj
 
+                        # workround: reset bevel modifier to non display to get the right hit face
+                        # Seems to be a Blender bug
+                        old_bevel_state = set_bevel_display(hit_obj, False)
+                        depsgraph = context.evaluated_depsgraph_get()
+                        depsgraph.update()
+
+
                 mouse_pos_2d, mouse_pos_3d = self.get_snapped_mouse_pos(mouse_pos_2d_r, context)
+
+                # workround: Reset bevel display when it was set
+                if old_bevel_state == True:
+                   old_bevel_state = set_bevel_display(context.scene.carver_target, True)    
 
                 gizmo_action = self.shape_gizmo.mouse_down(context, event, mouse_pos_2d_r, mouse_pos_3d)
                 if gizmo_action:

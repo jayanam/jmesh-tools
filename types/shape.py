@@ -222,6 +222,7 @@ class Shape:
         if self._hit is None:
             ray_cast_param = self.get_raycast_param(context.view_layer)
             hit, self._hit, self._normal, self._hit_face, self._hit_obj, *_ = scene.ray_cast(ray_cast_param, origin, direction)
+
             if hit:
                 self._snap_to_target = True
                 result = self._hit.copy()
