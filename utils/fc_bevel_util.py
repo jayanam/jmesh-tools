@@ -21,6 +21,9 @@ def set_bevel_display(obj, enabled):
     result = bevel_mod.show_viewport
     bevel_mod.show_viewport = enabled
 
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    depsgraph.update()
+
     return result
 
 

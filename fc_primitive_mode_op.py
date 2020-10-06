@@ -203,9 +203,6 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                         # workround: reset bevel modifier to non display to get the right hit face
                         # Seems to be a Blender bug
                         old_bevel_state = set_bevel_display(hit_obj, False)
-                        depsgraph = context.evaluated_depsgraph_get()
-                        depsgraph.update()
-
 
                 mouse_pos_2d, mouse_pos_3d = self.get_snapped_mouse_pos(mouse_pos_2d_r, context)
 
