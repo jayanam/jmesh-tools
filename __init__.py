@@ -2,7 +2,7 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 3, 5, 0),
+    "version": (1, 3, 6, 0),
     "blender": (2, 80, 0),
     "location": "View3D",
     "category": "Object"}
@@ -84,7 +84,8 @@ mode_items = [ ("Create",     "Create", "", 0),
              ]
 
 center_items = [ ("Mouse",     "Mouse", "", 0),
-                 ("3D-Cursor", "3D-cursor", "", 1)
+                 ("3D-Cursor", "3D-cursor", "", 1),
+                 ("Mesh", "Mesh", "", 2)
                ]
 
 shape_input_method = [ ("Click", "Click", "", 0),

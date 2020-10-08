@@ -178,8 +178,15 @@ class Circle_Shape(Shape):
     def get_center(self, mouse_pos_3d, context):
         if context.scene.center_type == "Mouse":
             return mouse_pos_3d
-        else:
+        elif context.scene.center_type == "3D-Cursor":
             return context.scene.cursor.location
+
+        # get active mesh part (vertex, edge or face)
+        # for edge: middle of edge
+        # for face: face center
+        else:
+            return get_selected_mesh_center(context, mouse_pos_3d)
+
 
     def build_actions(self):
         super().build_actions()

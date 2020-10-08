@@ -41,6 +41,28 @@ def get_grid_snap_pos(pos, overlay3d):
 
     return mod
 
+def get_selected_mesh_center(context, default_pos):
+    current_mode = context.object.mode
+    is_edit  = (current_mode == "EDIT")
+
+    if is_edit:
+        mesh = context.object.data
+        
+        bm = bmesh.from_edit_mesh(mesh)
+
+        if bm.select_history:
+            elem = bm.select_history[-1]
+            if isinstance(elem, bmesh.types.BMVert):
+                return elem.co
+            elif isinstance(elem, bmesh.types.BMEdge):
+                return elem.verts[0].co.lerp(elem.verts[1].co, 0.5)
+            elif isinstance(elem, bmesh.types.BMFace):
+                return elem.calc_center_median()
+
+        return default_pos
+
+    return default_pos
+
 def get_face_center(face_index, obj):
     center = Vector((0,0,0))
 
