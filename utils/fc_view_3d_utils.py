@@ -59,8 +59,6 @@ def get_selected_mesh_center(context, default_pos):
             elif isinstance(elem, bmesh.types.BMFace):
                 return elem.calc_center_median()
 
-        return default_pos
-
     return default_pos
 
 def get_face_center(face_index, obj):
