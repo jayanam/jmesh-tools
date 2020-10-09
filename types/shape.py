@@ -66,7 +66,17 @@ class Shape:
         self.shader = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
         self.create_batch()
 
+    def get_center(self, mouse_pos_3d, context):
+        if context.scene.center_type == "Mouse":
+            return mouse_pos_3d
+        elif context.scene.center_type == "3D-Cursor":
+            return context.scene.cursor.location
 
+        # get active mesh part (vertex, edge or face)
+        # for edge: middle of edge
+        # for face: face center
+        else:
+            return get_selected_mesh_center(context, mouse_pos_3d)
 
     def create_batch(self, mouse_pos = None):
         points = self.get_vertices_copy(mouse_pos)
@@ -507,6 +517,12 @@ class Shape:
     def vertices_3d_offset(self, vec_offset):
         for vertex_3d in self._vertices:
             vertex_3d += vec_offset
+
+    def vertex_3d_to_2d(self, context, v3d):
+
+        rv3d = context.space_data.region_3d
+        region = context.region
+        return location_3d_to_region_2d(region, rv3d, v3d)       
 
     def vertices_3d_to_2d(self, context):
         for index, vertex_3d in enumerate(self._vertices):

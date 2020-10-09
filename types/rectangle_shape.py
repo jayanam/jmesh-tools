@@ -14,6 +14,9 @@ class Rectangle_Shape(Shape):
     def __str__(self):
         return "Rect"
 
+    def can_set_center_type(self):
+        return True
+
     def can_start_from_center(self):
         return True
 
@@ -25,10 +28,11 @@ class Rectangle_Shape(Shape):
         if self.is_none() and event.ctrl:
 
             if self.get_start_from_center(context):
-                self._center_2d = mouse_pos_2d
-            else:
-                self._vertices_2d[0] = mouse_pos_2d
-                self._vertex1 = mouse_pos_3d
+                center_3d = self.get_center(mouse_pos_3d, context)
+                self._center_2d = self.vertex_3d_to_2d(context, center_3d)
+            else:              
+                self._vertex1 = self.get_center(mouse_pos_3d, context)
+                self._vertices_2d[0] = self.vertex_3d_to_2d(context, self._vertex1)
 
             self.state = ShapeState.PROCESSING
             return False
@@ -215,6 +219,7 @@ class Rectangle_Shape(Shape):
     def build_actions(self):
         super().build_actions()
         bool_mode = bpy.context.scene.bool_mode
+        center_type = bpy.context.scene.center_type
 
         from_center = "Yes"
 
@@ -235,6 +240,7 @@ class Rectangle_Shape(Shape):
         self.add_action(Action("R",                 "Rotate",
                                ""),          ShapeState.CREATED)
         self.build_extrude_action()
+        self.add_action(Action("C",                 "Startpos",             center_type), ShapeState.NONE)
         self.add_action(Action("F",                 "From Center",
                                from_center),        ShapeState.NONE)
         self.add_action(Action("Left Click",        "Set 2nd point",

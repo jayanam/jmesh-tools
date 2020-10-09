@@ -175,19 +175,6 @@ class Circle_Shape(Shape):
     def can_set_center_type(self):
         return True
 
-    def get_center(self, mouse_pos_3d, context):
-        if context.scene.center_type == "Mouse":
-            return mouse_pos_3d
-        elif context.scene.center_type == "3D-Cursor":
-            return context.scene.cursor.location
-
-        # get active mesh part (vertex, edge or face)
-        # for edge: middle of edge
-        # for face: face center
-        else:
-            return get_selected_mesh_center(context, mouse_pos_3d)
-
-
     def build_actions(self):
         super().build_actions()
         bool_mode = bpy.context.scene.bool_mode
@@ -202,7 +189,7 @@ class Circle_Shape(Shape):
         self.add_action(Action("S",                 "Scale",               ""),          ShapeState.CREATED)
         self.build_move_action()
         self.build_extrude_action()
-        self.add_action(Action("C",                 "Center",             center_type), ShapeState.NONE)
+        self.add_action(Action("C",                 "Startpos",             center_type), ShapeState.NONE)
         self.add_action(Action("Mouse wheel",       "Segments",           str(self._segments)), ShapeState.PROCESSING)
         self.add_action(Action("Left Click",        "Create",             ""),          ShapeState.PROCESSING)
         self.add_action(Action("Ctrl + Left Click", "Start",              ""),          ShapeState.NONE)
