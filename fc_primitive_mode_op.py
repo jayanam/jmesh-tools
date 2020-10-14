@@ -62,11 +62,6 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
         context.window_manager.in_primitive_mode = True
 
-        self.current_mode = None
-
-        if context.object is not None:
-            self.current_mode = context.object.mode
-
         self.create_shape(context)    
 
         self.shape_gizmo = Shape_Gizmo()       
@@ -453,6 +448,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         try:
 
             if context.object is not None:
+                current_mode = context.object.mode
                 bpy.ops.object.mode_set(mode='OBJECT')
 
             is_bool_create = (context.scene.bool_mode == "Create")
@@ -532,8 +528,8 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         except RuntimeError:
             pass
         finally:
-            if self.current_mode is not None:
-                bpy.ops.object.mode_set(mode=self.current_mode)
+            if current_mode is not None:
+                bpy.ops.object.mode_set(mode=current_mode)
 
     def get_bool_mode_id(self, bool_name):
         if bool_name == "Difference":
