@@ -23,8 +23,6 @@ class FC_PT_Primitive_Panel(Panel):
         col.prop(context.scene, "use_snapping", text="Snap to grid")
 
         if context.scene.primitive_type != "Curve":   
-            col = row.column()
-            col.prop(context.scene, "extrude_mesh", text="Extrude")
 
             row = layout.row()
             row.prop(context.scene, "extrude_immediate", text="Extrude immediately")

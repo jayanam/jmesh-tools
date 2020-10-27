@@ -514,6 +514,9 @@ class Shape:
             return True
         return False
 
+    def can_convert_to_mesh(self):
+        return self.is_created()
+
     def vertices_3d_offset(self, vec_offset):
         for vertex_3d in self._vertices:
             vertex_3d += vec_offset
@@ -578,6 +581,9 @@ class Shape:
 
 
     def start_extrude(self, mouse_pos_2d, mouse_pos_3d, context):
+        if not self.is_created():
+            return False
+
         self._extrude_pos = mouse_pos_2d
         self._is_extruding = True
         self.build_actions()

@@ -228,28 +228,22 @@ class Rectangle_Shape(Shape):
 
         self.add_action(Action(self.get_prim_id(),
                                "Primitive",          "Rectangle"), None)
-        self.add_action(
-            Action("O",                 "Operation",           bool_mode),   None)
+        self.add_action(Action("O",                 "Operation",           bool_mode),   None)
 
         mirror_type = bpy.context.scene.mirror_primitive
-        self.add_action(Action("M",                 "Mirror",
-                               mirror_type),    ShapeState.NONE)
+        self.add_action(Action("M",                 "Mirror",               mirror_type),    ShapeState.NONE)
 
         # self.add_action(Action("S",                 "Size",               ""),          ShapeState.CREATED)
         self.build_move_action()
         self.add_action(Action("R",                 "Rotate",
                                ""),          ShapeState.CREATED)
         self.build_extrude_action()
-        self.add_action(Action("C",                 "Startpos",             center_type), ShapeState.NONE)
-        self.add_action(Action("F",                 "From Center",
-                               from_center),        ShapeState.NONE)
-        self.add_action(Action("Left Click",        "Set 2nd point",
-                               ""),          ShapeState.PROCESSING)
-        self.add_action(Action("Ctrl + Left Click", "Start",
-                               ""),          ShapeState.NONE)
-        self.add_action(Action("Ctrl + Left Click", "Apply",
-                               ""),          ShapeState.CREATED)
-        self.add_action(Action("Left Drag",         "Move points",
-                               ""),          ShapeState.CREATED)
+        self.add_action(Action("C",                 "Startpos",            center_type), ShapeState.NONE)
+        self.add_action(Action("F",                 "From Center",        from_center),        ShapeState.NONE)
+        self.add_action(Action("Left Click",        "Set 2nd point",      ""),          ShapeState.PROCESSING)
+        self.add_action(Action("Ctrl + Left Click", "Start",              ""),          ShapeState.NONE)
+        self.add_action(Action("Ctrl + Left Click", "Apply",              ""),          ShapeState.CREATED)
+        self.add_action(Action("Left Drag",         "Move points",        ""),          ShapeState.CREATED)
+        self.add_action(Action("Alt + M",           "To Mesh",            ""),          ShapeState.CREATED)
         self.add_action(
             Action("Esc",               self.get_esc_title(), ""),          None)

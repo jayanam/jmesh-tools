@@ -2,7 +2,7 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 3, 7, 1),
+    "version": (1, 3, 8, 1),
     "blender": (2, 80, 0),
     "location": "View3D",
     "category": "Object"}
@@ -56,7 +56,7 @@ bpy.types.Scene.delete_on_apply   = BoolProperty(
 
 bpy.types.Scene.use_snapping   = BoolProperty(name="Snap to grid", 
                                         description="Use snapping to the grid",
-                                        default = True)
+                                        default = False)
 
 bpy.types.Scene.snap_to_target   = BoolProperty(name="Snap to target", 
                                         description="Snap the primitive to the target",
@@ -64,10 +64,6 @@ bpy.types.Scene.snap_to_target   = BoolProperty(name="Snap to target",
 
 bpy.types.WindowManager.in_primitive_mode = BoolProperty(name="Primitive Mode",
                                         default = False)
-
-bpy.types.Scene.extrude_mesh  = BoolProperty(name="Extrude mesh", 
-                                      description="Extrude the mesh after creation",
-                                      default = True)
 
 bpy.types.Scene.extrude_immediate    = BoolProperty(
                                       name="Extrude Immediately", 

@@ -251,6 +251,10 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         # Keyboard
         if event.value == "PRESS":
 
+            if event.type == "M" and event.alt:
+                if self.shape.can_convert_to_mesh():
+                    self.create_mesh(context, False)
+
             if event.type == "S":
                 mouse_pos_2d = (event.mouse_region_x, event.mouse_region_y)
                 mouse_pos_2d, mouse_pos_3d = self.get_snapped_mouse_pos(mouse_pos_2d, context)
@@ -286,7 +290,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                     result = RM
 
             # Try set mirror type for primitives
-            if event.type == "M":
+            if event.type == "M" and not event.alt:
                 if self.shape.is_none():
                     self.shape.set_next_mirror(context)
                     self.shape.build_actions()
@@ -366,7 +370,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
     def create_object(self, context):
         # TODO: Refactor -> Creation factory with shape as parameter
         if self.shape.connected_shape():
-            self.create_mesh(context)
+            self.create_mesh(context, True)
         else:
             self.create_curve(context)
 
@@ -444,14 +448,13 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
         new_collection.objects.link(obj)
 
-    def create_mesh(self, context):
+    def create_mesh(self, context, extrude_mesh):
         try:
-
             if context.object is not None:
                 current_mode = context.object.mode
                 bpy.ops.object.mode_set(mode='OBJECT')
 
-            is_bool_create = (context.scene.bool_mode == "Create")
+            is_bool_create = (context.scene.bool_mode == "Create" or not extrude_mesh)
 
             # Create a mesh and an object and 
             # add the object to the scene collection
@@ -489,7 +492,8 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                 bm.faces.new(mirror_verts)
 
             # Extrude mesh if extrude mesh option is enabled
-            self.extrude_mesh(context, bm, is_bool_create)
+            if extrude_mesh:
+                self.extrude_mesh(context, bm, is_bool_create)
 
             bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
 
@@ -524,8 +528,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                         obj.hide_set(True)
 
                     select_active(target_obj)
-
-        except RuntimeError:
+        except:
             pass
         finally:
             if current_mode is not None:
@@ -548,23 +551,21 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         bpy.ops.mesh.remove_doubles()       
 
     def extrude_mesh(self, context, bm, is_bool_create):
-        if context.scene.extrude_mesh:
+        length = 1
+        if not is_bool_create:
+            length = 100
+        
+        dir = self.shape.get_dir() * length
 
-            length = 1
-            if not is_bool_create:
-                length = 100
-            
-            dir = self.shape.get_dir() * length
+        if self.shape.is_extruded():
+            dir = self.shape.get_dir() * self.shape.extrusion
 
-            if self.shape.is_extruded():
-                dir = self.shape.get_dir() * self.shape.extrusion
+        # extr_geom = bm.edges[:]
+        extr_geom = bm.faces[:]
 
-            # extr_geom = bm.edges[:]
-            extr_geom = bm.faces[:]
-
-            r = bmesh.ops.extrude_face_region(bm, geom=extr_geom)
-            verts = [e for e in r['geom'] if isinstance(e, bmesh.types.BMVert)]
-            bmesh.ops.translate(bm, vec=dir, verts=verts)
+        r = bmesh.ops.extrude_face_region(bm, geom=extr_geom)
+        verts = [e for e in r['geom'] if isinstance(e, bmesh.types.BMVert)]
+        bmesh.ops.translate(bm, vec=dir, verts=verts)
 
     def finish(self):
         self.unregister_handlers(bpy.context)
