@@ -78,6 +78,38 @@ class FC_CurveConvertOperator(Operator):
 
         return {'FINISHED'}
 
+class FC_MeshToCurveOperator(Operator):
+    bl_idname = "view3d.mesh_to_curve"
+    bl_label = "Mesh to Curve"
+    bl_description = "Convert mesh to curve" 
+    bl_options = {'REGISTER', 'UNDO'}   
+
+    @classmethod
+    def poll(cls, context): 
+
+        if len(context.selected_objects) < 1:
+            return False
+   
+        return True
+
+    def execute(self, context): 
+
+        # Convert selected objects to curves
+        bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+        bpy.ops.mesh.delete(type='ONLY_FACE')
+
+        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+        bpy.ops.object.convert(target='CURVE')
+
+        # Set curve properties
+        for obj in context.selected_objects:
+            obj.data.bevel_depth = 0.05
+            obj.data.bevel_resolution = 8
+  
+        bpy.ops.object.shade_smooth()
+
+        return {'FINISHED'}
+
 #3D cursor operators
 class FC_OriginActiveOperator(Operator):
     bl_idname = "view3d.origin_active"

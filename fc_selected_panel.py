@@ -78,6 +78,9 @@ class FC_PT_Selected_Panel(Panel):
             row.operator('view3d.curve_convert', text='Curve to mesh & fill', icon='LINENUMBERS_OFF')
 
             row = layout.row()
+            row.operator('view3d.mesh_to_curve', text='Mesh to curve', icon='LINENUMBERS_OFF')
+
+            row = layout.row()
             row.operator('view3d.dissolve_edges', text='Dissolve edges', icon='LINENUMBERS_OFF')
 
 

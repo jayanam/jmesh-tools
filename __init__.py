@@ -2,7 +2,7 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 3, 8, 2),
+    "version": (1, 4, 0, 0),
     "blender": (2, 80, 0),
     "location": "View3D",
     "category": "Object"}
@@ -33,6 +33,7 @@ from . fc_utils_op          import FC_CenterActiveOperator
 from . fc_utils_op          import FC_DissolveEdgesOperator
 from . fc_utils_op          import FC_UnionSelectedOperator
 from . fc_utils_op          import FC_CurveConvertOperator
+from . fc_utils_op          import FC_MeshToCurveOperator
 from . fc_menus             import FC_MT_Bool_Menu
 from . fc_apply_bool_op     import FC_ApplyBoolOperator, FC_ApplyAllBoolOperator
 from . fc_primitive_mode_op import FC_Primitive_Mode_Operator
@@ -172,6 +173,7 @@ classes = (
     FC_DissolveEdgesOperator,
     FC_UnionSelectedOperator,
     FC_CurveConvertOperator,
+    FC_MeshToCurveOperator,
     FC_ApplyBoolOperator,
     FC_ApplyAllBoolOperator,
     FC_Primitive_Mode_Operator,
