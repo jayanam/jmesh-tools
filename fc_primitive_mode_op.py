@@ -254,6 +254,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             if event.type == "M" and event.alt:
                 if self.shape.can_convert_to_mesh():
                     self.create_mesh(context, False)
+                    result = RM
                 elif self.shape.can_create_from_mesh():
                     view_context = ViewContext(context)
                     self.shape.set_view_context(view_context)
@@ -514,6 +515,10 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             bpy.ops.object.editmode_toggle()
             bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY')
 
+            if not extrude_mesh:
+                bpy.ops.object.editmode_toggle()
+                bpy.ops.mesh.select_all(action='SELECT')
+
             # Fast bool modes
             if not is_bool_create:
 
@@ -536,7 +541,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         except:
             pass
         finally:
-            if current_mode is not None:
+            if extrude_mesh and current_mode is not None:
                 bpy.ops.object.mode_set(mode=current_mode)
 
     def get_bool_mode_id(self, bool_name):
