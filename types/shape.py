@@ -517,6 +517,12 @@ class Shape:
     def can_convert_to_mesh(self):
         return self.is_created()
 
+    def can_create_from_mesh(self):
+        return False
+
+    def create_from_mesh(self, context):
+        return False
+
     def vertices_3d_offset(self, vec_offset):
         for vertex_3d in self._vertices:
             vertex_3d += vec_offset

@@ -16,6 +16,35 @@ class Polyline_Shape(Shape):
             
         return False
 
+    def can_create_from_mesh(self):
+        return False # self.is_none()
+
+    def create_from_mesh(self, context):
+
+        obj = context.active_object
+
+        if obj.mode == 'EDIT':
+            bm = bmesh.from_edit_mesh(obj.data)
+            vertices = bm.verts
+
+        else:
+            vertices = obj.data.vertices
+
+        verts = [obj.matrix_world @ vert.co for vert in vertices]
+        
+        self.reset()
+
+        for v in verts:
+            self.add_vertex(v)
+            self._vertices_2d.append(get_2d_vertex(context, v))
+            
+
+        self.close()
+        self.build_actions()
+        self.create_batch()
+
+        return True
+
     def get_vertices_copy(self, mouse_pos = None):
         result = self._vertices.copy()
 
@@ -134,4 +163,5 @@ class Polyline_Shape(Shape):
         self.add_action(Action("Ctrl + Left Click", "Apply",              ""),          ShapeState.CREATED)
         self.add_action(Action("Left Drag",         "Move points",        ""),          ShapeState.CREATED)
         self.add_action(Action("Alt + M",           "To Mesh",            ""),          ShapeState.CREATED)
+        #self.add_action(Action("Alt + M",           "From Mesh",            ""),        ShapeState.NONE)
         self.add_action(Action("Esc",               self.get_esc_title(), ""),          None)

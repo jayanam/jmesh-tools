@@ -254,6 +254,11 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             if event.type == "M" and event.alt:
                 if self.shape.can_convert_to_mesh():
                     self.create_mesh(context, False)
+                elif self.shape.can_create_from_mesh():
+                    view_context = ViewContext(context)
+                    self.shape.set_view_context(view_context)
+                    self.shape.create_from_mesh(context)
+                    result = RM
 
             if event.type == "S":
                 mouse_pos_2d = (event.mouse_region_x, event.mouse_region_y)
