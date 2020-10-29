@@ -73,6 +73,7 @@ def get_face_center(face_index, obj):
 
         bm = bmesh.new()
         bm.from_mesh(obj.data)
+        bm.transform(obj.matrix_world)
         bm.faces.ensure_lookup_table()
         center = bm.faces[face_index].calc_center_median()
         bm.free()
