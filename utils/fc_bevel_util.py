@@ -87,6 +87,7 @@ def execute_bevel(bevel_objects):
         bevel.limit_method = 'WEIGHT'
         bevel.use_clamp_overlap = False
         bevel.width = width
+        bevel.miter_outer = 'MITER_ARC'
         bevel.segments = 3
         bevel.profile = 0.7
 
