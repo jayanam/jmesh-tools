@@ -2,7 +2,7 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 4, 0, 3),
+    "version": (1, 4, 0, 4),
     "blender": (2, 80, 0),
     "location": "View3D",
     "category": "Object"}
@@ -190,21 +190,23 @@ def register():
    
     # add keymap entry
     kc = bpy.context.window_manager.keyconfigs.addon
-    km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
 
-    kmi = km.keymap_items.new("object.fc_primitve_mode_op", 'P', 'PRESS', shift=True, ctrl=True)
-    addon_keymaps.append((km, kmi))
+    if kc is not None:
+        km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
 
-    kmi = km.keymap_items.new("object.fc_array_mode_op", 'A', 'PRESS', shift=True, ctrl=True)
-    addon_keymaps.append((km, kmi))
+        kmi = km.keymap_items.new("object.fc_primitve_mode_op", 'P', 'PRESS', shift=True, ctrl=True)
+        addon_keymaps.append((km, kmi))
 
-    kmi = km.keymap_items.new("object.fc_circle_array_mode_op", 'C', 'PRESS', shift=True, ctrl=True)
-    addon_keymaps.append((km, kmi))
+        kmi = km.keymap_items.new("object.fc_array_mode_op", 'A', 'PRESS', shift=True, ctrl=True)
+        addon_keymaps.append((km, kmi))
 
-    kmi_mnu = km.keymap_items.new("wm.call_menu_pie", "COMMA", "PRESS", shift=True)
-    kmi_mnu.properties.name = FC_MT_Bool_Menu.bl_idname
+        kmi = km.keymap_items.new("object.fc_circle_array_mode_op", 'C', 'PRESS', shift=True, ctrl=True)
+        addon_keymaps.append((km, kmi))
 
-    addon_keymaps.append((km, kmi_mnu))
+        kmi_mnu = km.keymap_items.new("wm.call_menu_pie", "COMMA", "PRESS", shift=True)
+        kmi_mnu.properties.name = FC_MT_Bool_Menu.bl_idname
+
+        addon_keymaps.append((km, kmi_mnu))
     
 def unregister():
     for c in classes:

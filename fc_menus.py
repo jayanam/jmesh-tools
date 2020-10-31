@@ -29,7 +29,6 @@ class FC_MT_Bool_Menu(Menu):
                     pie.operator("object.bool_diff",  icon="SELECT_SUBTRACT")
                     pie.operator("object.bool_union", icon="SELECT_EXTEND")
                     pie.operator("object.bool_slice", icon="SELECT_DIFFERENCE")
-                    pie.operator("object.bool_intersect", icon="SELECT_DIFFERENCE")
                 
                 if more_than_one_selected(context):
                     pie.operator("object.union_selected_op", icon="SELECT_EXTEND")
@@ -39,6 +38,8 @@ class FC_MT_Bool_Menu(Menu):
  
             if active_object != context.scene.carver_target:
                 pie.operator("object.bool_target", icon="MOD_BOOLEAN")
+                pie.operator("object.mirror", icon='MOD_MIRROR')
+                pie.operator("object.fc_array_mode_op", icon='MOD_ARRAY')
             
             pie.operator("object.bevel", text=bo.get_display(context.object.mode), icon="MOD_BEVEL")
             pie.operator("object.unbevel", text=ubo.get_display(context.object.mode), icon="MOD_BEVEL")       
