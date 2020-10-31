@@ -257,6 +257,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                     result = RM
                 elif self.shape.can_create_from_mesh():
                     view_context = ViewContext(context)
+                    self.shape = Polyline_Shape()
                     self.shape.set_view_context(view_context)
                     self.shape.create_from_mesh(context)
                     result = RM

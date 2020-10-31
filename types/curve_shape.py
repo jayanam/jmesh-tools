@@ -124,4 +124,5 @@ class Curve_Shape(Shape):
             self.add_action(Action("Left Click", "Add Point",       ""),       ShapeState.PROCESSING)
 
         self.add_action(Action("Ctrl + Left Click", "Set Endpoint",       ""),       ShapeState.PROCESSING)
+        self.add_action(Action("Alt + M",           "From Mesh",          ""),       ShapeState.NONE)
         self.add_action(Action("Esc",               self.get_esc_title(), ""),       None)

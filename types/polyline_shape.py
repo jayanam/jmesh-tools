@@ -16,19 +16,18 @@ class Polyline_Shape(Shape):
             
         return False
 
-    def can_create_from_mesh(self):
-        return False # self.is_none()
-
     def create_from_mesh(self, context):
 
         obj = context.active_object
+        current_mode = obj.mode
 
-        if obj.mode == 'EDIT':
-            bm = bmesh.from_edit_mesh(obj.data)
-            vertices = bm.verts
+        bpy.ops.object.mode_set(mode='EDIT', toggle=False)
 
-        else:
-            vertices = obj.data.vertices
+        vertices = []
+
+        bm = bmesh.from_edit_mesh(obj.data)
+        for edge in bm.edges:
+            vertices.append(edge.verts[0])
 
         verts = [obj.matrix_world @ vert.co for vert in vertices]
         
@@ -38,10 +37,12 @@ class Polyline_Shape(Shape):
             self.add_vertex(v)
             self._vertices_2d.append(get_2d_vertex(context, v))
             
-
         self.close()
         self.build_actions()
         self.create_batch()
+
+        if current_mode is not None:
+            bpy.ops.object.mode_set(mode=current_mode, toggle=False)
 
         return True
 
@@ -163,5 +164,5 @@ class Polyline_Shape(Shape):
         self.add_action(Action("Ctrl + Left Click", "Apply",              ""),          ShapeState.CREATED)
         self.add_action(Action("Left Drag",         "Move points",        ""),          ShapeState.CREATED)
         self.add_action(Action("Alt + M",           "To Mesh",            ""),          ShapeState.CREATED)
-        #self.add_action(Action("Alt + M",           "From Mesh",            ""),        ShapeState.NONE)
+        self.add_action(Action("Alt + M",           "From Mesh",          ""),          ShapeState.NONE)
         self.add_action(Action("Esc",               self.get_esc_title(), ""),          None)
