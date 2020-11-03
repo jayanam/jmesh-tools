@@ -23,7 +23,7 @@ class FC_BoolOperator_Diff(Operator):
     def execute(self, context):
         try:
             target_obj = bpy.context.scene.carver_target
-            current_mode = context.mode 
+            current_mode = context.object.mode 
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
             execute_boolean_op(context, target_obj, 0)
@@ -51,7 +51,7 @@ class FC_BoolOperator_Union(Operator):
         try:
 
             target_obj = bpy.context.scene.carver_target
-            current_mode = context.mode 
+            current_mode = context.object.mode 
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
             execute_boolean_op(context, target_obj, 1)
