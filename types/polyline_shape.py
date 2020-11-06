@@ -27,7 +27,7 @@ class Polyline_Shape(Shape):
 
         bm = bmesh.from_edit_mesh(obj.data)
         bm.verts.ensure_lookup_table()
-        
+
         vert = bm.verts[0]
         prev = None
 
@@ -37,11 +37,10 @@ class Polyline_Shape(Shape):
                 if (v != prev):
                     next = v
 
-            if next == None:
-                vertices.append(obj.matrix_world @ vert.co)
-                break
-            
             vertices.append(obj.matrix_world @ vert.co)
+
+            if next == None:
+                break
             
             prev, vert = vert, next
         
