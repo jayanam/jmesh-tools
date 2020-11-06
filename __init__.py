@@ -2,10 +2,10 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 4, 1, 2),
+    "version": (1, 4, 2, 0),
     "blender": (2, 80, 0),
     "location": "View3D",
-    "category": "Object"}
+    "category": "Object" }
 
 # Blender imports
 import bpy

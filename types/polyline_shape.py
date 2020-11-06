@@ -26,14 +26,27 @@ class Polyline_Shape(Shape):
         vertices = []
 
         bm = bmesh.from_edit_mesh(obj.data)
-        for edge in bm.edges:
-            vertices.append(edge.verts[0])
 
-        verts = [obj.matrix_world @ vert.co for vert in vertices]
+        first = bm.verts[0]
+
+        vert = first
+        prev = None
+        
+        for i in range(len(bm.verts)):
+            next = None
+            for v in [e.other_vert(vert) for e in vert.link_edges if e.is_boundary]:
+                if (v != prev and v != first):
+                    vertices.append(obj.matrix_world @ v.co)
+                    next = v
+
+            if next == None: 
+                break
+
+            prev, vert = vert, next
         
         self.reset()
 
-        for v in verts:
+        for v in vertices:
             self.add_vertex(v)
             self._vertices_2d.append(get_2d_vertex(context, v))
             
@@ -164,5 +177,5 @@ class Polyline_Shape(Shape):
         self.add_action(Action("Ctrl + Left Click", "Apply",              ""),          ShapeState.CREATED)
         self.add_action(Action("Left Drag",         "Move points",        ""),          ShapeState.CREATED)
         self.add_action(Action("Alt + M",           "To Mesh",            ""),          ShapeState.CREATED)
-        #self.add_action(Action("Alt + M",           "From Mesh",          ""),          ShapeState.NONE)
+        self.add_action(Action("Alt + M",           "From Mesh",          ""),          ShapeState.NONE)
         self.add_action(Action("Esc",               self.get_esc_title(), ""),          None)
