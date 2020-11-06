@@ -26,22 +26,23 @@ class Polyline_Shape(Shape):
         vertices = []
 
         bm = bmesh.from_edit_mesh(obj.data)
-
-        first = bm.verts[0]
-
-        vert = first
-        prev = None
+        bm.verts.ensure_lookup_table()
         
+        vert = bm.verts[0]
+        prev = None
+
         for i in range(len(bm.verts)):
             next = None
             for v in [e.other_vert(vert) for e in vert.link_edges if e.is_boundary]:
-                if (v != prev and v != first):
-                    vertices.append(obj.matrix_world @ v.co)
+                if (v != prev):
                     next = v
 
-            if next == None: 
+            if next == None:
+                vertices.append(obj.matrix_world @ vert.co)
                 break
-
+            
+            vertices.append(obj.matrix_world @ vert.co)
+            
             prev, vert = vert, next
         
         self.reset()
