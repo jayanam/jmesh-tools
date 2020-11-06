@@ -518,7 +518,7 @@ class Shape:
         return self.is_created()
 
     def can_create_from_mesh(self):
-        return self.is_none()
+        return False # self.is_none()
 
     def create_from_mesh(self, context):
         return False

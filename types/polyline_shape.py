@@ -164,5 +164,5 @@ class Polyline_Shape(Shape):
         self.add_action(Action("Ctrl + Left Click", "Apply",              ""),          ShapeState.CREATED)
         self.add_action(Action("Left Drag",         "Move points",        ""),          ShapeState.CREATED)
         self.add_action(Action("Alt + M",           "To Mesh",            ""),          ShapeState.CREATED)
-        self.add_action(Action("Alt + M",           "From Mesh",          ""),          ShapeState.NONE)
+        #self.add_action(Action("Alt + M",           "From Mesh",          ""),          ShapeState.NONE)
         self.add_action(Action("Esc",               self.get_esc_title(), ""),          None)
