@@ -2,7 +2,7 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 4, 2, 1),
+    "version": (1, 5, 0, 1),
     "blender": (2, 80, 0),
     "location": "View3D",
     "category": "Object" }
@@ -64,6 +64,9 @@ bpy.types.Scene.snap_to_target   = BoolProperty(name="Snap to target",
                                         default = True)
 
 bpy.types.WindowManager.in_primitive_mode = BoolProperty(name="Primitive Mode",
+                                        default = False)
+
+bpy.types.WindowManager.modal_running = BoolProperty(name="Modal operator running",
                                         default = False)
 
 bpy.types.Scene.extrude_immediate    = BoolProperty(

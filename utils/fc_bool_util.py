@@ -68,7 +68,7 @@ def bool_mod_and_apply(obj, bool_method, allow_delete = True):
         bpy.ops.object.modifier_apply(modifier=bool_mod.name)
 
         if has_bevel_mod(active_obj):
-            apply_sharp_edges()
+            bpy.ops.object.shade_smooth()
 
         if is_delete_after_apply() and allow_delete:
             select_active(obj)

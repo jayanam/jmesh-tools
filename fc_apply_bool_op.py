@@ -92,6 +92,7 @@ class FC_ApplyAllBoolOperator(Operator):
                 bpy.ops.object.delete()    
 
         active_obj.select_set(True)
+        bpy.ops.object.shade_smooth()
         bpy.context.view_layer.objects.active = active_obj
 
         return {'FINISHED'}

@@ -75,7 +75,7 @@ def execute_bevel(bevel_objects):
             target_obj.modifiers.remove(modifier_to_remove)
 
         # Remove the Weighted Normal modifier if exists
-        modifier_to_remove = target_obj.modifiers.get("Weighted Normal")
+        modifier_to_remove = target_obj.modifiers.get("WeightedNormal")
         if(modifier_to_remove is not None):
             target_obj.modifiers.remove(modifier_to_remove)
             
@@ -84,7 +84,7 @@ def execute_bevel(bevel_objects):
 
         # get the last added modifier
         bevel = target_obj.modifiers[-1]
-        bevel.limit_method = 'WEIGHT'
+        bevel.limit_method = 'ANGLE'
         bevel.use_clamp_overlap = False
         bevel.width = width
         bevel.miter_outer = 'MITER_ARC'
@@ -96,4 +96,5 @@ def execute_bevel(bevel_objects):
         weighted_mod = target_obj.modifiers[-1]
         weighted_mod.keep_sharp = True
         
-        apply_sharp_edges()
+        bpy.ops.object.shade_smooth()
+        # apply_sharp_edges()

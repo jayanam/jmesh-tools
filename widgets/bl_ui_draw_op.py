@@ -22,6 +22,9 @@ class BL_UI_OT_draw_operator(Operator):
     def on_invoke(self, context, event):
         pass
 
+    def on_finish(self, context):
+        pass
+
     def invoke(self, context, event):
 
         self.on_invoke(context, event)
@@ -62,12 +65,14 @@ class BL_UI_OT_draw_operator(Operator):
         
         if event.type in {"ESC"}:
             self.unregister_handlers(context)
+            self.on_finish(context)
             return {'CANCELLED'}
                     
         return {"PASS_THROUGH"}
                                 
     def finish(self):
         self.unregister_handlers(context)
+        self.on_finish(bpy.context)
         return {"FINISHED"}
 		
 	# Draw handler to paint onto the screen
