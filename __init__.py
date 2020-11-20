@@ -2,7 +2,7 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 5, 1, 0),
+    "version": (1, 5, 2, 0),
     "blender": (2, 80, 0),
     "location": "View3D",
     "category": "Object" }
@@ -13,7 +13,6 @@ import bpy
 from bpy.props import *
 
 from bpy.types import AddonPreferences
-
 import rna_keymap_ui
 
 from . fc_bevel_op          import FC_BevelOperator

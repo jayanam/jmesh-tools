@@ -39,7 +39,7 @@ class FC_BevelOperator(BL_UI_OT_draw_operator):
         x_left = 100
 
         super().__init__()
-        self.panel = BL_UI_Drag_Panel(0, 0, 270, 150)
+        self.panel = BL_UI_Drag_Panel(0, 0, 280, 150)
         self.panel.bg_color = (0.1, 0.1, 0.1, 0.9)
 
         self.lbl_bvl_segm = BL_UI_Label(20, y_top, 50, 15)
@@ -61,27 +61,37 @@ class FC_BevelOperator(BL_UI_OT_draw_operator):
         self.lbl_bvl_width.text_size = 14
         self.lbl_bvl_width.text_color = (0.9, 0.9, 0.9, 1.0)
 
-        self.sl_width = BL_UI_Slider(x_left, y_top + 45, 150, 30)
+        self.sl_width = BL_UI_Slider(x_left, y_top + 45, 160, 30)
         self.sl_width.color = (0.3, 0.56, 0.94, 1.0)
         self.sl_width.hover_color = (0.3, 0.56, 0.94, 0.8)
         self.sl_width.min = 0.0
-        self.sl_width.max = 0.05
+        self.sl_width.max = 0.08
         self.sl_width.decimals = 3
         self.sl_width.show_min_max = False
         self.sl_width.tag = 0
         self.sl_width.set_value_change(self.on_bevel_width_value_change)
 
-        self.lbl_close = BL_UI_Label(185, y_top - 25, 50, 15)
+        self.lbl_close = BL_UI_Label(195, y_top - 25, 50, 15)
         self.lbl_close.text = "Escape to Close"
         self.lbl_close.text_size = 10
         self.lbl_close.text_color = (0.9, 0.9, 0.9, 1.0)
 
-        self.btn_apply = BL_UI_Button(20, y_top + 85, 120, 25)
+        self.btn_apply = BL_UI_Button(20, y_top + 85, 110, 25)
         self.btn_apply.bg_color = (0.3, 0.56, 0.94, 1.0)
         self.btn_apply.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
         self.btn_apply.text_size = 14
         self.btn_apply.text = "Apply modifier"
         self.btn_apply.set_mouse_down(self.on_btn_apply_down)
+
+        self.btn_close = BL_UI_Button(140, y_top + 85, 120, 25)
+        self.btn_close.bg_color = (0.3, 0.56, 0.94, 1.0)
+        self.btn_close.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+        self.btn_close.text_size = 14
+        self.btn_close.text = "Close"
+        self.btn_close.set_mouse_down(self.on_btn_close_down)
+
+    def on_btn_close_down(self, widget):
+        self.finish()
 
     def on_btn_apply_down(self, widget):
         mod_bevel = self.get_bevel_modifier()
@@ -111,6 +121,7 @@ class FC_BevelOperator(BL_UI_OT_draw_operator):
             # Add new widgets here
             widgets_panel = [self.lbl_bvl_width, self.sl_width, self.lbl_bvl_segm, self.ud_segm_count, self.lbl_close]
             widgets_panel.append(self.btn_apply)
+            widgets_panel.append(self.btn_close)
 
             widgets = [self.panel]
             widgets += widgets_panel
