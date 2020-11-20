@@ -542,7 +542,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         except:
             pass
         finally:
-            if extrude_mesh and current_mode is not None:
+            if extrude_mesh and (current_mode is not None):
                 bpy.ops.object.mode_set(mode=current_mode)
 
     def get_bool_mode_id(self, bool_name):
