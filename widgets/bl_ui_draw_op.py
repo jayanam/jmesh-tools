@@ -11,6 +11,7 @@ class BL_UI_OT_draw_operator(Operator):
     def __init__(self):
         self.draw_handle = None
         self.draw_event  = None
+        self._finished = False
                 
         self.widgets = []
 
@@ -23,7 +24,7 @@ class BL_UI_OT_draw_operator(Operator):
         pass
 
     def on_finish(self, context):
-        pass
+        self._finished = True
 
     def invoke(self, context, event):
 
@@ -57,6 +58,10 @@ class BL_UI_OT_draw_operator(Operator):
         return result
           
     def modal(self, context, event):
+
+        if self._finished:
+            return {'FINISHED'}
+
         if context.area:
             context.area.tag_redraw()
         
@@ -64,16 +69,13 @@ class BL_UI_OT_draw_operator(Operator):
             return {'RUNNING_MODAL'}   
         
         if event.type in {"ESC"}:
-            self.unregister_handlers(context)
-            self.on_finish(context)
-            return {'CANCELLED'}
+            self.finish()
                     
         return {"PASS_THROUGH"}
                                 
     def finish(self):
-        self.unregister_handlers(context)
+        self.unregister_handlers(bpy.context)
         self.on_finish(bpy.context)
-        return {"FINISHED"}
 		
 	# Draw handler to paint onto the screen
     def draw_callback_px(self, op, context):

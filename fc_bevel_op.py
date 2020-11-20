@@ -39,7 +39,7 @@ class FC_BevelOperator(BL_UI_OT_draw_operator):
         x_left = 100
 
         super().__init__()
-        self.panel = BL_UI_Drag_Panel(0, 0, 270, 120)
+        self.panel = BL_UI_Drag_Panel(0, 0, 270, 150)
         self.panel.bg_color = (0.1, 0.1, 0.1, 0.9)
 
         self.lbl_bvl_segm = BL_UI_Label(20, y_top, 50, 15)
@@ -76,8 +76,28 @@ class FC_BevelOperator(BL_UI_OT_draw_operator):
         self.lbl_close.text_size = 10
         self.lbl_close.text_color = (0.9, 0.9, 0.9, 1.0)
 
+        self.btn_apply = BL_UI_Button(20, y_top + 85, 120, 25)
+        self.btn_apply.bg_color = (0.3, 0.56, 0.94, 1.0)
+        self.btn_apply.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+        self.btn_apply.text_size = 14
+        self.btn_apply.text = "Apply modifier"
+        self.btn_apply.set_mouse_down(self.on_btn_apply_down)
+
+    def on_btn_apply_down(self, widget):
+        mod_bevel = self.get_bevel_modifier()
+        mod_wnorm = self.get_weighted_normal_modifier()
+
+        if(mod_bevel):
+            bpy.ops.object.modifier_apply(modifier=mod_bevel.name)
+
+        if(mod_wnorm):
+            bpy.ops.object.modifier_apply(modifier=mod_wnorm.name)
+
+        self.finish()
+
     def on_finish(self, context):
         context.window_manager.modal_running = False
+        super().on_finish(context)
 
     def on_invoke(self, context, event):
 
@@ -90,6 +110,7 @@ class FC_BevelOperator(BL_UI_OT_draw_operator):
 
             # Add new widgets here
             widgets_panel = [self.lbl_bvl_width, self.sl_width, self.lbl_bvl_segm, self.ud_segm_count, self.lbl_close]
+            widgets_panel.append(self.btn_apply)
 
             widgets = [self.panel]
             widgets += widgets_panel
@@ -106,13 +127,23 @@ class FC_BevelOperator(BL_UI_OT_draw_operator):
 
             context.window_manager.modal_running = True
 
-    def init_widget_values(self):
+    def get_weighted_normal_modifier(self):
         active_obj = bpy.context.view_layer.objects.active
         if active_obj is not None:
-            mod_bevel = active_obj.modifiers.get("Bevel")
-            if mod_bevel is not None:
-                self.sl_width.set_value(mod_bevel.width)
-                self.ud_segm_count.set_value(mod_bevel.segments)
+            return active_obj.modifiers.get("WeightedNormal")
+        return None
+
+    def get_bevel_modifier(self):
+        active_obj = bpy.context.view_layer.objects.active
+        if active_obj is not None:
+            return active_obj.modifiers.get("Bevel")
+        return None
+
+    def init_widget_values(self):
+        mod_bevel = self.get_bevel_modifier()
+        if mod_bevel is not None:
+            self.sl_width.set_value(mod_bevel.width)
+            self.ud_segm_count.set_value(mod_bevel.segments)
 
     def on_bevel_width_value_change(self, slider, value):
         active_obj = bpy.context.view_layer.objects.active
