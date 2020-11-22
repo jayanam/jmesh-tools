@@ -1,5 +1,6 @@
 from .widgets . bl_ui_draw_op import *
 from .widgets . bl_ui_label import * 
+from .widgets . bl_ui_button import *
 from .widgets . bl_ui_up_down import *
 from .widgets . bl_ui_drag_panel import *
 from .widgets . bl_ui_draw_op import *
@@ -19,7 +20,7 @@ class FC_Circle_Array_Mode_Operator(BL_UI_OT_draw_operator):
         
         super().__init__()
 
-        self.panel = BL_UI_Drag_Panel(0, 0, 200, 50)
+        self.panel = BL_UI_Drag_Panel(0, 0, 270, 100)
         self.panel.bg_color = (0.1, 0.1, 0.1, 0.9)
 
         self.lbl_item_count = BL_UI_Label(20, 13, 40, 15)
@@ -36,16 +37,61 @@ class FC_Circle_Array_Mode_Operator(BL_UI_OT_draw_operator):
         self.ud_item_count.set_value(1.0)
         self.ud_item_count.set_value_change(self.on_item_count_value_change)
 
+        self.lbl_close = BL_UI_Label(185, 0, 50, 15)
+        self.lbl_close.text = "Escape to Close"
+        self.lbl_close.text_size = 10
+        self.lbl_close.text_color = (0.9, 0.9, 0.9, 1.0)
+
+        y_top = 60
+
+        self.btn_apply = BL_UI_Button(20, y_top, 110, 25)
+        self.btn_apply.bg_color = (0.3, 0.56, 0.94, 1.0)
+        self.btn_apply.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+        self.btn_apply.text_size = 14
+        self.btn_apply.text = "Apply modifier"
+        self.btn_apply.set_mouse_down(self.on_btn_apply_down)
+
+        self.btn_close = BL_UI_Button(140, y_top, 110, 25)
+        self.btn_close.bg_color = (0.3, 0.56, 0.94, 1.0)
+        self.btn_close.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+        self.btn_close.text_size = 14
+        self.btn_close.text = "Close"
+        self.btn_close.set_mouse_down(self.on_btn_close_down)
+
     @classmethod
     def poll(cls, context):        
         return len(context.selected_objects) > 0
-        
+
+    def get_array_modifier(self):
+        active_obj = bpy.context.view_layer.objects.active
+        if active_obj is not None:
+            return active_obj.modifiers.get("FC_Circle_Array")
+        return None
+
+    def on_btn_close_down(self, widget):
+        self.finish()
+
+    def on_btn_apply_down(self, widget):
+        mod_array = self.get_array_modifier()
+        if(mod_array):
+            offset_obj = mod_array.offset_object
+            if offset_obj:	
+                bpy.data.objects.remove(offset_obj, do_unlink=True)
+
+            bpy.ops.object.modifier_apply(modifier=mod_array.name)
+            
+        self.finish()
+
     def on_invoke(self, context, event):
 
         # Add new widgets here
         widgets_panel = [self.lbl_item_count, self.ud_item_count]
 
-        widgets =       [self.panel]
+        widgets_panel.append(self.lbl_close)
+        widgets_panel.append(self.btn_close)
+        widgets_panel.append(self.btn_apply)
+
+        widgets = [self.panel]
 
         widgets += widgets_panel
 
