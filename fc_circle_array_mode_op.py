@@ -75,11 +75,12 @@ class FC_Circle_Array_Mode_Operator(BL_UI_OT_draw_operator):
         mod_array = self.get_array_modifier()
         if(mod_array):
             offset_obj = mod_array.offset_object
-            if offset_obj:	
-                bpy.data.objects.remove(offset_obj, do_unlink=True)
 
             bpy.ops.object.modifier_apply(modifier=mod_array.name)
             
+            if offset_obj:	
+                bpy.data.objects.remove(offset_obj, do_unlink=True)
+
         self.finish()
 
     def on_invoke(self, context, event):
