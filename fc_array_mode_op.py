@@ -4,7 +4,6 @@ from .widgets . bl_ui_button import *
 from .widgets . bl_ui_slider import *
 from .widgets . bl_ui_up_down import *
 from .widgets . bl_ui_drag_panel import *
-from .widgets . bl_ui_draw_op import *
 
 # Array mode operator
 class FC_Array_Mode_Operator(BL_UI_OT_draw_operator):

@@ -2,7 +2,7 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 5, 4, 1),
+    "version": (1, 6, 0, 0),
     "blender": (2, 80, 0),
     "location": "View3D",
     "category": "Object" }
@@ -25,14 +25,14 @@ from . fc_bool_op           import FC_BoolOperator_Union
 from . fc_bool_op           import FC_BoolOperator_Slice
 from . fc_bool_op           import FC_BoolOperator_Intersect
 from . fc_bool_op           import FC_TargetSelectOperator
+from . fc_curve_op          import FC_MeshToCurveOperator, FC_CurveConvertOperator
+from . fc_curve_op          import FC_CurveAdjustOperator
 from . fc_utils_op          import FC_MirrorOperator
 from . fc_utils_op          import FC_SymmetrizeOperator
 from . fc_utils_op          import FC_OriginActiveOperator
 from . fc_utils_op          import FC_CenterActiveOperator
 from . fc_utils_op          import FC_DissolveEdgesOperator
 from . fc_utils_op          import FC_UnionSelectedOperator
-from . fc_utils_op          import FC_CurveConvertOperator
-from . fc_utils_op          import FC_MeshToCurveOperator
 from . fc_menus             import FC_MT_Bool_Menu
 from . fc_apply_bool_op     import FC_ApplyBoolOperator, FC_ApplyAllBoolOperator
 from . fc_primitive_mode_op import FC_Primitive_Mode_Operator
@@ -175,6 +175,7 @@ classes = (
     FC_DissolveEdgesOperator,
     FC_UnionSelectedOperator,
     FC_CurveConvertOperator,
+    FC_CurveAdjustOperator,
     FC_MeshToCurveOperator,
     FC_ApplyBoolOperator,
     FC_ApplyAllBoolOperator,
