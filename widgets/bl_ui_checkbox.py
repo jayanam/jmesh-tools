@@ -27,6 +27,14 @@ class BL_UI_Checkbox(BL_UI_Widget):
         self._text_color = value
 
     @property
+    def cross_color(self):
+        return self._cross_color
+
+    @cross_color.setter
+    def cross_color(self, value):
+        self._cross_color = value
+
+    @property
     def text(self):
         return self._text
 
@@ -114,7 +122,7 @@ class BL_UI_Checkbox(BL_UI_Widget):
         size = blf.dimensions(0, self._text)
 
         textpos_y = area_height - self._textpos[1] - (self.height + size[1]) / 2.0
-        blf.position(0, self._textpos[0], textpos_y, 0)
+        blf.position(0, self._textpos[0], textpos_y + 1, 0)
 
         r, g, b, a = self._text_color
         blf.color(0, r, g, b, a)

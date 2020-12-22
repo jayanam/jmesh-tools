@@ -7,6 +7,7 @@ from .widgets . bl_ui_label import *
 from .widgets . bl_ui_slider import *
 from .widgets . bl_ui_drag_panel import *
 from .widgets . bl_ui_button import *
+from .widgets . bl_ui_checkbox import *
 
 from .utils.fc_bool_util import union_selected
 
@@ -40,7 +41,7 @@ class FC_MeshToCurveOperator(Operator):
         # Set curve properties
         for obj in context.selected_objects:
             obj.data.bevel_depth = 0.05
-            obj.data.bevel_resolution = 8
+            obj.data.bevel_resolution = 10
   
         bpy.ops.object.shade_smooth()
 
@@ -67,10 +68,10 @@ class FC_CurveAdjustOperator(BL_UI_OT_draw_operator):
         
         super().__init__()
             
-        self.panel = BL_UI_Drag_Panel(0, 0, 300, 130)
+        self.panel = BL_UI_Drag_Panel(0, 0, 300, 160)
         self.panel.bg_color = (0.1, 0.1, 0.1, 0.9)
 
-        self.lbl_depth = BL_UI_Label(20, 30, 40, 15)
+        self.lbl_depth = BL_UI_Label(20, 32, 40, 15)
         self.lbl_depth.text = "Depth:"
         self.lbl_depth.text_size = 14
         self.lbl_depth.text_color = (0.9, 0.9, 0.9, 1.0)
@@ -85,19 +86,41 @@ class FC_CurveAdjustOperator(BL_UI_OT_draw_operator):
         self.sl_depth.tag = 0
         self.sl_depth.set_value_change(self.on_depth_change)
 
-        self.btn_to_mesh = BL_UI_Button(20, 80, 110, 25)
+        self.cb_fillcaps = BL_UI_Checkbox(20, 80, 120, 16)
+        self.cb_fillcaps.cross_color = (0.3, 0.56, 0.94, 1.0)
+        self.cb_fillcaps.text = "Fillcaps"
+        self.cb_fillcaps.text_size = 14
+        self.cb_fillcaps.set_state_changed(self.on_fillcaps_change)
+
+        self.cb_cyclic = BL_UI_Checkbox(115, 80, 120, 16)
+        self.cb_cyclic.cross_color = (0.3, 0.56, 0.94, 1.0)
+        self.cb_cyclic.text_size = 14
+        self.cb_cyclic.text = "Cyclic"
+        self.cb_cyclic.set_state_changed(self.on_cyclic_change)
+
+        self.btn_to_mesh = BL_UI_Button(20, 120, 110, 25)
         self.btn_to_mesh.bg_color = (0.3, 0.56, 0.94, 1.0)
         self.btn_to_mesh.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
         self.btn_to_mesh.text_size = 14
         self.btn_to_mesh.text = "To Mesh"
         self.btn_to_mesh.set_mouse_down(self.on_btn_to_mesh_down)
 
-        self.btn_close = BL_UI_Button(140, 80, 120, 25)
+        self.btn_close = BL_UI_Button(140, 120, 120, 25)
         self.btn_close.bg_color = (0.3, 0.56, 0.94, 1.0)
         self.btn_close.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
         self.btn_close.text_size = 14
         self.btn_close.text = "Close"
         self.btn_close.set_mouse_down(self.on_btn_close_down)
+
+    def on_cyclic_change(self, checkbox, value):
+        active_obj = bpy.context.view_layer.objects.active
+        if active_obj is not None:
+          active_obj.data.splines[0].use_cyclic_u = value
+
+    def on_fillcaps_change(self, checkbox, value):
+        active_obj = bpy.context.view_layer.objects.active
+        if active_obj is not None:
+          active_obj.data.use_fill_caps = value
 
     def on_depth_change(self, slider, value):
         active_obj = bpy.context.view_layer.objects.active
@@ -124,7 +147,7 @@ class FC_CurveAdjustOperator(BL_UI_OT_draw_operator):
     def on_invoke(self, context, event):
 
       # Add new widgets here
-      widgets_panel = [self.lbl_depth, self.sl_depth, self.btn_to_mesh, self.btn_close]
+      widgets_panel = [self.lbl_depth, self.sl_depth, self.cb_fillcaps, self.cb_cyclic, self.btn_to_mesh, self.btn_close]
 
       widgets = [self.panel]
 
@@ -144,7 +167,9 @@ class FC_CurveAdjustOperator(BL_UI_OT_draw_operator):
         active_obj = bpy.context.view_layer.objects.active
         if active_obj is not None:
           self.sl_depth.set_value(active_obj.data.bevel_depth)
-        
+          self.cb_fillcaps.is_checked = active_obj.data.use_fill_caps 
+          self.cb_cyclic.is_checked = active_obj.data.splines[0].use_cyclic_u
+                  
         return {'FINISHED'}
 
 class FC_CurveConvertOperator(Operator):
