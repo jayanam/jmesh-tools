@@ -128,7 +128,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
         RM = "RUNNING_MODAL"
 
-        if self.shape.input_handle_event(event):
+        if self.shape.shape_action_widgets_handle_event(event):
             return { RM }
                               
         if event.type == "ESC" and event.value == "PRESS":
@@ -140,6 +140,9 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             if was_none:
                 self.unregister_handlers(context)
                 return { "FINISHED" }
+
+        if event.type == "RET" and event.value == "PRESS":
+            self.shape.accept()
 
         # The mouse wheel is moved
         if not self.shape.is_none():
@@ -184,7 +187,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
                 self.create_shape(context)
 
-                if self.shape.is_input_active():
+                if self.shape.is_shape_action_active():
                     return { RM }
 
                 old_bevel_state = False
@@ -211,9 +214,13 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
                 for shape_action in self.shape._shape_actions:
                     if shape_action.mouse_down(context, event, mouse_pos_2d_r, mouse_pos_3d):
-                        unitinfo = get_current_units()
-                        if self.shape.open_input(context, shape_action, unitinfo):
-                            result = RM
+                        if type(shape_action) is Shape_Size_Action:
+                            unitinfo = get_current_units()
+                            if self.shape.open_size_input(context, shape_action, unitinfo):
+                                result = RM
+                        else:
+                             if self.shape.open_array_input(context, shape_action):
+                                result = RM                           
 
                 if self.shape.is_moving() and not self.shape_gizmo.is_dragging():
                     self.shape.stop_move(context)
@@ -230,11 +237,11 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                 if self.shape.is_processing():
                     result = RM
 
-                if self.shape.is_created() and not gizmo_action and not event.ctrl and not self.shape.is_input_active():
+                if self.shape.is_created() and not gizmo_action and not event.ctrl and not self.shape.is_shape_action_active():
                     if self.shape.set_vertex_moving(mouse_pos_3d):
                         result = RM
 
-                if not gizmo_action and not self.shape.is_input_active():
+                if not gizmo_action and not self.shape.is_shape_action_active():
                     if self.shape.handle_mouse_press(mouse_pos_2d, mouse_pos_3d, event, context):
 
                         self.create_object(context)
@@ -498,6 +505,16 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                 bm.verts.index_update()
                 bm.faces.new(mirror_verts)
 
+            for vc in self.shape.vertex_containers:
+
+                # Add faces for vertex containers like arrays
+                ctr_verts = []
+                for v in vc.vertices:
+                    ctr_verts.append(bm.verts.new(v))
+                
+                bm.verts.index_update()
+                bm.faces.new(ctr_verts)
+
             # Extrude mesh if extrude mesh option is enabled
             if extrude_mesh:
                 self.extrude_mesh(context, bm, is_bool_create)
@@ -602,9 +619,9 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
         self.shape_gizmo.draw(self.shape)
 
-        self.shape.input_draw()
-
         self.shape.shape_actions_draw()
+
+        self.shape.shape_action_widgets_draw()
 
         # Draw text for primitive mode
         blf.size(1, 16, 72)

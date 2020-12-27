@@ -13,6 +13,9 @@ class BL_UI_Drag_Panel(BL_UI_Widget):
         super().set_location(x,y)
         self.layout_widgets()
 
+    def add_widget(self, widget):
+        self.widgets.append(widget)
+        
     def add_widgets(self, widgets):
         self.widgets = widgets
         self.layout_widgets()

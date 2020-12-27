@@ -247,6 +247,9 @@ class BL_UI_Slider(BL_UI_Widget):
     def __pos_to_value(self, pos):
         return self._min + round(((self._max - self._min) * self.__slider_pos / self.width), self._decimals)
 
+    def get_value(self):
+        return self.__slider_value
+
     def set_value(self, value):
         if value < self._min:
             value = self._min

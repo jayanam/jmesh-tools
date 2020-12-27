@@ -24,8 +24,13 @@ from .shape_action import *
 from .enums import *
 
 from ..widgets.bl_ui_textbox import *
+from ..widgets.bl_ui_slider import *
+from ..widgets.bl_ui_label import *
+from ..widgets.bl_ui_drag_panel import *
 
 from ..utils.unit_util import *
+
+from .vertex_container import VertexContainer
 
 class Shape:
 
@@ -61,7 +66,16 @@ class Shape:
         self._extrude_pos = None
         self._mouse_pressed = False
         self._input_size = None
+
+        self._panel_array = None
+        self._slider_count = None
+        self._slider_distance = None
         self._shape_actions = []
+
+        self._current_shape_action = None
+
+        # vertex containers with vertices for arrays
+        self._array = []
 
         self.shader = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
         self.create_batch()
@@ -119,6 +133,10 @@ class Shape:
         # Batch for points
         self.batch_points = batch_for_shader(self.shader, 'POINTS', {"pos": points})
 
+    @property
+    def vertex_containers(self):
+        return self._array
+
     def draw(self, context):
         self.shader.bind()
 
@@ -146,6 +164,9 @@ class Shape:
         bgl.glPointSize(self.get_point_size(context))
         self.batch_points.draw(self.shader)
 
+        for vc in self._array:
+            vc.draw()
+
     def add_shape_action(self, shape_action):
         self._shape_actions.append(shape_action)
 
@@ -156,23 +177,103 @@ class Shape:
     def set_shape_actions_position(self):
         pass
 
-    def input_handle_event(self, event):
+    def shape_action_widgets_handle_event(self, event):
         if self._input_size is not None:
             if self._input_size.handle_event(event):
                 return True
 
+        if self._slider_count is not None:
+            if self._slider_count.handle_event(event):
+                return True
+
+        if self._slider_distance is not None:
+            if self._slider_distance.handle_event(event):
+                return True
+
         return False
 
-    def is_input_active(self):
-        return self._input_size is not None
+    def is_shape_action_active(self):
+        return self._input_size is not None or self._slider_count is not None
 
-    def input_draw(self):
-         if self._input_size is not None:
-             self._input_size.draw()    
+    def shape_action_widgets_draw(self):
+        if self._input_size is not None:
+            self._input_size.draw()
 
-    def open_input(self, context, shape_action, unitinfo) -> bool:
+        if self._panel_array is not None:
+            self._panel_array.draw()
+            for w in self._panel_array.widgets:
+                w.draw()
+                    
+    def open_array_input(self, context, shape_action) -> bool:
         if self.is_created():
-            
+            self._current_shape_action = shape_action 
+            self._panel_array = BL_UI_Drag_Panel(0, 0, 200, 120)
+            self._panel_array.bg_color = (0.1, 0.1, 0.1, 0.9)
+            self._panel_array.init(context)
+
+            lbl_array_count = BL_UI_Label(10, 10, 60, 24)
+            lbl_array_count.text = "Count:"
+            lbl_array_count.text_size = 12
+            lbl_array_count.init(context)
+
+            self._slider_count = BL_UI_Slider(90, 20, 100, 24)
+            self._slider_count.color = (0.3, 0.56, 0.94, 1.0)
+            self._slider_count.hover_color = (0.3, 0.56, 0.94, 0.8)
+            self._slider_count.min = 1
+            self._slider_count.max = 20
+            self._slider_count.decimals = 0
+            self._slider_count.show_min_max = False
+            self._slider_count.init(context)
+
+            lbl_array_distance = BL_UI_Label(10, 50, 60, 24)
+            lbl_array_distance.text = "Distance:"
+            lbl_array_distance.text_size = 12
+            lbl_array_distance.init(context)
+
+            self._slider_distance = BL_UI_Slider(90, 60, 100, 24)
+            self._slider_distance.color = (0.3, 0.56, 0.94, 1.0)
+            self._slider_distance.hover_color = (0.3, 0.56, 0.94, 0.8)
+            self._slider_distance.min = -2
+            self._slider_distance.max = 2
+            self._slider_distance.decimals = 1
+            self._slider_distance.show_min_max = False
+            self._slider_distance.init(context)
+
+            lbl_hint = BL_UI_Label(10, 80, 150, 24)
+            lbl_hint.text = "Esc: Close | Enter: Apply"
+            lbl_hint.text_size = 11
+            lbl_hint.init(context)
+
+            pos = shape_action.get_position()
+            pos_y = self._panel_array.get_area_height() - pos[1]
+
+            self._panel_array.set_location(pos[0], pos_y)
+
+            self._panel_array.add_widget(lbl_array_count)
+            self._panel_array.add_widget(lbl_array_distance)
+            self._panel_array.add_widget(lbl_hint)
+            self._panel_array.add_widget(self._slider_count)
+            self._panel_array.add_widget(self._slider_distance)
+            self._panel_array.layout_widgets()
+
+            self._slider_count.set_value_change(self.on_array_count_changed)
+            self._slider_count.set_value(self.get_array_count())
+
+            self._slider_distance.set_value_change(self.on_array_distance_changed)
+            self._slider_distance.set_value(0.5)
+            return True
+        return False
+
+    def get_array_count(self):
+        count = len(self._array)
+        if count == 0:
+            return 1
+        return count
+
+    def open_size_input(self, context, shape_action, unitinfo) -> bool:
+
+        if self.is_created():  
+            self._current_shape_action = shape_action        
             self._input_size = BL_UI_Textbox(0, 0, 100, 24)
             self._input_size.max_input_chars = 12
             self._input_size.init(context)
@@ -186,13 +287,58 @@ class Shape:
 
         return False
 
+    def on_array_distance_changed(self, slider, value):
+        self.create_array(self._slider_count.get_value(), value)
+
+    def on_array_count_changed(self, slider, value):
+        self.create_array(value, float(self._slider_distance.get_value()))
+
+    def create_array(self, count: int, distance: float):
+        self._array.clear()
+        axis = self._current_shape_action.get_axis()
+
+        for i in range(int(count)):
+
+            # normal vector of vertices on a plane
+            rot_mat = self._normal.to_track_quat('Z', 'Y').to_matrix()
+            if axis == 'x':
+                offset = rot_mat @ Vector((distance, 0, 0))
+            else:
+                offset = rot_mat @ Vector((0, distance, 0))     
+
+            vc = VertexContainer()
+            vc.add_vertices(self._vertices, offset * (i+1))
+            vc.create_batch()
+
+            self._array.append(vc)
+
     def on_input_changed(self, textbox, context, event):
         if event.type == "ESC":
             self.close_input()
         elif event.type == "RET":
             self.apply_input(context)
 
+    def close_array(self):
+        for vc in self._array:
+            vc.clear()
+
+        self._array.clear()
+
+        self.close_array_widgets()
+
+    def close_array_widgets(self):
+
+        if self._panel_array is not None:
+            self._panel_array.widgets.clear()
+
+        self._current_shape_action = None
+        self._slider_count = None
+        self._slider_distance = None
+        self._panel_array = None
+
+
     def close_input(self):
+        self._current_shape_action = None
         self._input_size = None
 
     def apply_input(self, context):
@@ -469,15 +615,24 @@ class Shape:
     def __str__(self):
         return "Shape"
 
+    def accept(self):
+        if self.is_shape_action_active():
+            self.close_array_widgets()
+
     def reset(self):
-        self._vertices.clear()
-        self._vertices_extruded.clear()
-        self._vertices_2d.clear()
-        self._vertices_m.clear()
-        self._vertices_extruded_m.clear()
-        self._shape_actions.clear()
-        self.state = ShapeState.NONE
-        self.create_batch()
+        
+        if not self.is_shape_action_active():
+            self._vertices.clear()
+            self._vertices_extruded.clear()
+            self._vertices_2d.clear()
+            self._vertices_m.clear()
+            self._vertices_extruded_m.clear()
+            
+            self._shape_actions.clear()
+            self.state = ShapeState.NONE
+            self.create_batch()
+
+        self.close_array()
 
     def close(self):
         return False
@@ -612,6 +767,10 @@ class Shape:
             else:
                 self._vertices_extruded[index] = vertex3d + dir
 
+        # Extrude vertices of array
+        for vc in self._array:
+            vc.extrude(dir, self._is_extruded)
+
         for index, vertex3d in enumerate(self._vertices_m):
             if not self._is_extruded:
                 self._vertices_extruded_m.append(vertex3d + dir)
@@ -661,6 +820,10 @@ class Shape:
         if self.is_created() and self._is_moving:
             diff = mouse_pos_3d - self._move_offset
             self._vertices = [vertex + diff for vertex in self._vertices]
+
+            for vc in self._array:
+                vc.add_offset(diff)
+
             self._vertices_extruded = [
                 vertex + diff for vertex in self._vertices_extruded]
 

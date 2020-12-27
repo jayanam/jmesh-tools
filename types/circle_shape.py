@@ -12,8 +12,8 @@ class Circle_Shape(Shape):
     def __str__(self):
         return "Circle"
 
-    def open_input(self, context, shape_action, unitinfo) -> bool:
-        if super().open_input(context, shape_action, unitinfo):
+    def open_size_input(self, context, shape_action, unitinfo) -> bool:
+        if super().open_size_input(context, shape_action, unitinfo):
             unit_value = bu_to_unit(self._radius, unitinfo[1])
 
             self._input_size.text = "{:.3f}".format(unit_value)
@@ -117,8 +117,15 @@ class Circle_Shape(Shape):
 
             self.state = ShapeState.CREATED
 
-            shape_action = Shape_Action()
-            self.add_shape_action(shape_action)
+            shape_size_action = Shape_Size_Action()
+            self.add_shape_action(shape_size_action)
+
+            shape_array_x_action = Shape_Array_Action("x")
+            self.add_shape_action(shape_array_x_action)
+
+            shape_array_y_action = Shape_Array_Action()
+            self.add_shape_action(shape_array_y_action)
+            
             self.start_extrude_immediate(mouse_pos_2d, mouse_pos_3d, context)
             return False
 
@@ -128,9 +135,9 @@ class Circle_Shape(Shape):
         return False
 
     def set_shape_actions_position(self):
-        for shape_action in self._shape_actions:
+        for i, shape_action in enumerate(self._shape_actions):
             gizmo_pos = self.get_gizmo_pos()
-            shape_action.set_position(gizmo_pos[0], gizmo_pos[1] - 22)
+            shape_action.set_position(gizmo_pos[0] + (i * 20), gizmo_pos[1] - 22)
 
     def get_gizmo_anchor_vertex(self):
         return self._center

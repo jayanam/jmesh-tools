@@ -42,6 +42,10 @@ def get_grid_snap_pos(pos, overlay3d):
     return mod
 
 def get_selected_mesh_center(context, default_pos):
+
+    if context.object is None:
+        return default_pos
+        
     current_mode = context.object.mode
     is_edit  = (current_mode == "EDIT")
 
