@@ -262,9 +262,15 @@ class Shape:
             self._slider_count.set_value(self.get_array_count())
 
             self._slider_distance.set_value_change(self.on_array_distance_changed)
-            self._slider_distance.set_value(0.5)
+            self._slider_distance.set_value(self.get_array_distance())
             return True
         return False
+
+    def get_array_distance(self):
+        if self._current_shape_action is None:
+            return 0.5
+
+        return self._current_shape_action.offset
 
     def get_array_count(self):
         count = len(self._array)
@@ -291,6 +297,7 @@ class Shape:
 
     def on_array_distance_changed(self, slider, value):
         self.create_array(self._slider_count.get_value(), value)
+        self._current_shape_action.offset = value
 
     def on_array_count_changed(self, slider, value):
         self.create_array(value, float(self._slider_distance.get_value()))
@@ -329,6 +336,8 @@ class Shape:
 
         self._array.clear()
 
+        self._current_shape_action = None
+
         self.close_array_widgets()
 
     def close_array_widgets(self):
@@ -336,7 +345,6 @@ class Shape:
         if self._panel_array is not None:
             self._panel_array.widgets.clear()
 
-        self._current_shape_action = None
         self._slider_count = None
         self._slider_distance = None
         self._panel_array = None

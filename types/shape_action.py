@@ -47,10 +47,19 @@ class Shape_Array_Action(Shape_Action):
 
   def __init__(self, axis = 'y'):
     self._axis = axis
+    self._offset = 0.5
     super().__init__()
 
   def get_axis(self):
     return self._axis
+
+  @property
+  def offset(self):
+    return self._offset
+
+  @offset.setter
+  def offset(self, value):
+      self._offset = value
     
   def draw(self):
     self._shader.bind()
