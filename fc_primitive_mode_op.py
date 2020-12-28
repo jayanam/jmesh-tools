@@ -40,8 +40,6 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context): 
-        # if context.object is None:
-        #     return False
 
         if context.window_manager.in_primitive_mode:
             return False

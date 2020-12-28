@@ -175,7 +175,9 @@ class Shape:
             action.draw()
 
     def set_shape_actions_position(self):
-        pass
+        for i, shape_action in enumerate(self._shape_actions):
+            gizmo_pos = self.get_gizmo_pos()
+            shape_action.set_position(gizmo_pos[0] + (i * 20), gizmo_pos[1] - 22)
 
     def shape_action_widgets_handle_event(self, event):
         if self._input_size is not None:

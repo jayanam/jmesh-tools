@@ -39,6 +39,11 @@ class Rectangle_Shape(Shape):
 
         elif self.is_processing():
             self.state = ShapeState.CREATED
+
+            self.add_shape_action(Shape_Array_Action("x"))
+
+            self.add_shape_action(Shape_Array_Action())
+
             self.start_extrude_immediate(mouse_pos_2d, mouse_pos_3d, context)
             return False
 

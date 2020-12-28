@@ -63,7 +63,6 @@ class Circle_Shape(Shape):
             diff = mouse_pos_3d - self._move_offset
             self._center += diff
             self._mouse_start_3d = self._center.copy()
-            self.set_shape_actions_position()
 
         result = super().handle_mouse_move(mouse_pos_2d, mouse_pos_3d, event, context)
 
@@ -117,14 +116,11 @@ class Circle_Shape(Shape):
 
             self.state = ShapeState.CREATED
 
-            shape_size_action = Shape_Size_Action()
-            self.add_shape_action(shape_size_action)
+            self.add_shape_action(Shape_Size_Action())
 
-            shape_array_x_action = Shape_Array_Action("x")
-            self.add_shape_action(shape_array_x_action)
+            self.add_shape_action(Shape_Array_Action("x"))
 
-            shape_array_y_action = Shape_Array_Action()
-            self.add_shape_action(shape_array_y_action)
+            self.add_shape_action(Shape_Array_Action())
             
             self.start_extrude_immediate(mouse_pos_2d, mouse_pos_3d, context)
             return False
@@ -133,11 +129,6 @@ class Circle_Shape(Shape):
             return True
 
         return False
-
-    def set_shape_actions_position(self):
-        for i, shape_action in enumerate(self._shape_actions):
-            gizmo_pos = self.get_gizmo_pos()
-            shape_action.set_position(gizmo_pos[0] + (i * 20), gizmo_pos[1] - 22)
 
     def get_gizmo_anchor_vertex(self):
         return self._center
