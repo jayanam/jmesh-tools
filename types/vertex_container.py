@@ -45,9 +45,11 @@ class VertexContainer:
   def __add_vertex(self, vertex: Vector):
     self._vertices.append(vertex)
 
-  def extrude(self, dir, is_extruded):
+  def extrude(self, dir):
+    extr_count = len(self._vertices_extruded)
+
     for index, vertex3d in enumerate(self._vertices):
-        if not is_extruded:
+        if index >= extr_count:
             self._vertices_extruded.append(vertex3d + dir)
         else:
             self._vertices_extruded[index] = vertex3d + dir

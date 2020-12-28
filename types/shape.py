@@ -314,6 +314,9 @@ class Shape:
 
             self._array.append(vc)
 
+        if self._is_extruded:
+            self.extrude_vertices(bpy.context)
+
     def on_input_changed(self, textbox, context, event):
         if event.type == "ESC":
             self.close_input()
@@ -771,7 +774,7 @@ class Shape:
 
         # Extrude vertices of array
         for vc in self._array:
-            vc.extrude(dir, self._is_extruded)
+            vc.extrude(dir)
 
         for index, vertex3d in enumerate(self._vertices_m):
             if not self._is_extruded:
