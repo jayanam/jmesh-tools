@@ -201,15 +201,17 @@ class Rectangle_Shape(Shape):
     def to_center(self, axis):
         old_center = self._center_3d.copy()
         self.set_center(axis, self._center_3d)
-        diff = self._center_3d - old_center
-        self.vertices_3d_offset(diff)
+
+        self.vertices_3d_offset(self._center_3d - old_center)
         self.vertices_3d_to_2d(bpy.context)
         self.calc_center_2d()
 
         self.create_rect(bpy.context)
 
+        self.calc_center_3d(bpy.context)
+
         # Bring the array to the center as well
-        self.array_offset(diff)
+        self.array_offset(self._center_3d - old_center)
 
 
     def draw_text(self):
