@@ -40,7 +40,7 @@ class Rectangle_Shape(Shape):
         elif self.is_processing():
             self.state = ShapeState.CREATED
 
-            self.add_shape_action(Shape_Array_Action("x"))
+            self.add_shape_action(Shape_Array_Action("X"))
 
             self.add_shape_action(Shape_Array_Action())
 
@@ -180,7 +180,7 @@ class Rectangle_Shape(Shape):
 
                 if not self._snap_to_target:
                     direction = get_view_direction_by_rot_matrix(
-                        self._view_context.view_rotation)  # * context.scene.snap_offset
+                        self._view_context.view_rotation)
                     self._vertices[i] = get_3d_vertex_for_2d(
                         self._view_context, (x, y), -direction)
                 else:
@@ -201,11 +201,15 @@ class Rectangle_Shape(Shape):
     def to_center(self, axis):
         old_center = self._center_3d.copy()
         self.set_center(axis, self._center_3d)
-        self.vertices_3d_offset(self._center_3d - old_center)
+        diff = self._center_3d - old_center
+        self.vertices_3d_offset(diff)
         self.vertices_3d_to_2d(bpy.context)
         self.calc_center_2d()
 
         self.create_rect(bpy.context)
+
+        # Bring the array to the center as well
+        self.array_offset(diff)
 
 
     def draw_text(self):

@@ -45,7 +45,7 @@ class Shape_Size_Action(Shape_Action):
 
 class Shape_Array_Action(Shape_Action):
 
-  def __init__(self, axis = 'y'):
+  def __init__(self, axis = 'Y'):
     self._axis = axis
     self._offset = 0.5
     super().__init__()
@@ -74,7 +74,7 @@ class Shape_Array_Action(Shape_Action):
 
     lines = []
 
-    if self._axis == 'y':
+    if self._axis == 'Y':
       for i in range(1, 5):
         lines.append((x,   y + 2 - (i * 3)))
         lines.append((x_r, y + 2 - (i * 3)))

@@ -310,7 +310,7 @@ class Shape:
 
             # normal vector of vertices on a plane
             rot_mat = self._normal.to_track_quat('Z', 'Y').to_matrix()
-            if axis == 'x':
+            if axis == 'X':
                 offset = rot_mat @ Vector((distance, 0, 0))
             else:
                 offset = rot_mat @ Vector((0, distance, 0))     
@@ -604,10 +604,31 @@ class Shape:
         self._vertices_extruded.clear()
         self._vertices_extruded_m.clear()
 
+    def get_array_center_offset(self, axis):
+        array_count = len(self._array)
+        if array_count == 0:
+            return 0
+
+        if self._current_shape_action.get_axis() != axis:
+            return 0
+
+        return (array_count / 2.0) * self._current_shape_action.offset
+
+    def array_offset(self, diff):
+
+        for vc in self._array:
+            vc.add_offset(diff)
+
     def set_center(self, axis, vec_center):
-                
+     
         if axis == "N":
             face_center = get_face_center(self._hit_face, self._hit_obj)
+            array_center_offset_x = self.get_array_center_offset('X')
+            array_center_offset_y = self.get_array_center_offset('Y')
+            
+            rot_mat = self._view_context._view_mat.to_3x3()
+            diff_vec = rot_mat.inverted() @ Vector((array_center_offset_x, array_center_offset_y, 0))
+            face_center -= diff_vec
             vec_center.xyz = face_center.xyz
             
         else:
@@ -615,12 +636,15 @@ class Shape:
 
             v = rot_mat @ vec_center
 
+            array_center_offset = self.get_array_center_offset(axis)
+
             if axis == "X":
-                v = Vector((-v[0],0,0))
+                v = Vector((-v[0] - array_center_offset,0,0))
             elif axis == "Y":
-                v = Vector((0,-v[1],0))
+                v = Vector((0,-v[1] - array_center_offset,0))
 
             vec_center += rot_mat.inverted() @ v
+
 
     def to_center(self, axis = "N"):
         pass

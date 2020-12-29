@@ -54,7 +54,7 @@ class Polyline_Shape(Shape):
         self.build_actions()
         self.create_batch()
 
-        self.add_shape_action(Shape_Array_Action("x"))
+        self.add_shape_action(Shape_Array_Action("X"))
 
         self.add_shape_action(Shape_Array_Action())
 
@@ -114,7 +114,7 @@ class Polyline_Shape(Shape):
 
             if self.close():
                 
-                self.add_shape_action(Shape_Array_Action("x"))
+                self.add_shape_action(Shape_Array_Action("X"))
 
                 self.add_shape_action(Shape_Array_Action())
 

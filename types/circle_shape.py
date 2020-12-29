@@ -118,7 +118,7 @@ class Circle_Shape(Shape):
 
             self.add_shape_action(Shape_Size_Action())
 
-            self.add_shape_action(Shape_Array_Action("x"))
+            self.add_shape_action(Shape_Array_Action("X"))
 
             self.add_shape_action(Shape_Array_Action())
             
@@ -145,9 +145,13 @@ class Circle_Shape(Shape):
 
     def to_center(self, axis):
 
+        old_center = self._center.copy()
+
         self.set_center(axis, self._center)
         self.create_circle(bpy.context)
 
+        # Bring the array to the center as well
+        self.array_offset(self._center - old_center)
 
     def draw_text(self):
         if self.is_processing() or self.is_sizing():
