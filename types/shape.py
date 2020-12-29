@@ -175,9 +175,14 @@ class Shape:
             action.draw()
 
     def set_shape_actions_position(self):
-        for i, shape_action in enumerate(self._shape_actions):
-            gizmo_pos = self.get_gizmo_pos()
+        gizmo_pos = self.get_gizmo_pos()
+
+        for i, shape_action in enumerate(self._shape_actions):    
             shape_action.set_position(gizmo_pos[0] + (i * 20), gizmo_pos[1] - 22)
+
+        if self._panel_array is not None:
+            self._panel_array.set_location(gizmo_pos[0], self._panel_array.get_area_height() - gizmo_pos[1] + 42)
+
 
     def shape_action_widgets_handle_event(self, event):
         if self._input_size is not None:
@@ -195,7 +200,7 @@ class Shape:
         return False
 
     def is_shape_action_active(self):
-        return self._input_size is not None or self._slider_count is not None
+        return self._input_size is not None or self._panel_array is not None
 
     def shape_action_widgets_draw(self):
         if self._input_size is not None:
@@ -245,11 +250,6 @@ class Shape:
             lbl_hint.text = "Esc: Close | Enter: Apply"
             lbl_hint.text_size = 11
             lbl_hint.init(context)
-
-            pos = shape_action.get_position()
-            pos_y = self._panel_array.get_area_height() - pos[1]
-
-            self._panel_array.set_location(pos[0], pos_y)
 
             self._panel_array.add_widget(lbl_array_count)
             self._panel_array.add_widget(lbl_array_distance)
