@@ -185,9 +185,6 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
                 self.create_shape(context)
 
-                if self.shape.is_shape_action_active():
-                    return { RM }
-
                 old_bevel_state = False
 
                 # If an object is hit, set it as target
@@ -231,6 +228,9 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
                 if self.shape.is_rotating():
                     self.shape.stop_rotate(context)
+
+                if self.shape.is_shape_action_active():
+                    return { RM }
 
                 if self.shape.is_processing():
                     result = RM
