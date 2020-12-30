@@ -548,10 +548,11 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                         execute_slice_op(context, target_obj)
 
                     # delete the bool object if apply immediate is checked
-                    if is_apply_immediate():
-                        bpy.ops.object.delete()
-                    else:
-                        obj.hide_set(True)
+                    # Apply not needed anymore here?
+                    #if is_apply_immediate():
+                        # bpy.ops.object.delete()
+                    #else:
+                    #    obj.hide_set(True)
 
                     select_active(target_obj)
         except:
