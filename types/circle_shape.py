@@ -25,9 +25,8 @@ class Circle_Shape(Shape):
         value = float(self._input_size.text)
         unitinfo = get_current_units()
 
-        self._radius = unit_to_bu(value, unitinfo[1])
-        
-        self.create_circle(context)
+        self.set_size(context, unit_to_bu(value, unitinfo[1]))
+
         super().apply_input(context)
 
     def handle_mouse_wheel(self, inc, context):
@@ -49,14 +48,22 @@ class Circle_Shape(Shape):
             return True
         return False
 
+    def set_size(self, context, radius):
+        self._radius = radius
+        
+        self.create_circle(context)  
+
+        array_count = len(self._array)
+        if array_count > 0:
+            self.create_array(array_count, self._current_array_action.offset)     
+
     def handle_mouse_move(self, mouse_pos_2d, mouse_pos_3d, event, context):
 
         if self.is_processing() or self._is_sizing:
 
             # Distance center to mouse pos
-            self._radius = (self._mouse_start_3d - mouse_pos_3d).length
-         
-            self.create_circle(context)
+            self.set_size(context, (self._mouse_start_3d - mouse_pos_3d).length)
+
             return True
 
         if self.is_moving():

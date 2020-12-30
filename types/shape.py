@@ -72,7 +72,7 @@ class Shape:
         self._slider_distance = None
         self._shape_actions = []
 
-        self._current_shape_action = None
+        self._current_array_action = None
 
         # vertex containers with vertices for arrays
         self._array = []
@@ -213,7 +213,7 @@ class Shape:
                     
     def open_array_input(self, context, shape_action) -> bool:
         if self.is_created():
-            self._current_shape_action = shape_action 
+            self._current_array_action = shape_action 
             self._panel_array = BL_UI_Drag_Panel(0, 0, 200, 120)
             self._panel_array.bg_color = (0.1, 0.1, 0.1, 0.9)
             self._panel_array.init(context)
@@ -267,10 +267,10 @@ class Shape:
         return False
 
     def get_array_distance(self):
-        if self._current_shape_action is None:
+        if self._current_array_action is None:
             return 0.5
 
-        return self._current_shape_action.offset
+        return self._current_array_action.offset
 
     def get_array_count(self):
         count = len(self._array)
@@ -280,8 +280,7 @@ class Shape:
 
     def open_size_input(self, context, shape_action, unitinfo) -> bool:
 
-        if self.is_created():  
-            self._current_shape_action = shape_action        
+        if self.is_created():    
             self._input_size = BL_UI_Textbox(0, 0, 100, 24)
             self._input_size.max_input_chars = 12
             self._input_size.init(context)
@@ -297,14 +296,14 @@ class Shape:
 
     def on_array_distance_changed(self, slider, value):
         self.create_array(self._slider_count.get_value(), value)
-        self._current_shape_action.offset = value
+        self._current_array_action.offset = value
 
     def on_array_count_changed(self, slider, value):
         self.create_array(value, float(self._slider_distance.get_value()))
 
     def create_array(self, count: int, distance: float):
         self._array.clear()
-        axis = self._current_shape_action.get_axis()
+        axis = self._current_array_action.get_axis()
 
         for i in range(int(count)):
 
@@ -336,7 +335,7 @@ class Shape:
 
         self._array.clear()
 
-        self._current_shape_action = None
+        self._current_array_action = None
 
         self.close_array_widgets()
 
@@ -351,7 +350,6 @@ class Shape:
 
 
     def close_input(self):
-        self._current_shape_action = None
         self._input_size = None
 
     def apply_input(self, context):
@@ -609,10 +607,10 @@ class Shape:
         if array_count == 0:
             return 0
 
-        if self._current_shape_action.get_axis() != axis:
+        if self._current_array_action.get_axis() != axis:
             return 0
 
-        return (array_count / 2.0) * self._current_shape_action.offset
+        return (array_count / 2.0) * self._current_array_action.offset
 
     def array_offset(self, diff):
 
