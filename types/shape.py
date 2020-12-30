@@ -614,6 +614,8 @@ class Shape:
 
     def array_offset(self, diff):
 
+        self.create_batch()
+        
         for vc in self._array:
             vc.add_offset(diff)
 
