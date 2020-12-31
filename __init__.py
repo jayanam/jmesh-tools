@@ -2,7 +2,7 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 7, 2, 3),
+    "version": (1, 7, 3, 0),
     "blender": (2, 80, 0),
     "location": "View3D",
     "category": "Object" }
@@ -12,7 +12,6 @@ import bpy
 
 from bpy.props import *
 
-from bpy.types import AddonPreferences
 import rna_keymap_ui
 
 from . fc_bevel_op          import FC_BevelOperator
@@ -38,6 +37,7 @@ from . fc_apply_bool_op     import FC_ApplyBoolOperator, FC_ApplyAllBoolOperator
 from . fc_primitive_mode_op import FC_Primitive_Mode_Operator
 from . fc_array_mode_op     import FC_Array_Mode_Operator
 from . fc_circle_array_mode_op     import FC_Circle_Array_Mode_Operator
+from . fc_preferences       import FC_AddonPreferences
 
 from .types.enums import *
 
@@ -136,25 +136,6 @@ bpy.types.Scene.start_center    = BoolProperty(
                                       description="Start primtive from center",
                                       default = False)
 
-# Addon preferences
-class FC_AddonPreferences(AddonPreferences):
-    bl_idname = __name__
-    
-    def draw(self, context):
-    
-        wm = bpy.context.window_manager 
-        km_items = wm.keyconfigs.addon.keymaps['3D View'].keymap_items         
-        km_item = km_items['object.fc_primitve_mode_op']
-
-        row = self.layout.row()
-        row.label(text=km_item.name)
-        row.prop(km_item, 'type', text='', full_event=True)
-
-        km_mnu_item = km_items['wm.call_menu_pie']
-        row = self.layout.row()
-        row.label(text=km_mnu_item.name)
-        row.prop(km_mnu_item, 'type', text='', full_event=True) 
-
 addon_keymaps = []
 
 classes = (
@@ -220,3 +201,4 @@ def unregister():
         km.keymap_items.remove(kmi)
 
     addon_keymaps.clear()
+
