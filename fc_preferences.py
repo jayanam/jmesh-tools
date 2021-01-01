@@ -41,6 +41,14 @@ class FC_AddonPreferences(AddonPreferences):
         size=4,
         subtype='COLOR'
     )
+
+    osd_font_size : IntProperty(
+        name="OSD font size",
+        description="Font size of On Screen Display",
+        default=16,
+        min=10,
+        max=24     
+    )
     
     def draw(self, context):
         
@@ -72,5 +80,8 @@ class FC_AddonPreferences(AddonPreferences):
 
             row = self.layout.row()
             row.prop(self, "osd_text_color")
+
+            row = self.layout.row()
+            row.prop(self, "osd_font_size")
 
         

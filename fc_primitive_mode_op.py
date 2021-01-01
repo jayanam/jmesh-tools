@@ -600,22 +600,28 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         self.unregister_handlers(bpy.context)
         return {"FINISHED"}
 
-    def draw_action_line(self, action, pos_y):
+    def draw_action_line(self, action, pos_y, pos_x):
 
         prefs = get_preferences()
         lc = prefs.osd_label_color
+        size = prefs.osd_font_size
 
         blf.color(1, lc[0], lc[1], lc[2], lc[3])
         blf.position(1, 10, pos_y , 1)
-        blf.draw(1, action.title) 
 
+        title = action.title
+        if action.content != "":
+            title += ":"
+
+        blf.draw(1, title) 
+     
         if(action.content != ""):
-            blf.position(1, 115, pos_y , 1)
-            blf.draw(1, ": " + action.content) 
+            blf.position(1, pos_x[0], pos_y , 1)
+            blf.draw(1, action.content) 
 
         tc = prefs.osd_text_color
         blf.color(1, tc[0], tc[1], tc[2], tc[3])
-        blf.position(1, 250, pos_y, 1)
+        blf.position(1, pos_x[1], pos_y, 1)
         blf.draw(1, action.id)
 
 	# Draw handler to paint in pixels
@@ -630,16 +636,30 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         self.shape.shape_action_widgets_draw()
 
         # Draw text for primitive mode
-        blf.size(1, 16, 72)
+        fsize = get_preferences().osd_font_size
+        blf.size(1, fsize, 72)
 
-        size = 20
-        pos_y = 180 # self.get_actions_height(size)
+        line_height = 18
+        pos_x = [115, 200]
+        pos_y = 150
 
-        self.draw_action_line(self.shape.actions[0], pos_y)
+        if fsize >= 20:
+            line_height = 23
+            pos_x = [200, 380]
+            pos_y = 200
+        elif fsize >= 17:
+            line_height = 22
+            pos_x = [160, 285]
+            pos_y = 190
+        elif fsize >= 14:
+            pos_x = [155, 270]
+            pos_y = 160
+
+        self.draw_action_line(self.shape.actions[0], pos_y, pos_x)
 
         for index in range(len(self.shape.actions)-1):
             action = self.shape.actions[index+1]
-            self.draw_action_line(action, (pos_y - 10) - (index + 1) * size)
+            self.draw_action_line(action, (pos_y - 10) - (index + 1) * line_height, pos_x)
 
         blf.color(1, 1, 1, 1, 1)
 
