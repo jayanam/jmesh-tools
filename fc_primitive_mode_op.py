@@ -31,6 +31,8 @@ from .types.shape_gizmo import *
 
 from .widgets.bl_ui_textbox import *
 
+from .fc_preferences import get_preferences
+
 # Primitive mode operator
 class FC_Primitive_Mode_Operator(bpy.types.Operator):
     bl_idname = "object.fc_primitve_mode_op"
@@ -599,7 +601,11 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         return {"FINISHED"}
 
     def draw_action_line(self, action, pos_y):
-        blf.color(1, 1, 1, 1, 1)
+
+        prefs = get_preferences()
+        lc = prefs.osd_label_color
+
+        blf.color(1, lc[0], lc[1], lc[2], lc[3])
         blf.position(1, 10, pos_y , 1)
         blf.draw(1, action.title) 
 
@@ -607,7 +613,8 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
             blf.position(1, 115, pos_y , 1)
             blf.draw(1, ": " + action.content) 
 
-        blf.color(1, 0, 0.5, 1, 1)
+        tc = prefs.osd_text_color
+        blf.color(1, tc[0], tc[1], tc[2], tc[3])
         blf.position(1, 250, pos_y, 1)
         blf.draw(1, action.id)
 

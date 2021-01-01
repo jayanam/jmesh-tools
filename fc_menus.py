@@ -9,7 +9,7 @@ from . utils.fc_select_util import *
 
 class FC_MT_Bool_Menu(Menu):
     bl_idname = "FC_MT_Bool_Menu"
-    bl_label = "JMesh tool operations"
+    bl_label = "JMesh Pie Menu"
    
     def draw(self, context):
 
