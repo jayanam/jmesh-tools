@@ -2,7 +2,7 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 7, 4, 1),
+    "version": (1, 7, 5, 0),
     "blender": (2, 80, 0),
     "location": "View3D",
     "category": "Object",
@@ -27,7 +27,7 @@ from . fc_bool_op           import FC_BoolOperator_Intersect
 from . fc_bool_op           import FC_TargetSelectOperator
 from . fc_curve_op          import FC_MeshToCurveOperator, FC_CurveConvertOperator
 from . fc_curve_op          import FC_CurveAdjustOperator
-from . fc_utils_op          import FC_MirrorOperator
+from . fc_mirror_op         import FC_MirrorOperator
 from . fc_utils_op          import FC_SymmetrizeOperator
 from . fc_utils_op          import FC_OriginActiveOperator
 from . fc_utils_op          import FC_CenterActiveOperator

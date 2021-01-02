@@ -6,38 +6,6 @@ from bpy.props import StringProperty
 
 from .utils.fc_bool_util import union_selected
 
-# Set the pivot point of the active object
-# to the center and add a mirror modifier
-class FC_MirrorOperator(Operator):
-    bl_idname = "object.mirror"
-    bl_label = "Center Origin & Mirror"
-    bl_description = "Mirror selected object" 
-    bl_options = {'REGISTER', 'UNDO'} 
-    
-    @classmethod
-    def poll(cls, context):
-
-        if context.active_object == None:
-            return False
-        
-        mode = context.active_object.mode       
-        return len(context.selected_objects) == 1 and (mode == "OBJECT" or mode == "SCULPT")
-    
-    def execute(self, context):
-        
-        cursor_location = bpy.context.scene.cursor.location.copy()
-                
-        bpy.context.scene.cursor.location = (0.0, 0.0, 0.0)
-        
-        bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
-        
-        mirror_mod = context.object.modifiers.new(type="MIRROR", name="FC_Mirror")
-        mirror_mod.use_clip = True
-        
-        bpy.context.scene.cursor.location = cursor_location
-
-        return {'FINISHED'}
-
 #3D cursor operators
 class FC_OriginActiveOperator(Operator):
     bl_idname = "view3d.origin_active"
