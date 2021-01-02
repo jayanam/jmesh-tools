@@ -92,7 +92,11 @@ class Circle_Shape(Shape):
 
         offset = Vector()
         if self._snap_to_target and self._normal != None:
-            rot_mat = self._normal.to_track_quat('Z', 'X').to_matrix()
+
+            # Use inverted matrix of shape instead of to_track_quat
+            rot_mat = self._view_context._view_mat.to_3x3().inverted()
+            
+            # rot_mat = self._normal.to_track_quat('Z', 'X').to_matrix()
             offset = self._normal.normalized() * context.scene.snap_offset
 
         self._vertices = [rot_mat @ Vector(point) + 
