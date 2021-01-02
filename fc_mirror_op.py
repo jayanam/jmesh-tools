@@ -26,19 +26,16 @@ class FC_MirrorOperator(BL_UI_OT_draw_operator):
       self.cb_x.cross_color = (0.3, 0.56, 0.94, 1.0)
       self.cb_x.text = "X"
       self.cb_x.text_size = 14
-      self.cb_x.set_state_changed(self.on_axis_change)
 
       self.cb_y = BL_UI_Checkbox(90, 20, 120, 16)
       self.cb_y.cross_color = (0.3, 0.56, 0.94, 1.0)
       self.cb_y.text = "Y"
       self.cb_y.text_size = 14
-      self.cb_y.set_state_changed(self.on_axis_change)
 
       self.cb_z = BL_UI_Checkbox(160, 20, 120, 16)
       self.cb_z.cross_color = (0.3, 0.56, 0.94, 1.0)
       self.cb_z.text = "Z"
       self.cb_z.text_size = 14
-      self.cb_z.set_state_changed(self.on_axis_change)
 
       self.btn_apply = BL_UI_Button(20, 60, 110, 25)
       self.btn_apply.bg_color = (0.3, 0.56, 0.94, 1.0)
@@ -72,6 +69,10 @@ class FC_MirrorOperator(BL_UI_OT_draw_operator):
                               context.area.height / 2.0)
 
       self.init_widget_values(context)
+
+      self.cb_x.set_state_changed(self.on_axis_change)
+      self.cb_y.set_state_changed(self.on_axis_change)
+      self.cb_z.set_state_changed(self.on_axis_change)
 
 
     def get_or_create_mirror_mod(self, context):
