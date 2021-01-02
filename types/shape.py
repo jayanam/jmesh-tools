@@ -68,8 +68,8 @@ class Shape:
         self._input_size = None
 
         self._panel_array = None
+        self._txt_distance = None
         self._slider_count = None
-        self._slider_distance = None
         self._shape_actions = []
 
         self._current_array_action = None
@@ -189,12 +189,12 @@ class Shape:
             if self._input_size.handle_event(event):
                 return True
 
-        if self._slider_count is not None:
-            if self._slider_count.handle_event(event):
+        if self._txt_distance is not None:
+            if self._txt_distance.handle_event(event):
                 return True
 
-        if self._slider_distance is not None:
-            if self._slider_distance.handle_event(event):
+        if self._slider_count is not None:
+            if self._slider_count.handle_event(event):
                 return True
 
         return False
@@ -211,7 +211,7 @@ class Shape:
             for w in self._panel_array.widgets:
                 w.draw()
                     
-    def open_array_input(self, context, shape_action) -> bool:
+    def open_array_input(self, context, shape_action, unitinfo) -> bool:
         if self.is_created():
             self._current_array_action = shape_action 
             self._panel_array = BL_UI_Drag_Panel(0, 0, 200, 120)
@@ -237,15 +237,21 @@ class Shape:
             lbl_array_distance.text_size = 12
             lbl_array_distance.init(context)
 
-            self._slider_distance = BL_UI_Slider(90, 60, 100, 24)
-            self._slider_distance.color = (0.3, 0.56, 0.94, 1.0)
-            self._slider_distance.hover_color = (0.3, 0.56, 0.94, 0.8)
-            self._slider_distance.min = -2
-            self._slider_distance.max = 2
-            self._slider_distance.decimals = 1
-            self._slider_distance.show_min_max = False
-            self._slider_distance.init(context)
+            self._txt_distance = BL_UI_Textbox(90, 55, 70, 24)
+            self._txt_distance.max_input_chars = 8
+            self._txt_distance.is_numeric = True
+            self._txt_distance.label = unitinfo[0]
+            input_keys = self._txt_distance.get_input_keys()
+            input_keys.remove('RET')
+            input_keys.remove('ESC')
 
+            self._txt_distance.init(context)
+
+            unit_value = bu_to_unit(self.get_array_distance(), unitinfo[1])
+
+            self._txt_distance.text = str(int(unit_value))
+            self._txt_distance.set_text_changed(self.on_distance_changed)
+            
             lbl_hint = BL_UI_Label(10, 80, 150, 24)
             lbl_hint.text = "Esc: Close | Enter: Apply"
             lbl_hint.text_size = 11
@@ -255,14 +261,12 @@ class Shape:
             self._panel_array.add_widget(lbl_array_distance)
             self._panel_array.add_widget(lbl_hint)
             self._panel_array.add_widget(self._slider_count)
-            self._panel_array.add_widget(self._slider_distance)
+            self._panel_array.add_widget(self._txt_distance)
             self._panel_array.layout_widgets()
 
             self._slider_count.set_value_change(self.on_array_count_changed)
             self._slider_count.set_value(self.get_array_count())
 
-            self._slider_distance.set_value_change(self.on_array_distance_changed)
-            self._slider_distance.set_value(self.get_array_distance())
             return True
         return False
 
@@ -294,12 +298,9 @@ class Shape:
 
         return False
 
-    def on_array_distance_changed(self, slider, value):
-        self.create_array(self._slider_count.get_value(), value)
-        self._current_array_action.offset = value
-
     def on_array_count_changed(self, slider, value):
-        self.create_array(value, float(self._slider_distance.get_value()))
+        distance = self.get_distance(self._txt_distance)
+        self.create_array(value, distance)
 
     def create_array(self, count: int, distance: float):
         self._array.clear()
@@ -323,6 +324,18 @@ class Shape:
         if self._is_extruded:
             self.extrude_vertices(bpy.context)
 
+    def get_distance(self, textbox):
+        value = int(textbox.text)
+        unitinfo = get_current_units()
+        return unit_to_bu(value, unitinfo[1])
+
+
+    def on_distance_changed(self, textbox, context, event):
+        distance = self.get_distance(textbox)
+
+        self.create_array(self._slider_count.get_value(), distance)
+        self._current_array_action.offset = distance
+
     def on_input_changed(self, textbox, context, event):
         if event.type == "ESC":
             self.close_input()
@@ -344,8 +357,8 @@ class Shape:
         if self._panel_array is not None:
             self._panel_array.widgets.clear()
 
+        self._txt_distance = None
         self._slider_count = None
-        self._slider_distance = None
         self._panel_array = None
 
 

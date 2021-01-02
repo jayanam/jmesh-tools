@@ -22,12 +22,15 @@ class BL_UI_Textbox(BL_UI_Widget):
 
         self._carret_pos = 0
 
+        self._input_keys = ['ESC', 'RET', 'BACK_SPACE', 'HOME', 'END', 'LEFT_ARROW', 'RIGHT_ARROW', 'DEL']
+
         self.text = ""
         self._label = ""
         self._text_size = 12
         self._textpos = [x, y]
         self._max_input_chars = 100
         self._label_width = 0
+        self._is_numeric = False
 
     @property
     def carret_color(self):
@@ -86,6 +89,14 @@ class BL_UI_Textbox(BL_UI_Widget):
     @property
     def has_label(self):
         return self._label != ""
+
+    @property
+    def is_numeric(self):
+        return self._is_numeric
+
+    @is_numeric.setter
+    def is_numeric(self, value):
+        self._is_numeric = value   
 
     def update(self, x, y):
         super().update(x, y)
@@ -202,13 +213,16 @@ class BL_UI_Textbox(BL_UI_Widget):
         blf.draw(0, self._text)
 
     def get_input_keys(self):
-        return ['ESC', 'RET', 'BACK_SPACE', 'HOME', 'END', 'LEFT_ARROW', 'RIGHT_ARROW', 'DEL']
+        return self._input_keys
 
     def text_input(self, event):
 
         index = self._carret_pos
 
         if event.ascii != '' and len(self._text) < self.max_input_chars:
+            if self._is_numeric and not event.ascii.isnumeric():
+                return False
+                
             self._text = self._text[:index] + event.ascii + self._text[index:]
             self._carret_pos += 1
         elif event.type == 'BACK_SPACE':
