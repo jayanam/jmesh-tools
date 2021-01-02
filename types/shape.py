@@ -307,8 +307,8 @@ class Shape:
 
         for i in range(int(count)):
 
-            # normal vector of vertices on a plane
-            rot_mat = self._normal.to_track_quat('Z', 'Y').to_matrix()
+            # inverted rotation matrix of shape matrix
+            rot_mat = self._view_context._view_mat.to_3x3().inverted()
             if axis == 'X':
                 offset = rot_mat @ Vector((distance, 0, 0))
             else:
@@ -615,7 +615,7 @@ class Shape:
     def array_offset(self, diff):
 
         self.create_batch()
-        
+
         for vc in self._array:
             vc.add_offset(diff)
 
