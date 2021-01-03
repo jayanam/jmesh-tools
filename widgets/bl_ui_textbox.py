@@ -226,7 +226,10 @@ class BL_UI_Textbox(BL_UI_Widget):
             self._text = self._text[:index] + event.ascii + self._text[index:]
             self._carret_pos += 1
         elif event.type == 'BACK_SPACE':
-            if self._carret_pos > 0:
+            if event.ctrl:
+                self._text = ""
+                self._carret_pos = 0
+            elif self._carret_pos > 0:
                 self._text = self._text[:index-1] + self._text[index:]
                 self._carret_pos -= 1
 
