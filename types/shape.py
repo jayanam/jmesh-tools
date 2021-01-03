@@ -232,12 +232,12 @@ class Shape:
             self._slider_count.show_min_max = False
             self._slider_count.init(context)
 
-            lbl_array_distance = BL_UI_Label(10, 50, 60, 24)
+            lbl_array_distance = BL_UI_Label(10, 48, 60, 24)
             lbl_array_distance.text = "Distance:"
             lbl_array_distance.text_size = 12
             lbl_array_distance.init(context)
 
-            self._txt_distance = BL_UI_Textbox(90, 55, 70, 24)
+            self._txt_distance = BL_UI_Textbox(90, 55, 66, 24)
             self._txt_distance.max_input_chars = 8
             self._txt_distance.is_numeric = True
             self._txt_distance.label = unitinfo[0]
