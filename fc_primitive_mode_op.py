@@ -180,7 +180,6 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         # Left mouse button is pressed
         if event.value == "PRESS" and event.type == "LEFTMOUSE":
 
-
             mouse_pos_2d_r = (event.mouse_region_x, event.mouse_region_y)
 
             if self.is_mouse_valid(mouse_pos_2d_r):

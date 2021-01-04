@@ -86,32 +86,11 @@ class FC_PT_Selected_Panel(Panel):
 
             row = layout.row()
             row.operator('view3d.dissolve_edges', text='Dissolve edges', icon='LINENUMBERS_OFF')
-
-
-        # Mirror                       
+        
+        # Mirror and symmetrize
         row = layout.row()
-        row.operator('object.mirror', text='Mirror', icon='MOD_MIRROR')
-        
-        # symmetrize negative
-        row = layout.row()
-        split = row.split(factor=0.33)
-        col = split.column()
-        col.operator('object.sym', text="to X", icon='MOD_MESHDEFORM').sym_axis = "NEGATIVE_X"
-        
-        col = split.column()
-        col.operator('object.sym', text="to Y", icon='MOD_MESHDEFORM').sym_axis = "NEGATIVE_Y"
-        
-        col = split.column()
-        col.operator('object.sym', text="to Z", icon='MOD_MESHDEFORM').sym_axis = "NEGATIVE_Z"
+        col = row.column()
+        col.operator('object.mirror', text='Mirror', icon='MOD_MIRROR')
 
-        # symmetrize positive
-        row = layout.row()
-        split = row.split(factor=0.33)
-        col = split.column()
-        col.operator('object.sym', text="to -X", icon='MOD_MESHDEFORM').sym_axis = "POSITIVE_X"
-        
-        col = split.column()
-        col.operator('object.sym', text="to -Y", icon='MOD_MESHDEFORM').sym_axis = "POSITIVE_Y"
-        
-        col = split.column()
-        col.operator('object.sym', text="to -Z", icon='MOD_MESHDEFORM').sym_axis = "POSITIVE_Z"
+        col = row.column()
+        col.operator('object.fc_symmetry_op', text="Symmetrize", icon='MOD_MESHDEFORM')

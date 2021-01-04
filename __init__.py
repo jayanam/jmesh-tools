@@ -2,7 +2,7 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 7, 6, 4),
+    "version": (1, 8, 0, 0),
     "blender": (2, 80, 0),
     "location": "View3D",
     "category": "Object",
@@ -39,6 +39,7 @@ from . fc_primitive_mode_op import FC_Primitive_Mode_Operator
 from . fc_array_mode_op     import FC_Array_Mode_Operator
 from . fc_circle_array_mode_op     import FC_Circle_Array_Mode_Operator
 from . fc_preferences       import FC_AddonPreferences
+from . fc_symmetry_op       import FC_Symmetry_Operator
 
 from .types.enums import *
 
@@ -64,6 +65,9 @@ bpy.types.Scene.snap_to_target   = BoolProperty(name="Snap to target",
                                         default = True)
 
 bpy.types.WindowManager.in_primitive_mode = BoolProperty(name="Primitive Mode",
+                                        default = False)
+
+bpy.types.WindowManager.in_symmetry_mode = BoolProperty(name="Symmetry Mode",
                                         default = False)
 
 bpy.types.WindowManager.modal_running = BoolProperty(name="Modal operator running",
@@ -165,7 +169,8 @@ classes = (
     FC_Array_Mode_Operator,
     FC_Circle_Array_Mode_Operator,
     FC_MT_Bool_Menu,
-    FC_AddonPreferences
+    FC_AddonPreferences,
+    FC_Symmetry_Operator
 )
      
     

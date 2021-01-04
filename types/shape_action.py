@@ -1,11 +1,17 @@
 import gpu
 from gpu_extras.batch import batch_for_shader
 
+from .. utils.fc_draw_utils import draw_circle_2d
+
+import bgl
+import blf
+
 class Shape_Action:
 
   def __init__(self):
+    self._x = 0
+    self._y = 0
     self._shader = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
-    self.set_position(0, 0)
 
   def mouse_down(self, context, event, mouse_pos_2d, mouse_pos_3d) -> bool:
     x = mouse_pos_2d[0]
@@ -28,20 +34,72 @@ class Shape_Action:
 
 class Shape_Size_Action(Shape_Action):
 
-    def draw(self):
-      self._shader.bind()
-      self._shader.uniform_float("color", (0.9, 0.0, 0.0, 1.0))
-      self._batch.draw(self._shader)
+  def draw(self):
+    self._shader.bind()
+    self._shader.uniform_float("color", (0.9, 0.0, 0.0, 1.0))
+    self._batch.draw(self._shader)
 
-    def set_position(self, x, y):
-      super().set_position(x, y)
+  def set_position(self, x, y):
+    super().set_position(x, y)
 
-      x_r = x + 14
-      y_r = y - 14
+    x_r = x + 14
+    y_r = y - 14
 
-      indices = ((0, 1, 2), (2, 0, 3))
-      coords_middle = [(x, y - 7), (x + 7,  y_r), (x_r, y - 7), (x + 7, y)]
-      self._batch = batch_for_shader(self._shader, 'TRIS', {"pos" : coords_middle}, indices=indices)
+    indices = ((0, 1, 2), (2, 0, 3))
+    coords_middle = [(x, y - 7), (x + 7,  y_r), (x_r, y - 7), (x + 7, y)]
+    self._batch = batch_for_shader(self._shader, 'TRIS', {"pos" : coords_middle}, indices=indices)
+
+class Shape_Action_Symmetry(Shape_Action):
+
+  def __init__(self, offset, axis = 'X', color=(1.0, 0.21, 0.33, 1.0)):
+    super().__init__()
+    self._axis = axis
+    self._color = color
+    self._offset = offset
+    self._radius = 20
+    self.set_symmetry()
+
+  def set_symmetry(self):
+    if self._axis == "X":
+      self._symmetry_command = "POSITIVE_X"
+    elif self._axis == "-X":
+      self._symmetry_command = "NEGATIVE_X"
+    elif self._axis == "Y":
+      self._symmetry_command = "POSITIVE_Y"
+    elif self._axis == "-Y":
+      self._symmetry_command = "NEGATIVE_Y"
+    elif self._axis == "Z":
+      self._symmetry_command = "POSITIVE_Z"
+    elif self._axis == "-Z":
+      self._symmetry_command = "NEGATIVE_Z"
+
+  def get_symmetry_command(self):
+    return self._symmetry_command
+
+  def mouse_down(self, context, event, mouse_pos_2d, mouse_pos_3d) -> bool:
+    x = mouse_pos_2d[0]
+    y = mouse_pos_2d[1]
+
+    if x >= self._x - self._radius and x <= self._x + self._radius and y <= self._y + self._radius and y >= self._y - self._radius:
+      return True
+
+    return False
+
+  def set_position(self, x, y):
+    super().set_position(x, y)
+
+  def get_offset(self):
+    return self._offset
+
+  def draw(self):
+
+    circle_co = draw_circle_2d((self._x, self._y), self._color, self._radius, 32)
+    blf.size(1, 14, 72)
+    blf.color(1, 0, 0, 0, 1)
+    dim = blf.dimensions(1, self._axis)
+    blf.position(1, self._x - dim[0] / 2, self._y - dim[1] / 2, 0)
+    blf.draw(1, self._axis) 
+
 
 class Shape_Array_Action(Shape_Action):
 
