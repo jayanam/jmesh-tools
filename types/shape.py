@@ -218,7 +218,7 @@ class Shape:
         if self.is_created():
             self.clear_action_panel()
 
-            self._panel_action = BL_UI_Drag_Panel(0, 0, 150, 50)
+            self._panel_action = BL_UI_Drag_Panel(0, 0, 153, 65)
             self._panel_action.bg_color = (0.1, 0.1, 0.1, 0.9)
             self._panel_action.init(context)
 
@@ -226,6 +226,8 @@ class Shape:
             txt_size.max_input_chars = 12
             txt_size.init(context)
             txt_size.label = unitinfo[0]
+
+            self.add_hint_label(context, 30)
 
             self._panel_action.add_widget(txt_size)
             self._panel_action.layout_widgets()
@@ -281,15 +283,11 @@ class Shape:
 
             self._txt_distance.text = "{:.2f}".format(unit_value)
             self._txt_distance.set_text_changed(self.on_distance_changed)
-            
-            lbl_hint = BL_UI_Label(10, 80, 150, 24)
-            lbl_hint.text = "Esc: Close | Enter: Apply"
-            lbl_hint.text_size = 11
-            lbl_hint.init(context)
 
+            self.add_hint_label(context, 80)
+            
             self._panel_action.add_widget(lbl_array_count)
             self._panel_action.add_widget(lbl_array_distance)
-            self._panel_action.add_widget(lbl_hint)
             self._panel_action.add_widget(self._slider_count)
             self._panel_action.add_widget(self._txt_distance)
             self._panel_action.layout_widgets()
@@ -299,6 +297,13 @@ class Shape:
 
             return True
         return False
+
+    def add_hint_label(self, context, y):
+        lbl_hint = BL_UI_Label(10, y, 120, 24)
+        lbl_hint.text = "Esc: Close | Enter: Apply"
+        lbl_hint.text_size = 11
+        lbl_hint.init(context)
+        self._panel_action.add_widget(lbl_hint)
 
     def get_array_distance(self):
         if self._current_array_action is None:
