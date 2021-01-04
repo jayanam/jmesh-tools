@@ -136,12 +136,6 @@ class BL_UI_Textbox(BL_UI_Widget):
                     
         self.batch_label_bg = batch_for_shader(self.shader, 'TRIS', {"pos" : vertices_label_bg}, indices=indices)
 
-
-
-    # def set_carret_pos(self, mouse_x):
-    #     self._carret_pos = 0
-    #     self.update_carret()
-
     def get_carret_pos_px(self):
         size_all = blf.dimensions(0, self._text)
         size_to_carret = blf.dimensions(0, self._text[:self._carret_pos])
@@ -220,10 +214,11 @@ class BL_UI_Textbox(BL_UI_Widget):
         index = self._carret_pos
 
         if event.ascii != '' and len(self._text) < self.max_input_chars:
-            if self._is_numeric and not event.ascii.isnumeric():
+            value = self._text[:index] + event.ascii + self._text[index:]
+            if self._is_numeric and not (event.ascii.isnumeric() or event.ascii in ['.', ',']):
                 return False
                 
-            self._text = self._text[:index] + event.ascii + self._text[index:]
+            self._text = value
             self._carret_pos += 1
         elif event.type == 'BACK_SPACE':
             if event.ctrl:

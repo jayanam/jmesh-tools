@@ -249,7 +249,7 @@ class Shape:
 
             unit_value = bu_to_unit(self.get_array_distance(), unitinfo[1])
 
-            self._txt_distance.text = str(int(unit_value))
+            self._txt_distance.text = "{:.2f}".format(unit_value)
             self._txt_distance.set_text_changed(self.on_distance_changed)
             
             lbl_hint = BL_UI_Label(10, 80, 150, 24)
@@ -325,7 +325,7 @@ class Shape:
             self.extrude_vertices(bpy.context)
 
     def get_distance(self, textbox):
-        value = int(textbox.text)
+        value = float(textbox.text)
         unitinfo = get_current_units()
         return unit_to_bu(value, unitinfo[1])
 

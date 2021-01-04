@@ -16,7 +16,7 @@ class Circle_Shape(Shape):
         if super().open_size_input(context, shape_action, unitinfo):
             unit_value = bu_to_unit(self._radius, unitinfo[1])
 
-            self._input_size.text = "{:.3f}".format(unit_value)
+            self._input_size.text = "{:.2f}".format(unit_value)
             return True
 
         return False
