@@ -213,7 +213,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                     if shape_action.mouse_down(context, event, mouse_pos_2d_r, mouse_pos_3d):
                         unitinfo = get_current_units()
                         if type(shape_action) is Shape_Size_Action:
-                             if self.shape.open_size_input(context, shape_action, unitinfo):
+                             if self.shape.open_size_action(context, shape_action, unitinfo):
                                 result = RM
                         else:
                              if self.shape.open_array_input(context, shape_action, unitinfo):

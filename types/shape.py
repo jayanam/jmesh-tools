@@ -65,9 +65,8 @@ class Shape:
         self._actions = []
         self._extrude_pos = None
         self._mouse_pressed = False
-        self._input_size = None
 
-        self._panel_array = None
+        self._panel_action = None
         self._txt_distance = None
         self._slider_count = None
         self._shape_actions = []
@@ -180,43 +179,74 @@ class Shape:
         for i, shape_action in enumerate(self._shape_actions):    
             shape_action.set_position(gizmo_pos[0] + (i * 20), gizmo_pos[1] - 22)
 
-        if self._panel_array is not None:
-            self._panel_array.set_location(gizmo_pos[0], self._panel_array.get_area_height() - gizmo_pos[1] + 42)
+        if self._panel_action is not None:
+            self._panel_action.set_location(gizmo_pos[0], self._panel_action.get_area_height() - gizmo_pos[1] + 42)
 
 
     def shape_action_widgets_handle_event(self, event):
-        if self._input_size is not None:
-            if self._input_size.handle_event(event):
-                return True
 
-        if self._txt_distance is not None:
-            if self._txt_distance.handle_event(event):
-                return True
+        handled = False
 
-        if self._slider_count is not None:
-            if self._slider_count.handle_event(event):
-                return True
+        if self._panel_action:
+            for widget in self._panel_action.widgets:
+                if widget.handle_event(event):
+                    handled = True
+
+        return handled
+
+    def is_shape_action_active(self):
+        return self._panel_action is not None
+
+    def shape_action_widgets_draw(self):
+
+        if self._panel_action is not None:
+            self._panel_action.draw()
+            for w in self._panel_action.widgets:
+                w.draw()
+
+    def clear_action_panel(self):
+        if self._panel_action:
+            for w in self._panel_action.widgets:
+                w = None
+            self._panel_action.widgets.clear()
+
+            self._slider_count = None
+            self._txt_distance = None
+
+    def open_size_action(self, context, shape_action, unitinfo) -> bool:
+
+        if self.is_created():
+            self.clear_action_panel()
+
+            self._panel_action = BL_UI_Drag_Panel(0, 0, 150, 50)
+            self._panel_action.bg_color = (0.1, 0.1, 0.1, 0.9)
+            self._panel_action.init(context)
+
+            txt_size = BL_UI_Textbox(10, 10, 100, 24)
+            txt_size.max_input_chars = 12
+            txt_size.init(context)
+            txt_size.label = unitinfo[0]
+
+            self._panel_action.add_widget(txt_size)
+            self._panel_action.layout_widgets()
+            
+            txt_size.set_text_changed(self.on_input_changed)
+
+            self.on_open_size_action(txt_size, unitinfo)
+            return True
 
         return False
 
-    def is_shape_action_active(self):
-        return self._input_size is not None or self._panel_array is not None
-
-    def shape_action_widgets_draw(self):
-        if self._input_size is not None:
-            self._input_size.draw()
-
-        if self._panel_array is not None:
-            self._panel_array.draw()
-            for w in self._panel_array.widgets:
-                w.draw()
-                    
+    def on_open_size_action(self, widget, unitinfo)              :
+        pass
+    
     def open_array_input(self, context, shape_action, unitinfo) -> bool:
         if self.is_created():
+            self.clear_action_panel()
             self._current_array_action = shape_action 
-            self._panel_array = BL_UI_Drag_Panel(0, 0, 200, 120)
-            self._panel_array.bg_color = (0.1, 0.1, 0.1, 0.9)
-            self._panel_array.init(context)
+            self._panel_action = BL_UI_Drag_Panel(0, 0, 200, 120)
+            self._panel_action.bg_color = (0.1, 0.1, 0.1, 0.9)
+            self._panel_action.init(context)
 
             lbl_array_count = BL_UI_Label(10, 10, 60, 24)
             lbl_array_count.text = "Count:"
@@ -257,12 +287,12 @@ class Shape:
             lbl_hint.text_size = 11
             lbl_hint.init(context)
 
-            self._panel_array.add_widget(lbl_array_count)
-            self._panel_array.add_widget(lbl_array_distance)
-            self._panel_array.add_widget(lbl_hint)
-            self._panel_array.add_widget(self._slider_count)
-            self._panel_array.add_widget(self._txt_distance)
-            self._panel_array.layout_widgets()
+            self._panel_action.add_widget(lbl_array_count)
+            self._panel_action.add_widget(lbl_array_distance)
+            self._panel_action.add_widget(lbl_hint)
+            self._panel_action.add_widget(self._slider_count)
+            self._panel_action.add_widget(self._txt_distance)
+            self._panel_action.layout_widgets()
 
             self._slider_count.set_value_change(self.on_array_count_changed)
             self._slider_count.set_value(self.get_array_count())
@@ -281,22 +311,6 @@ class Shape:
         if count == 0:
             return 1
         return count
-
-    def open_size_input(self, context, shape_action, unitinfo) -> bool:
-
-        if self.is_created():    
-            self._input_size = BL_UI_Textbox(0, 0, 100, 24)
-            self._input_size.max_input_chars = 12
-            self._input_size.init(context)
-            self._input_size.label = unitinfo[0]
-            
-            pos = shape_action.get_position()
-            self._input_size.set_location(pos[0] + 20, self._input_size.get_area_height() - pos[1] - 4)
-
-            self._input_size.set_text_changed(self.on_input_changed)
-            return True
-
-        return False
 
     def on_array_count_changed(self, slider, value):
         distance = self.get_distance(self._txt_distance)
@@ -340,7 +354,7 @@ class Shape:
         if event.type == "ESC":
             self.close_input()
         elif event.type == "RET":
-            self.apply_input(context)
+            self.apply_size_action(textbox, context)
 
     def close_array(self):
         for vc in self._array:
@@ -354,18 +368,19 @@ class Shape:
 
     def close_array_widgets(self):
 
-        if self._panel_array is not None:
-            self._panel_array.widgets.clear()
+        if self._panel_action is not None:
+            self._panel_action.widgets.clear()
 
         self._txt_distance = None
         self._slider_count = None
-        self._panel_array = None
+        self._panel_action = None
 
 
     def close_input(self):
-        self._input_size = None
+        self.clear_action_panel()
+        self._panel_action = None
 
-    def apply_input(self, context):
+    def apply_size_action(self, widget, context):
         self.close_input()
         self.create_batch()
 

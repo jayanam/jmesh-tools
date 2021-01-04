@@ -12,22 +12,17 @@ class Circle_Shape(Shape):
     def __str__(self):
         return "Circle"
 
-    def open_size_input(self, context, shape_action, unitinfo) -> bool:
-        if super().open_size_input(context, shape_action, unitinfo):
-            unit_value = bu_to_unit(self._radius, unitinfo[1])
+    def on_open_size_action(self, widget, unitinfo):
+        unit_value = bu_to_unit(self._radius, unitinfo[1])
+        widget.text = "{:.2f}".format(unit_value)       
 
-            self._input_size.text = "{:.2f}".format(unit_value)
-            return True
-
-        return False
-
-    def apply_input(self, context):
-        value = float(self._input_size.text)
+    def apply_size_action(self, widget, context):
+        value = float(widget.text)
         unitinfo = get_current_units()
 
         self.set_size(context, unit_to_bu(value, unitinfo[1]))
 
-        super().apply_input(context)
+        super().apply_size_action(widget, context)
 
     def handle_mouse_wheel(self, inc, context):
         if self.is_processing():
