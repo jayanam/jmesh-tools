@@ -38,8 +38,8 @@ class FC_MT_Bool_Menu(Menu):
  
             if active_object != context.scene.carver_target:
                 pie.operator("object.bool_target", icon="MOD_BOOLEAN")
-                pie.operator("object.mirror", icon='MOD_MIRROR')
-                pie.operator("object.fc_array_mode_op", icon='MOD_ARRAY')
-            
-            pie.operator("object.bevel", text=bo.get_display(context.object.mode), icon="MOD_BEVEL")
-            pie.operator("object.unbevel", text=ubo.get_display(context.object.mode), icon="MOD_BEVEL")       
+
+            pie.operator("object.mirror", text="Mirror", icon='MOD_MIRROR')
+            pie.operator("object.fc_array_mode_op", icon='MOD_ARRAY')
+            pie.operator('object.fc_symmetry_op', text="Symmetrize", icon='MOD_MESHDEFORM')
+            pie.operator("object.bevel", text=bo.get_display(context.object.mode), icon="MOD_BEVEL")     
