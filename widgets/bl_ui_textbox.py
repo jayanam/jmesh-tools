@@ -158,6 +158,9 @@ class BL_UI_Textbox(BL_UI_Widget):
 
     def draw(self):
 
+        if not self.visible:
+            return
+            
         super().draw()
 
         area_height = self.get_area_height()

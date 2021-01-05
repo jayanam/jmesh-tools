@@ -17,6 +17,7 @@ class BL_UI_Widget:
         self.context = None
         self.__inrect = False
         self._mouse_down = False
+        self._is_visible = True
 
     def set_location(self, x, y):
         self.x = x
@@ -34,6 +35,14 @@ class BL_UI_Widget:
         self._bg_color = value
 
     @property
+    def visible(self):
+        return self._is_visible
+
+    @visible.setter
+    def visible(self, value):
+        self._is_visible = value
+
+    @property
     def tag(self):
         return self._tag
 
@@ -42,6 +51,9 @@ class BL_UI_Widget:
         self._tag = value
                 		    
     def draw(self):
+        if not self.visible:
+            return
+            
         self.shader.bind()
         self.shader.uniform_float("color", self._bg_color)
         

@@ -99,6 +99,9 @@ class BL_UI_Up_Down(BL_UI_Widget):
 
     def draw(self):
 
+        if not self.visible:
+            return
+
         area_height = self.get_area_height()
 
         self.shader.bind()

@@ -39,6 +39,9 @@ class BL_UI_Label(BL_UI_Widget):
         return False
         
     def draw(self):
+        if not self.visible:
+            return
+            
         area_height = self.get_area_height()
 
         blf.size(0, self._text_size, 72)

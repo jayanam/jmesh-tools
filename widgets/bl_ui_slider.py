@@ -104,7 +104,9 @@ class BL_UI_Slider(BL_UI_Widget):
     def show_min_max(self, value):
         self._show_min_max = value
                 
-    def draw(self):
+    def draw(self):      
+        if not self.visible:
+            return
 
         area_height = self.get_area_height()
 
