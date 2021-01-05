@@ -13,7 +13,7 @@ class Shape_Action:
     self._y = 0
     self._shader = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
 
-  def mouse_down(self, context, event, mouse_pos_2d, mouse_pos_3d) -> bool:
+  def mouse_inside(self, context, event, mouse_pos_2d, mouse_pos_3d) -> bool:
     x = mouse_pos_2d[0]
     y = mouse_pos_2d[1]
 
@@ -21,6 +21,9 @@ class Shape_Action:
       return True
 
     return False
+
+  def set_hover(self, is_hover):
+    pass
 
   def get_position(self):
     return (self._x, self._y)
@@ -51,7 +54,7 @@ class Shape_Size_Action(Shape_Action):
 
 class Shape_Action_Symmetry(Shape_Action):
 
-  def __init__(self, offset, axis = 'X', color=(1.0, 0.21, 0.33, 1.0)):
+  def __init__(self, offset, axis = 'X', color=[1.0, 0.21, 0.33, 1.0]):
     super().__init__()
     self._axis = axis
     self._color = color
@@ -76,7 +79,7 @@ class Shape_Action_Symmetry(Shape_Action):
   def get_symmetry_command(self):
     return self._symmetry_command
 
-  def mouse_down(self, context, event, mouse_pos_2d, mouse_pos_3d) -> bool:
+  def mouse_inside(self, context, event, mouse_pos_2d, mouse_pos_3d) -> bool:
     x = mouse_pos_2d[0]
     y = mouse_pos_2d[1]
 
@@ -84,6 +87,12 @@ class Shape_Action_Symmetry(Shape_Action):
       return True
 
     return False
+
+  def set_hover(self, is_hover):
+    if is_hover:
+      self._color[3] = 0.5
+    else:
+      self._color[3] = 1.0
 
   def set_position(self, x, y):
     super().set_position(x, y)
@@ -94,6 +103,7 @@ class Shape_Action_Symmetry(Shape_Action):
   def draw(self):
 
     circle_co = draw_circle_2d((self._x, self._y), self._color, self._radius, 32)
+    
     blf.size(1, 14, 72)
     blf.color(1, 0, 0, 0, 1)
     dim = blf.dimensions(1, self._axis)

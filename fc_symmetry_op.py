@@ -47,20 +47,20 @@ class FC_Symmetry_Operator(bpy.types.Operator):
                    
         context.window_manager.modal_handler_add(self)
 
-        red   = (1.00, 0.21, 0.33, 1.0)
-        green = (0.54, 0.86, 0,    1.0)
-        blue  = (0.17, 0.55, 0.99, 1.0)
+        red   = [1.00, 0.21, 0.33, 1.0]
+        green = [0.54, 0.86, 0,    1.0]
+        blue  = [0.17, 0.55, 0.99, 1.0]
 
         d = 1.5
 
         self.add_action(red, "-X", Vector((-d,0,0)))
-        self.add_action(red, "X", Vector((d,0,0)))
+        self.add_action(red.copy(), "X", Vector((d,0,0)))
 
         self.add_action(green, "-Y", Vector((0,-d,0)))
-        self.add_action(green, "Y", Vector((0,d,0)))
+        self.add_action(green.copy(), "Y", Vector((0,d,0)))
 
         self.add_action(blue, "-Z", Vector((0,0,-d)))
-        self.add_action(blue, "Z", Vector((0,0,d)))
+        self.add_action(blue.copy(), "Z", Vector((0,0,d)))
 
         return {"RUNNING_MODAL"}
 
@@ -73,17 +73,24 @@ class FC_Symmetry_Operator(bpy.types.Operator):
             context.area.tag_redraw()
 
         result = "PASS_THROUGH"
+        mouse_pos_2d = (event.mouse_region_x, event.mouse_region_y)
 
-        if event.value == "PRESS" and event.type == "LEFTMOUSE":
-          mouse_pos_2d = (event.mouse_region_x, event.mouse_region_y)
-
+        if event.type == "MOUSEMOVE":
           for action in self._actions:
-            if action.mouse_down(context, event, mouse_pos_2d, None):
+            is_inside = action.mouse_inside(context, event, mouse_pos_2d, None)
+            action.set_hover(is_inside)
 
-              if context.mode == "OBJECT":
+        elif event.value == "PRESS" and event.type == "LEFTMOUSE":
+          
+          for action in self._actions:
+            if action.mouse_inside(context, event, mouse_pos_2d, None):
+              action.set_hover(False)
+
+              if context.mode == "EDIT":
+                self.symmetrize_edit_mode(action)
+              elif context.mode == "OBJECT":
                 bpy.ops.object.mode_set(mode="EDIT")
-                bpy.ops.mesh.select_all(action='SELECT')
-                bpy.ops.mesh.symmetrize(direction=action.get_symmetry_command())
+                self.symmetrize_edit_mode(action)
                 bpy.ops.object.mode_set(mode="OBJECT")
               elif context.mode == "SCULPT":
                   bpy.context.scene.tool_settings.sculpt.symmetrize_direction = action.get_symmetry_command()
@@ -97,6 +104,11 @@ class FC_Symmetry_Operator(bpy.types.Operator):
 
         return { result }
     
+    def symmetrize_edit_mode(self, action):
+      bpy.ops.mesh.select_all(action='SELECT')
+      bpy.ops.mesh.symmetrize(direction=action.get_symmetry_command())
+      bpy.ops.mesh.select_all(action='DESELECT')
+
     def register_handlers(self, args, context):
 
         self.draw_handle_2d = bpy.types.SpaceView3D.draw_handler_add(

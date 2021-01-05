@@ -31,3 +31,5 @@ def draw_circle_2d(position, color, radius, segments=32, batch_type='TRI_FAN'):
         batch.program_set(shader)
         shader.uniform_float("color", color)
         batch.draw()
+
+        bgl.glDisable(bgl.GL_BLEND)
