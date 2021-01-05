@@ -154,6 +154,7 @@ class BL_UI_Checkbox(BL_UI_Widget):
         self.__state = not self.__state
 
     def mouse_enter(self, event, x, y):
+        super().mouse_enter(event, x, y)
         if self._mouse_down:
             self.toggle_state()
             self.call_state_changed()

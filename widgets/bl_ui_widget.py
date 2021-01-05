@@ -136,11 +136,31 @@ class BL_UI_Widget:
     def mouse_up(self, x, y):
         pass
 
+    def set_mouse_enter(self, mouse_enter_func):
+        self.mouse_enter_func = mouse_enter_func  
+ 
+    def call_mouse_enter(self):
+        try:
+            if self.mouse_enter_func:
+                self.mouse_enter_func(self)
+        except:
+            pass
+
     def mouse_enter(self, event, x, y):
-        pass
+        self.call_mouse_enter()
+
+    def set_mouse_exit(self, mouse_exit_func):
+        self.mouse_exit_func = mouse_exit_func  
+ 
+    def call_mouse_exit(self):
+        try:
+            if self.mouse_exit_func:
+                self.mouse_exit_func(self)
+        except:
+            pass
 
     def mouse_exit(self, event, x, y):
-        pass
+        self.call_mouse_exit()
 
     def mouse_move(self, x, y):
         pass
