@@ -85,16 +85,30 @@ class FC_Symmetry_Operator(bpy.types.Operator):
           for action in self._actions:
             if action.mouse_inside(context, event, mouse_pos_2d, None):
               action.set_hover(False)
+              
+              if context.mode == "EDIT_MESH":
 
-              if context.mode == "EDIT":
+                # Symmetrize the active object in edit mode
                 self.symmetrize_edit_mode(action)
               elif context.mode == "OBJECT":
-                bpy.ops.object.mode_set(mode="EDIT")
-                self.symmetrize_edit_mode(action)
-                bpy.ops.object.mode_set(mode="OBJECT")
+
+                # Symmetrize all selected objects
+                sel_objs = bpy.context.selected_objects
+                act_obj = bpy.context.active_object   
+                for sel_obj in sel_objs:
+                  bpy.context.view_layer.objects.active = sel_obj
+                  bpy.ops.object.mode_set(mode="EDIT")
+                  self.symmetrize_edit_mode(action)
+                  bpy.ops.object.mode_set(mode="OBJECT")
+
+                bpy.context.view_layer.objects.active = act_obj
+
               elif context.mode == "SCULPT":
+
+                  # Symmetrize the active object in sculpt mode
                   bpy.context.scene.tool_settings.sculpt.symmetrize_direction = action.get_symmetry_command()
                   bpy.ops.sculpt.symmetrize()
+                  
               return { "RUNNING_MODAL" }
                      
         if event.type == "ESC" and event.value == "PRESS":
