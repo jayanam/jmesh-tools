@@ -218,7 +218,7 @@ class BL_UI_Textbox(BL_UI_Widget):
 
         if event.ascii != '' and len(self._text) < self.max_input_chars:
             value = self._text[:index] + event.ascii + self._text[index:]
-            if self._is_numeric and not (event.ascii.isnumeric() or event.ascii in ['.', ',']):
+            if self._is_numeric and not (event.ascii.isnumeric() or event.ascii in ['.', ',', '-']):
                 return False
                 
             self._text = value
