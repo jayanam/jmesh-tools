@@ -89,7 +89,7 @@ class FC_Symmetry_Operator(bpy.types.Operator):
               if context.mode == "EDIT_MESH":
 
                 # Symmetrize the active object in edit mode
-                self.symmetrize_edit_mode(action)
+                bpy.ops.mesh.symmetrize(direction=action.get_symmetry_command())
               elif context.mode == "OBJECT":
 
                 # Symmetrize all selected objects
