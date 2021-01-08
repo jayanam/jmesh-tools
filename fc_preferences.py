@@ -22,6 +22,12 @@ class FC_AddonPreferences(AddonPreferences):
         default=False
     )
 
+    operator_section : BoolProperty(
+        name="Operator settings",
+        description="Operator settings",
+        default=False
+    )
+
     osd_text_color : FloatVectorProperty(
         name="OSD text color",
         description="Color for On Screen Display text",
@@ -49,6 +55,14 @@ class FC_AddonPreferences(AddonPreferences):
         min=10,
         max=24     
     )
+
+    sym_dir_items = [ ("Selected to opposite", "Selected to opposite", "",  0),
+                      ("To Selected",   "To Selected", "", 1)
+                    ]
+
+    symmetrize_direction : EnumProperty(items=sym_dir_items, 
+                                                   name="Symmetrize direction",
+                                                   default="Selected to opposite")
     
     def draw(self, context):
         
@@ -82,6 +96,13 @@ class FC_AddonPreferences(AddonPreferences):
             row.prop(self, "osd_text_color")
 
             row = self.layout.row()
-            row.prop(self, "osd_font_size")
+            row.label(text="OSD font size")
+            row.prop(self, "osd_font_size", text='')
 
+        # Operator settings section
+        layout.prop(self, "operator_section", icon='DISCLOSURE_TRI_DOWN' if self.operator_section else 'DISCLOSURE_TRI_RIGHT')
+        if self.operator_section:
+            row = self.layout.row()
+            row.label(text="Symmetrize direction")
+            row.prop(self, "symmetrize_direction", text='')
         

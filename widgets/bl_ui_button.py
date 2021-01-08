@@ -76,26 +76,6 @@ class BL_UI_Button(BL_UI_Widget):
     def update(self, x, y):        
         super().update(x, y)
         self._textpos = [x, y]
-
-        area_height = self.get_area_height()
-        
-        y_screen_flip = area_height - self.y_screen
-        
-        off_x, off_y =  self.__image_position
-        sx, sy = self.__image_size
-        
-        # bottom left, top left, top right, bottom right
-        vertices = (
-                    (self.x_screen + off_x, y_screen_flip - off_y), 
-                    (self.x_screen + off_x, y_screen_flip - sy - off_y), 
-                    (self.x_screen + off_x + sx, y_screen_flip - sy - off_y),
-                    (self.x_screen + off_x + sx, y_screen_flip - off_x))
-        
-        self.shader_img = gpu.shader.from_builtin('2D_IMAGE')
-        self.batch_img = batch_for_shader(self.shader_img, 'TRI_FAN', 
-        { "pos" : vertices, 
-          "texCoord": ((0, 1), (0, 0), (1, 0), (1, 1)) 
-        },)
         
     def draw(self):
         if not self.visible:
@@ -147,9 +127,26 @@ class BL_UI_Button(BL_UI_Widget):
     def draw_image(self):
         if self.__image is not None:
             try:
+                y_screen_flip = self.get_area_height() - self.y_screen
+        
+                off_x, off_y =  self.__image_position
+                sx, sy = self.__image_size
+                
+                # bottom left, top left, top right, bottom right
+                vertices = (
+                            (self.x_screen + off_x, y_screen_flip - off_y), 
+                            (self.x_screen + off_x, y_screen_flip - sy - off_y), 
+                            (self.x_screen + off_x + sx, y_screen_flip - sy - off_y),
+                            (self.x_screen + off_x + sx, y_screen_flip - off_y))
+                
+                self.shader_img = gpu.shader.from_builtin('2D_IMAGE')
+                self.batch_img = batch_for_shader(self.shader_img, 'TRI_FAN', 
+                { "pos" : vertices, 
+                "texCoord": ((0, 1), (0, 0), (1, 0), (1, 1)) 
+                },)
+
                 bgl.glActiveTexture(bgl.GL_TEXTURE0)
-                bgl.glBindTexture(bgl.GL_TEXTURE_2D, 
-                self.__image.bindcode)
+                bgl.glBindTexture(bgl.GL_TEXTURE_2D, self.__image.bindcode)
 
                 self.shader_img.bind()
                 self.shader_img.uniform_int("image", 0)

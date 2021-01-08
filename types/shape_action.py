@@ -3,6 +3,8 @@ from gpu_extras.batch import batch_for_shader
 
 from .. utils.fc_draw_utils import draw_circle_2d
 
+from .. fc_preferences import get_preferences
+
 import bgl
 import blf
 
@@ -63,18 +65,29 @@ class Shape_Action_Symmetry(Shape_Action):
     self.set_symmetry()
 
   def set_symmetry(self):
+
+    prefs = get_preferences()
+    sd = prefs.symmetrize_direction
+
+    if sd == 'Selected to opposite':
+      pos_prefix = "POSITIVE"
+      neg_prefix = "NEGATIVE"
+    else:
+      pos_prefix = "NEGATIVE"
+      neg_prefix = "POSITIVE"     
+
     if self._axis == "X":
-      self._symmetry_command = "POSITIVE_X"
+      self._symmetry_command = pos_prefix + "_X"
     elif self._axis == "-X":
-      self._symmetry_command = "NEGATIVE_X"
+      self._symmetry_command = neg_prefix + "_X"
     elif self._axis == "Y":
-      self._symmetry_command = "POSITIVE_Y"
+      self._symmetry_command = pos_prefix + "_Y"
     elif self._axis == "-Y":
-      self._symmetry_command = "NEGATIVE_Y"
+      self._symmetry_command = neg_prefix + "_Y"
     elif self._axis == "Z":
-      self._symmetry_command = "POSITIVE_Z"
+      self._symmetry_command = pos_prefix + "_Z"
     elif self._axis == "-Z":
-      self._symmetry_command = "NEGATIVE_Z"
+      self._symmetry_command = neg_prefix + "_Z"
 
   def get_symmetry_command(self):
     return self._symmetry_command
