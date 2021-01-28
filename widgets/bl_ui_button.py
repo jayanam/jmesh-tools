@@ -14,6 +14,7 @@ class BL_UI_Button(BL_UI_Widget):
         self._text = "Button"
         self._text_size = 16
         self._textpos = (x, y)
+        self._textoffset = [0, 0]
 
         self.__state = 0
         self.__image = None
@@ -59,6 +60,9 @@ class BL_UI_Button(BL_UI_Widget):
     @select_bg_color.setter
     def select_bg_color(self, value):
         self._select_bg_color = value 
+
+    def set_text_offset(self, x,y):
+        self._textoffset = [x,y]
         
     def set_image_size(self, imgage_size):
         self.__image_size = imgage_size
@@ -117,7 +121,9 @@ class BL_UI_Button(BL_UI_Widget):
         size = blf.dimensions(0, self._text)
 
         textpos_y = area_height - self._textpos[1] - (self.height + size[1]) / 2.0
-        blf.position(0, self._textpos[0] + (self.width - size[0]) / 2.0, textpos_y + 1, 0)
+        textpos_y += self._textoffset[1]
+
+        blf.position(0, self._textoffset[0] + self._textpos[0] + (self.width - size[0]) / 2.0, textpos_y + 1, 0)
 
         r, g, b, a = self._text_color
         blf.color(0, r, g, b, a)

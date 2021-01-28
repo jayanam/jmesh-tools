@@ -604,9 +604,10 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         prefs = get_preferences()
         lc = prefs.osd_label_color
         size = prefs.osd_font_size
+        off_x = prefs.osd_offset_x
 
         blf.color(1, lc[0], lc[1], lc[2], lc[3])
-        blf.position(1, 10, pos_y , 1)
+        blf.position(1, off_x, pos_y , 1)
 
         title = action.title
         if action.content != "":
@@ -636,6 +637,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
         # Draw text for primitive mode
         fsize = get_preferences().osd_font_size
+        off_x = get_preferences().osd_offset_x
         blf.size(1, fsize, 72)
 
         line_height = 18
@@ -653,6 +655,9 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         elif fsize >= 14:
             pos_x = [155, 270]
             pos_y = 160
+
+        pos_x[0] += off_x
+        pos_x[1] += off_x
 
         self.draw_action_line(self.shape.actions[0], pos_y, pos_x)
 

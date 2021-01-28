@@ -56,6 +56,13 @@ class FC_AddonPreferences(AddonPreferences):
         max=24     
     )
 
+    osd_offset_x : IntProperty(
+        name="OSD Offset X",
+        description="Offset X-axis On Screen Display",
+        default=60,
+        min=0   
+    )
+
     sym_dir_items = [ ("Selected to opposite", "Selected to opposite", "",  0),
                       ("To Selected",   "To Selected", "", 1)
                     ]
@@ -98,6 +105,10 @@ class FC_AddonPreferences(AddonPreferences):
             row = self.layout.row()
             row.label(text="OSD font size")
             row.prop(self, "osd_font_size", text='')
+
+            row = self.layout.row()
+            row.label(text="OSD Offset X")
+            row.prop(self, "osd_offset_x", text='')
 
         # Operator settings section
         layout.prop(self, "operator_section", icon='DISCLOSURE_TRI_DOWN' if self.operator_section else 'DISCLOSURE_TRI_RIGHT')

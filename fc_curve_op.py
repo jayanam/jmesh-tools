@@ -11,6 +11,37 @@ from .widgets . bl_ui_checkbox import *
 
 from .utils.fc_bool_util import union_selected
 
+class FC_JoinAndRemesh(Operator):
+    bl_idname = "view3d.join_and_remesh"
+    bl_label = "Join and remesh"
+    bl_description = "Joins and object with the target and does a voxel remesh" 
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context): 
+
+        if len(context.selected_objects) < 1:
+            return False
+
+        return True
+
+    def execute(self, context):
+      bpy.ops.view3d.curve_convert()
+
+      target = bpy.context.scene.carver_target
+      if target:
+        target.select_set(state=True)
+        context.view_layer.objects.active = target
+      
+      bpy.ops.object.join()
+
+      bpy.ops.object.mode_set(mode='SCULPT', toggle=False)
+      bpy.ops.object.voxel_remesh()
+
+      return {'FINISHED'}
+
+    
+
 class FC_MeshToCurveOperator(Operator):
     bl_idname = "view3d.mesh_to_curve"
     bl_label = "Mesh to Curve"
@@ -98,14 +129,22 @@ class FC_CurveAdjustOperator(BL_UI_OT_draw_operator):
         self.cb_cyclic.text = "Cyclic"
         self.cb_cyclic.set_state_changed(self.on_cyclic_change)
 
-        self.btn_to_mesh = BL_UI_Button(20, 120, 110, 25)
+        self.btn_to_mesh = BL_UI_Button(20, 120, 70, 25)
         self.btn_to_mesh.bg_color = (0.3, 0.56, 0.94, 1.0)
         self.btn_to_mesh.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
         self.btn_to_mesh.text_size = 14
         self.btn_to_mesh.text = "To Mesh"
         self.btn_to_mesh.set_mouse_down(self.on_btn_to_mesh_down)
 
-        self.btn_close = BL_UI_Button(140, 120, 120, 25)
+        self.btn_join = BL_UI_Button(100, 120, 110, 25)
+        self.btn_join.bg_color = (0.3, 0.56, 0.94, 1.0)
+        self.btn_join.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+        self.btn_join.text_size = 14
+        self.btn_join.text = "Join & Remesh"
+        self.btn_join.set_text_offset(0, 2)
+        self.btn_join.set_mouse_down(self.on_btn_join_down)
+
+        self.btn_close = BL_UI_Button(220, 120, 60, 25)
         self.btn_close.bg_color = (0.3, 0.56, 0.94, 1.0)
         self.btn_close.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
         self.btn_close.text_size = 14
@@ -127,7 +166,12 @@ class FC_CurveAdjustOperator(BL_UI_OT_draw_operator):
         if active_obj is not None:
           active_obj.data.bevel_depth = value
 
+    def on_btn_join_down(self, widget):
+      bpy.ops.view3d.join_and_remesh()
+      self.finish()
+
     def on_btn_to_mesh_down(self, widget):
+        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
         bpy.ops.object.convert(target='MESH')
 
         bpy.ops.object.mode_set(mode='EDIT', toggle=False)
@@ -147,7 +191,7 @@ class FC_CurveAdjustOperator(BL_UI_OT_draw_operator):
     def on_invoke(self, context, event):
 
       # Add new widgets here
-      widgets_panel = [self.lbl_depth, self.sl_depth, self.cb_fillcaps, self.cb_cyclic, self.btn_to_mesh, self.btn_close]
+      widgets_panel = [self.lbl_depth, self.sl_depth, self.cb_fillcaps, self.cb_cyclic, self.btn_to_mesh, self.btn_join, self.btn_close]
 
       widgets = [self.panel]
 
@@ -185,7 +229,7 @@ class FC_CurveConvertOperator(Operator):
       if len(selected_curves) == 0:
         return False
 
-      if context.active_object.mode != "OBJECT":
+      if context.active_object.mode != "OBJECT" and context.active_object.mode != "EDIT":
           return False
   
       return True
@@ -199,6 +243,7 @@ class FC_CurveConvertOperator(Operator):
           curve.data.use_fill_caps = True
 
         if len(selected_curves) > 0:
+          bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
           bpy.ops.object.convert(target='MESH')
 
           bpy.ops.object.mode_set(mode='EDIT', toggle=False)
