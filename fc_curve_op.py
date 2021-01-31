@@ -26,7 +26,10 @@ class FC_JoinAndRemesh(Operator):
         return True
 
     def execute(self, context):
-      bpy.ops.view3d.curve_convert()
+      try:
+        bpy.ops.view3d.curve_convert()
+      except RuntimeError:
+        pass
 
       target = bpy.context.scene.carver_target
       if target:
