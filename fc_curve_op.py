@@ -31,6 +31,7 @@ class FC_JoinAndRemesh(Operator):
       except RuntimeError:
         pass
 
+      bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
       target = bpy.context.scene.carver_target
       if target:
         target.select_set(state=True)
