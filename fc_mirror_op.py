@@ -83,6 +83,7 @@ class FC_MirrorOperator(BL_UI_OT_draw_operator):
         if not result:
 
           # Create new mirror modifier
+          bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
           cursor_location = context.scene.cursor.location.copy()      
           context.scene.cursor.location = (0.0, 0.0, 0.0)
           bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
