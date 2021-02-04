@@ -112,7 +112,7 @@ class FC_Mesh_Snap_Operator(BL_UI_OT_draw_operator):
 
           # Create new subsurface modifier
           result = context.object.modifiers.new(type="SOLIDIFY", name="FC_Solidify")
-          result.thickness = -0.02
+          result.thickness = 0.02
           result.use_even_offset = True
           result.show_on_cage = True
 
@@ -127,6 +127,8 @@ class FC_Mesh_Snap_Operator(BL_UI_OT_draw_operator):
 
           # Create new subsurface modifier
           result = context.object.modifiers.new(type="SHRINKWRAP", name="FC_Shrinkwrap")
+          result.wrap_mode = "ABOVE_SURFACE"
+          result.offset = 0.001
           result.target = context.scene.carver_target
 
       return result
