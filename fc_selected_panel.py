@@ -83,9 +83,6 @@ class FC_PT_Selected_Panel(Panel):
 
             col = row.column()
             col.operator('view3d.curve_adjust', text='Adjust curve', icon='LINENUMBERS_OFF')
-
-            row = layout.row()
-            row.operator('view3d.dissolve_edges', text='Dissolve edges', icon='LINENUMBERS_OFF')
         
         # Mirror and symmetrize
         row = layout.row()
@@ -94,3 +91,9 @@ class FC_PT_Selected_Panel(Panel):
 
         col = row.column()
         col.operator('object.fc_symmetry_op', text="Symmetrize", icon='MOD_MESHDEFORM')
+
+        # Mesh snap
+        row = layout.row()
+        row.operator('object.fc_mesh_snap_op', text='Mesh Snap', icon='MOD_MIRROR')
+
+        
