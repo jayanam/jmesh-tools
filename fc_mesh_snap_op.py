@@ -146,6 +146,7 @@ class FC_Mesh_Snap_Operator(BL_UI_OT_draw_operator):
           bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
           for mod in active_obj.modifiers:
             bpy.ops.object.modifier_apply(modifier=mod.name)
+        self.finish()
 
     def on_btn_close_down(self, widget):
         self.finish()
