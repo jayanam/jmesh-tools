@@ -18,20 +18,26 @@ class FC_Mesh_Snap_Operator(BL_UI_OT_draw_operator):
     def __init__(self):      
       super().__init__()
 
-      self.panel = BL_UI_Drag_Panel(0, 0, 280, 140)
+      self.panel = BL_UI_Drag_Panel(0, 0, 280, 170)
       self.panel.bg_color = (0.1, 0.1, 0.1, 0.9)  
 
+      # Checkboxes
       self.cb_snap_face = BL_UI_Checkbox(20, 20, 120, 16)
       self.cb_snap_face.cross_color = (0.3, 0.56, 0.94, 1.0)
       self.cb_snap_face.text = "Snap to faces"
       self.cb_snap_face.text_size = 14
 
-      self.lbl_bvl_width = BL_UI_Label(20, 60, 50, 15)
+      self.cb_smooth_shading = BL_UI_Checkbox(20, 50, 120, 16)
+      self.cb_smooth_shading.cross_color = (0.3, 0.56, 0.94, 1.0)
+      self.cb_smooth_shading.text = "Smooth shading"
+      self.cb_smooth_shading.text_size = 14
+
+      self.lbl_bvl_width = BL_UI_Label(20, 90, 50, 15)
       self.lbl_bvl_width.text = "Width:"
       self.lbl_bvl_width.text_size = 14
       self.lbl_bvl_width.text_color = (0.9, 0.9, 0.9, 1.0)
 
-      self.sl_width = BL_UI_Slider(80, 60, 160, 30)
+      self.sl_width = BL_UI_Slider(80, 90, 160, 30)
       self.sl_width.color = (0.3, 0.56, 0.94, 1.0)
       self.sl_width.hover_color = (0.3, 0.56, 0.94, 0.8)
       self.sl_width.min = -0.1
@@ -41,14 +47,14 @@ class FC_Mesh_Snap_Operator(BL_UI_OT_draw_operator):
       self.sl_width.tag = 0
       self.sl_width.set_value_change(self.on_width_value_change)
 
-      self.btn_apply = BL_UI_Button(20, 100, 110, 25)
+      self.btn_apply = BL_UI_Button(20, 130, 110, 25)
       self.btn_apply.bg_color = (0.3, 0.56, 0.94, 1.0)
       self.btn_apply.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
       self.btn_apply.text_size = 14
       self.btn_apply.text = "Apply modifiers"
       self.btn_apply.set_mouse_down(self.on_btn_apply_down)
 
-      self.btn_close = BL_UI_Button(140, 100, 120, 25)
+      self.btn_close = BL_UI_Button(140, 130, 120, 25)
       self.btn_close.bg_color = (0.3, 0.56, 0.94, 1.0)
       self.btn_close.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
       self.btn_close.text_size = 14
@@ -58,22 +64,22 @@ class FC_Mesh_Snap_Operator(BL_UI_OT_draw_operator):
     @classmethod
     def poll(cls, context):
 
-        if context.active_object == None:
-            return False
+      if context.active_object == None:
+        return False
         
-        mode = context.active_object.mode       
-        return len(context.selected_objects) == 1 and (mode == "EDIT" or mode == "OBJECT")
+      mode = context.active_object.mode       
+      return len(context.selected_objects) == 1 and (mode == "EDIT" or mode == "OBJECT")
 
     def on_width_value_change(self, slider, value):
-        active_obj = bpy.context.view_layer.objects.active
-        if active_obj is not None:
-            mod_sol = active_obj.modifiers.get("FC_Solidify")
-            mod_sol.thickness = value
+      active_obj = bpy.context.view_layer.objects.active
+      if active_obj is not None:
+        mod_sol = active_obj.modifiers.get("FC_Solidify")
+        mod_sol.thickness = value
 
     def on_invoke(self, context, event):
 
       # Add new widgets here
-      widgets_panel = [self.cb_snap_face, self.sl_width, self.lbl_bvl_width, self.btn_apply, self.btn_close]
+      widgets_panel = [self.cb_snap_face, self.cb_smooth_shading, self.sl_width, self.lbl_bvl_width, self.btn_apply, self.btn_close]
 
       widgets = [self.panel]
 
@@ -89,6 +95,7 @@ class FC_Mesh_Snap_Operator(BL_UI_OT_draw_operator):
       self.init_widget_values(context)
 
       self.cb_snap_face.set_state_changed(self.on_snap_face_change)
+      self.cb_smooth_shading.set_state_changed(self.on_smooth_shading_change)
 
     def get_or_create_subsurf_mod(self, context):
       result = None
@@ -134,24 +141,37 @@ class FC_Mesh_Snap_Operator(BL_UI_OT_draw_operator):
       return result
 
     def init_widget_values(self, context):
-        self.cb_snap_face.is_checked = bpy.context.scene.tool_settings.use_snap
-        subsurf_mod = self.get_or_create_subsurf_mod(context)
-        shrinkwrap_mod = self.get_or_create_shrinkwrap_mod(context)
-        solidify_mod = self.get_or_create_solidify_mod(context)
-        self.sl_width.set_value(solidify_mod.thickness)
+      self.cb_snap_face.is_checked = bpy.context.scene.tool_settings.use_snap
+      self.cb_smooth_shading.is_checked = bpy.context.active_object.data.polygons[0].use_smooth
+      
+      subsurf_mod = self.get_or_create_subsurf_mod(context)
+      shrinkwrap_mod = self.get_or_create_shrinkwrap_mod(context)
+      solidify_mod = self.get_or_create_solidify_mod(context)
+      self.sl_width.set_value(solidify_mod.thickness)
+      
 
     def on_btn_apply_down(self, widget):
-        active_obj = bpy.context.view_layer.objects.active
-        if active_obj:
-          bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-          for mod in active_obj.modifiers:
-            bpy.ops.object.modifier_apply(modifier=mod.name)
-        self.finish()
+      active_obj = bpy.context.view_layer.objects.active
+      if active_obj:
+        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+        for mod in active_obj.modifiers:
+          bpy.ops.object.modifier_apply(modifier=mod.name)
+      self.finish()
 
     def on_btn_close_down(self, widget):
-        self.finish()
+      self.finish()
+
+    def on_smooth_shading_change(self, checkbox, value):
+      current_mode = bpy.context.active_object.mode
+      bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+      if value:
+        bpy.ops.object.shade_smooth()
+      else:
+        bpy.ops.object.shade_flat()
+      bpy.ops.object.mode_set(mode=current_mode, toggle=False)
+
 
     def on_snap_face_change(self, checkbox, value):
-        bpy.context.scene.tool_settings.snap_elements = {'FACE'}
-        bpy.context.scene.tool_settings.use_snap_project = value
-        bpy.context.scene.tool_settings.use_snap = value
+      bpy.context.scene.tool_settings.snap_elements = {'FACE'}
+      bpy.context.scene.tool_settings.use_snap_project = value
+      bpy.context.scene.tool_settings.use_snap = value
