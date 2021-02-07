@@ -94,6 +94,6 @@ class FC_PT_Selected_Panel(Panel):
 
         # Mesh snap
         row = layout.row()
-        row.operator('object.fc_mesh_snap_op', text='Mesh Snap', icon='MOD_MIRROR')
+        row.operator('object.fc_mesh_snap_op', text='Mesh Snap', icon='SNAP_ON')
 
         
