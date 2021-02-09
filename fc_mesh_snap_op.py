@@ -19,7 +19,7 @@ class FC_Mesh_Snap_Operator(BL_UI_OT_draw_operator):
     def __init__(self):      
       super().__init__()
 
-      self.panel = BL_UI_Drag_Panel(0, 0, 280, 210)
+      self.panel = BL_UI_Drag_Panel(0, 0, 280, 240)
       self.panel.bg_color = (0.1, 0.1, 0.1, 0.9)  
 
       y_pos = 20
@@ -35,6 +35,12 @@ class FC_Mesh_Snap_Operator(BL_UI_OT_draw_operator):
       self.cb_smooth_shading.cross_color = (0.3, 0.56, 0.94, 1.0)
       self.cb_smooth_shading.text = "Smooth shading"
       self.cb_smooth_shading.text_size = 14
+
+      y_pos += 30
+      self.cb_show_normals = BL_UI_Checkbox(20, y_pos, 120, 16)
+      self.cb_show_normals.cross_color = (0.3, 0.56, 0.94, 1.0)
+      self.cb_show_normals.text = "Show normals"
+      self.cb_show_normals.text_size = 14
 
       y_pos += 40
       self.lbl_bvl_width = BL_UI_Label(20, y_pos, 50, 15)
@@ -106,7 +112,7 @@ class FC_Mesh_Snap_Operator(BL_UI_OT_draw_operator):
     def on_invoke(self, context, event):
 
       # Add new widgets here
-      widgets_panel = [self.cb_snap_face, self.cb_smooth_shading, self.sl_width, self.lbl_bvl_width, self.lbl_ss_levels, self.ud_ss_levels, self.btn_apply, self.btn_close]
+      widgets_panel = [self.cb_snap_face, self.cb_smooth_shading, self.cb_show_normals, self.sl_width, self.lbl_bvl_width, self.lbl_ss_levels, self.ud_ss_levels, self.btn_apply, self.btn_close]
 
       widgets = [self.panel]
 
@@ -122,6 +128,7 @@ class FC_Mesh_Snap_Operator(BL_UI_OT_draw_operator):
       self.init_widget_values(context)
 
       self.cb_snap_face.set_state_changed(self.on_snap_face_change)
+      self.cb_show_normals.set_state_changed(self.on_show_normals_change)
       self.cb_smooth_shading.set_state_changed(self.on_smooth_shading_change)
 
     def get_or_create_subsurf_mod(self, context):
@@ -133,7 +140,7 @@ class FC_Mesh_Snap_Operator(BL_UI_OT_draw_operator):
 
           # Create new subsurface modifier
           result = context.object.modifiers.new(type="SUBSURF", name="FC_Subsurf")
-          result.levels = 2
+          result.levels = 1
 
       return result
 
@@ -170,7 +177,7 @@ class FC_Mesh_Snap_Operator(BL_UI_OT_draw_operator):
     def init_widget_values(self, context):
       self.cb_snap_face.is_checked = bpy.context.scene.tool_settings.use_snap
       self.cb_smooth_shading.is_checked = bpy.context.active_object.data.polygons[0].use_smooth
-      
+      self.cb_show_normals.is_checked = bpy.context.space_data.overlay.show_face_normals
       subsurf_mod = self.get_or_create_subsurf_mod(context)
       shrinkwrap_mod = self.get_or_create_shrinkwrap_mod(context)
       solidify_mod = self.get_or_create_solidify_mod(context)
@@ -199,8 +206,10 @@ class FC_Mesh_Snap_Operator(BL_UI_OT_draw_operator):
         bpy.ops.object.shade_flat()
       bpy.ops.object.mode_set(mode=current_mode, toggle=False)
 
-
     def on_snap_face_change(self, checkbox, value):
       bpy.context.scene.tool_settings.snap_elements = {'FACE'}
       bpy.context.scene.tool_settings.use_snap_project = value
       bpy.context.scene.tool_settings.use_snap = value
+
+    def on_show_normals_change(self, checkbox, value):
+      bpy.context.space_data.overlay.show_face_normals = value
