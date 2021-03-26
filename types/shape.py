@@ -26,6 +26,7 @@ from .enums import *
 from ..widgets.bl_ui_textbox import *
 from ..widgets.bl_ui_slider import *
 from ..widgets.bl_ui_label import *
+from ..widgets.bl_ui_button import *
 from ..widgets.bl_ui_drag_panel import *
 
 from ..utils.unit_util import *
@@ -241,6 +242,72 @@ class Shape:
 
     def on_open_size_action(self, widget, unitinfo)              :
         pass
+
+    def create_mirror(self):
+        self._vertices_m.clear()
+        self._vertices_extruded_m.clear()
+        if self.has_mirror:
+            for vertex in self._vertices:
+                self.add_vertex_mirror(vertex)
+
+            if self._is_extruded:
+                dir = self._extrusion * self.get_dir()
+                for vertex3d in self._vertices_m:
+                    self._vertices_extruded_m.append(vertex3d + dir)
+
+    def on_mirror_changed(self, button):
+        bpy.context.scene.mirror_primitive = button.text
+        self.close_input()
+        self.create_mirror()
+        self.create_batch()
+
+    def open_mirror_input(self, context, shape_action, unitinfo)              :
+        if self.is_created():
+            self.clear_action_panel()
+            self._panel_action = BL_UI_Drag_Panel(0, 0, 120, 80)
+            self._panel_action.bg_color = (0.1, 0.1, 0.1, 0.9)
+            self._panel_action.init(context)
+
+            btn_x = BL_UI_Button(10, 10, 30, 25)
+            btn_x.bg_color = (0.3, 0.56, 0.94, 1.0)
+            btn_x.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+            btn_x.text_size = 14
+            btn_x.text = "X"
+            btn_x.set_mouse_down(self.on_mirror_changed)
+            btn_x.init(context)
+
+            btn_y = BL_UI_Button(45, 10, 30, 25)
+            btn_y.bg_color = (0.3, 0.56, 0.94, 1.0)
+            btn_y.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+            btn_y.text_size = 14
+            btn_y.text = "Y"
+            btn_y.set_mouse_down(self.on_mirror_changed)
+            btn_y.init(context)
+
+            btn_z = BL_UI_Button(80, 10, 30, 25)
+            btn_z.bg_color = (0.3, 0.56, 0.94, 1.0)
+            btn_z.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+            btn_z.text_size = 14
+            btn_z.text = "Z"
+            btn_z.set_mouse_down(self.on_mirror_changed)
+            btn_z.init(context)
+
+            btn_c = BL_UI_Button(10, 45, 100, 25)
+            btn_c.bg_color = (0.3, 0.56, 0.94, 1.0)
+            btn_c.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+            btn_c.text_size = 14
+            btn_c.text = "None"
+            btn_c.set_mouse_down(self.on_mirror_changed)
+            btn_c.init(context)
+
+            self._panel_action.add_widget(btn_x)
+            self._panel_action.add_widget(btn_y)
+            self._panel_action.add_widget(btn_z)
+            self._panel_action.add_widget(btn_c)
+            self._panel_action.layout_widgets()
+
+            return True
+        return False
     
     def open_array_input(self, context, shape_action, unitinfo) -> bool:
         if self.is_created():
@@ -848,6 +915,7 @@ class Shape:
                 self._vertices_extruded_m[index] = vertex3d + dir
 
         self._is_extruded = True
+
 
     def handle_extrude(self, is_up_key, context):
         if self.is_extruding():

@@ -165,3 +165,45 @@ class Shape_Array_Action(Shape_Action):
         lines.append((x + (i * 3), y_b))
 
     self._batch = batch_for_shader(self._shader, 'LINES', {"pos": lines})
+
+class Shape_Mirror_Action(Shape_Action):
+
+  def __init__(self):
+    self._axis = 'X'
+    super().__init__()
+
+  def get_axis(self):
+    return self._axis
+   
+  def draw(self):
+
+    bgl.glEnable(bgl.GL_BLEND)
+    bgl.glEnable(bgl.GL_LINE_SMOOTH)
+    bgl.glLineWidth(2)
+
+    self._shader.bind()
+    self._shader.uniform_float("color", (0.8, 0.30, 1.0, 1.0))
+
+    self._batch.draw(self._shader)
+
+    bgl.glLineWidth(1)
+    bgl.glDisable(bgl.GL_LINE_SMOOTH)
+    bgl.glDisable(bgl.GL_BLEND)
+
+  def set_position(self, x, y):
+    super().set_position(x, y)
+
+    x_m = x + 6
+    y_t = y - 11
+
+    points = []
+
+    # Left 
+    points.append((x_m-6, y_t))
+    points.append((x_m-6, y))
+    points.append((x_m, y - 5))
+
+    points.append((x_m+6, y))
+    points.append((x_m+6, y_t))
+
+    self._batch = batch_for_shader(self._shader, 'LINE_STRIP', {"pos": points})

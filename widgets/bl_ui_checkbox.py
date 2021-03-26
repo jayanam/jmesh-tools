@@ -62,7 +62,11 @@ class BL_UI_Checkbox(BL_UI_Widget):
             self.call_state_changed()
 
     def update(self, x, y):        
-        super().update(x, y)
+
+        area_height = self.get_area_height()
+        
+        self.x_screen = x
+        self.y_screen = y
 
         self._textpos = [x + 26, y]
 
@@ -73,9 +77,7 @@ class BL_UI_Checkbox(BL_UI_Widget):
         off_x = 0
         off_y = 0
         sx, sy = self.__boxsize 
-
-        self.shader_chb = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
-        
+       
         # top left, top right, ...
         vertices_box = (
                     (self.x_screen + off_x,      y_screen_flip - off_y - sy), 
@@ -83,7 +85,8 @@ class BL_UI_Checkbox(BL_UI_Widget):
                     (self.x_screen + off_x + sx, y_screen_flip - off_y),
                     (self.x_screen + off_x,      y_screen_flip - off_y))
 
-        self.batch_box = batch_for_shader(self.shader_chb, 'LINE_LOOP', {"pos": vertices_box})
+        self.shader = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
+        self.batch_box = batch_for_shader(self.shader, 'LINE_LOOP', {"pos": vertices_box})
 
         inset = 4
 
@@ -94,29 +97,35 @@ class BL_UI_Checkbox(BL_UI_Widget):
             (self.x_screen + off_x + sx - inset, y_screen_flip - off_y -  inset), 
             (self.x_screen + off_x + inset, y_screen_flip - off_y - sy + inset))
 
-        self.batch_cross = batch_for_shader(self.shader_chb, 'LINES', {"pos": vertices_cross})
+        self.batch_cross = batch_for_shader(self.shader, 'LINES', {"pos": vertices_cross})
 
    
     def draw(self):
         if not self.visible:
             return
-            
+        
+        bgl.glEnable(bgl.GL_BLEND)
+        bgl.glEnable(bgl.GL_LINE_SMOOTH)
+
         area_height = self.get_area_height()
-        self.shader_chb.bind()
+
+        self.shader.bind()
 
         if self.is_checked:
             bgl.glLineWidth(3)
-            self.shader_chb.uniform_float("color", self._cross_color)
-
-            self.batch_cross.draw(self.shader_chb) 
+            self.shader.uniform_float("color", self._cross_color)
+            self.batch_cross.draw(self.shader) 
 
         bgl.glLineWidth(2)
-        self.shader_chb.uniform_float("color", self._box_color)
+        self.shader.uniform_float("color", self._box_color)
 
-        self.batch_box.draw(self.shader_chb) 
+        self.batch_box.draw(self.shader) 
 
         # Draw text
         self.draw_text(area_height)
+
+        bgl.glDisable(bgl.GL_LINE_SMOOTH)
+        bgl.glDisable(bgl.GL_BLEND)
 
 
     def draw_text(self, area_height):

@@ -97,10 +97,7 @@ class Circle_Shape(Shape):
         self._vertices = [rot_mat @ Vector(point) + 
                           self._center + offset for point in points]
 
-        if self.has_mirror:
-            self._vertices_m.clear()
-            for v in self._vertices:
-                self.add_vertex_mirror(v)
+        self.create_mirror()
 
         self._vertices_2d = [get_2d_vertex(context, vertex) for vertex in self._vertices]
 
@@ -127,6 +124,8 @@ class Circle_Shape(Shape):
             self.add_shape_action(Shape_Array_Action("X"))
 
             self.add_shape_action(Shape_Array_Action())
+
+            self.add_shape_action(Shape_Mirror_Action())
             
             self.start_extrude_immediate(mouse_pos_2d, mouse_pos_3d, context)
             return False

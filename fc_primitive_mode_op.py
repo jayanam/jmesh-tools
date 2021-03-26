@@ -212,11 +212,14 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                     if shape_action.mouse_inside(context, event, mouse_pos_2d_r, mouse_pos_3d):
                         unitinfo = get_current_units()
                         if type(shape_action) is Shape_Size_Action:
-                             if self.shape.open_size_action(context, shape_action, unitinfo):
-                                result = RM
+                            if self.shape.open_size_action(context, shape_action, unitinfo):
+                               result = RM
+                        elif type(shape_action) is Shape_Array_Action:
+                            if self.shape.open_array_input(context, shape_action, unitinfo):
+                               result = RM
                         else:
-                             if self.shape.open_array_input(context, shape_action, unitinfo):
-                                result = RM                           
+                            if self.shape.open_mirror_input(context, shape_action, unitinfo):
+                                result = RM                                                      
 
                 if self.shape.is_moving() and not self.shape_gizmo.is_dragging():
                     self.shape.stop_move(context)

@@ -44,6 +44,8 @@ class Rectangle_Shape(Shape):
 
             self.add_shape_action(Shape_Array_Action())
 
+            self.add_shape_action(Shape_Mirror_Action())
+
             self.start_extrude_immediate(mouse_pos_2d, mouse_pos_3d, context)
             return False
 
@@ -152,12 +154,7 @@ class Rectangle_Shape(Shape):
 
         self._vertices.extend([self._vertex1, vertex2, self._vertex3, vertex4])
 
-        if self.has_mirror:
-            self._vertices_m.clear()
-            self.add_vertex_mirror(self._vertex1)
-            self.add_vertex_mirror(vertex2)
-            self.add_vertex_mirror(self._vertex3)
-            self.add_vertex_mirror(vertex4)
+        self.create_mirror()
 
     def start_rotate(self, mouse_pos, context):
         if self.is_created():

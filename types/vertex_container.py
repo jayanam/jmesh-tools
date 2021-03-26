@@ -28,6 +28,7 @@ class VertexContainer:
     self._shader.bind()
 
     # Draw lines
+    bgl.glEnable(bgl.GL_BLEND)
     bgl.glEnable(bgl.GL_LINE_SMOOTH)
 
     self._shader.uniform_float("color", (0.2, 0.5, 0.8, 1.0))
@@ -41,6 +42,9 @@ class VertexContainer:
     self._shader.uniform_float("color", (0.1, 0.3, 0.7, 1.0))
     self._batch.draw(self._shader)
     self._batch_points.draw(self._shader)
+
+    bgl.glDisable(bgl.GL_LINE_SMOOTH)
+    bgl.glDisable(bgl.GL_BLEND)
 
   def __add_vertex(self, vertex: Vector):
     self._vertices.append(vertex)

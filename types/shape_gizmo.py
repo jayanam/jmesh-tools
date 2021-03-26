@@ -61,7 +61,10 @@ class Shape_Gizmo:
 
     x_r = x + 15
     y_r = y - 15
+
+    bgl.glEnable(bgl.GL_BLEND)
     bgl.glEnable(bgl.GL_LINE_SMOOTH)
+    bgl.glEnable(bgl.GL_POLYGON_SMOOTH)
 
     self.shader_2d.bind()
 
@@ -92,3 +95,7 @@ class Shape_Gizmo:
 
     self.shader_2d.uniform_float("color", (0.9, 0.9, 0.9, 1.0))
     batch_gizmo_middle.draw(self.shader_2d)
+
+    bgl.glDisable(bgl.GL_POLYGON_SMOOTH)
+    bgl.glDisable(bgl.GL_LINE_SMOOTH)
+    bgl.glDisable(bgl.GL_BLEND)
