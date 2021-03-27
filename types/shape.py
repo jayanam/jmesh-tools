@@ -274,43 +274,49 @@ class Shape:
             self._panel_action.bg_color = (0.1, 0.1, 0.1, 0.9)
             self._panel_action.init(context)
 
+            mode = context.scene.bool_mode
+
+            sel_col = (1.0, 0.6, 0.2, 1.0)
+            hov_col = (0.2, 0.6, 0.94, 1.0)
+            col = (0.3, 0.56, 0.94, 1.0)
+
             btn_c = BL_UI_Button(10, 10, 100, 25)
-            btn_c.bg_color = (0.3, 0.56, 0.94, 1.0)
-            btn_c.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+            btn_c.hover_bg_color = hov_col
             btn_c.text_size = 14
             btn_c.text = "Create"
+            btn_c.bg_color = sel_col if mode == btn_c.text else col
             btn_c.set_mouse_down(self.on_operation_changed)
             btn_c.init(context)
 
             btn_d = BL_UI_Button(10, 45, 100, 25)
-            btn_d.bg_color = (0.3, 0.56, 0.94, 1.0)
-            btn_d.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+            btn_d.hover_bg_color = hov_col
             btn_d.text_size = 14
             btn_d.text = "Difference"
+            btn_d.bg_color = sel_col if mode == btn_d.text else col
             btn_d.set_mouse_down(self.on_operation_changed)
             btn_d.init(context)
 
             btn_u = BL_UI_Button(10, 80, 100, 25)
-            btn_u.bg_color = (0.3, 0.56, 0.94, 1.0)
-            btn_u.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+            btn_u.hover_bg_color = hov_col
             btn_u.text_size = 14
             btn_u.text = "Union"
+            btn_u.bg_color = sel_col if mode == btn_u.text else col
             btn_u.set_mouse_down(self.on_operation_changed)
             btn_u.init(context)
 
             btn_i = BL_UI_Button(10, 115, 100, 25)
-            btn_i.bg_color = (0.3, 0.56, 0.94, 1.0)
-            btn_i.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+            btn_i.hover_bg_color = hov_col
             btn_i.text_size = 14
             btn_i.text = "Intersect"
+            btn_i.bg_color = sel_col if mode == btn_i.text else col
             btn_i.set_mouse_down(self.on_operation_changed)
             btn_i.init(context)
 
             btn_s = BL_UI_Button(10, 150, 100, 25)
-            btn_s.bg_color = (0.3, 0.56, 0.94, 1.0)
-            btn_s.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+            btn_s.hover_bg_color = hov_col
             btn_s.text_size = 14
             btn_s.text = "Slice"
+            btn_s.bg_color = sel_col if mode == btn_s.text else col
             btn_s.set_mouse_down(self.on_operation_changed)
             btn_s.init(context)
 
@@ -331,42 +337,48 @@ class Shape:
             self._panel_action.bg_color = (0.1, 0.1, 0.1, 0.9)
             self._panel_action.init(context)
 
+            mode = context.scene.mirror_primitive
+
+            sel_col = (1.0, 0.6, 0.2, 1.0)
+            hov_col = (0.2, 0.6, 0.94, 1.0)
+            col = (0.3, 0.56, 0.94, 1.0)
+
             btn_x = BL_UI_Button(10, 10, 30, 25)
-            btn_x.bg_color = (0.3, 0.56, 0.94, 1.0)
-            btn_x.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+            btn_x.hover_bg_color = hov_col
             btn_x.text_size = 14
             btn_x.text = "X"
+            btn_x.bg_color = sel_col if mode == btn_x.text else col
             btn_x.set_mouse_down(self.on_mirror_changed)
             btn_x.init(context)
 
             btn_y = BL_UI_Button(45, 10, 30, 25)
-            btn_y.bg_color = (0.3, 0.56, 0.94, 1.0)
-            btn_y.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+            btn_y.hover_bg_color = hov_col
             btn_y.text_size = 14
             btn_y.text = "Y"
+            btn_y.bg_color = sel_col if mode == btn_y.text else col
             btn_y.set_mouse_down(self.on_mirror_changed)
             btn_y.init(context)
 
             btn_z = BL_UI_Button(80, 10, 30, 25)
-            btn_z.bg_color = (0.3, 0.56, 0.94, 1.0)
-            btn_z.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+            btn_z.hover_bg_color = hov_col
             btn_z.text_size = 14
             btn_z.text = "Z"
+            btn_z.bg_color = sel_col if mode == btn_z.text else col
             btn_z.set_mouse_down(self.on_mirror_changed)
             btn_z.init(context)
 
-            btn_c = BL_UI_Button(10, 45, 100, 25)
-            btn_c.bg_color = (0.3, 0.56, 0.94, 1.0)
-            btn_c.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
-            btn_c.text_size = 14
-            btn_c.text = "None"
-            btn_c.set_mouse_down(self.on_mirror_changed)
-            btn_c.init(context)
+            btn_n = BL_UI_Button(10, 45, 100, 25)
+            btn_n.hover_bg_color = hov_col
+            btn_n.text_size = 14
+            btn_n.text = "None"
+            btn_n.bg_color = sel_col if mode == btn_n.text else col
+            btn_n.set_mouse_down(self.on_mirror_changed)
+            btn_n.init(context)
 
             self._panel_action.add_widget(btn_x)
             self._panel_action.add_widget(btn_y)
             self._panel_action.add_widget(btn_z)
-            self._panel_action.add_widget(btn_c)
+            self._panel_action.add_widget(btn_n)
             self._panel_action.layout_widgets()
 
             return True
