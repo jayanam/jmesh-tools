@@ -60,6 +60,8 @@ class Polyline_Shape(Shape):
 
         self.add_shape_action(Shape_Mirror_Action())
 
+        self.add_shape_action(Shape_Operation_Action())
+
         if current_mode is not None:
             bpy.ops.object.mode_set(mode=current_mode, toggle=False)
 
@@ -121,6 +123,8 @@ class Polyline_Shape(Shape):
                 self.add_shape_action(Shape_Array_Action())
 
                 self.add_shape_action(Shape_Mirror_Action())
+
+                self.add_shape_action(Shape_Operation_Action())
 
                 self.start_extrude_immediate(mouse_pos_2d, mouse_pos_3d, context)
             return False

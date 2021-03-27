@@ -126,6 +126,8 @@ class Circle_Shape(Shape):
             self.add_shape_action(Shape_Array_Action())
 
             self.add_shape_action(Shape_Mirror_Action())
+
+            self.add_shape_action(Shape_Operation_Action())
             
             self.start_extrude_immediate(mouse_pos_2d, mouse_pos_3d, context)
             return False

@@ -217,8 +217,11 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                         elif type(shape_action) is Shape_Array_Action:
                             if self.shape.open_array_input(context, shape_action, unitinfo):
                                result = RM
-                        else:
+                        elif type(shape_action) is Shape_Mirror_Action:
                             if self.shape.open_mirror_input(context, shape_action, unitinfo):
+                               result = RM
+                        else:
+                            if self.shape.open_operation_input(context, shape_action, unitinfo):
                                 result = RM                                                      
 
                 if self.shape.is_moving() and not self.shape_gizmo.is_dragging():

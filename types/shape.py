@@ -260,6 +260,69 @@ class Shape:
         self.close_input()
         self.create_mirror()
         self.create_batch()
+        self.build_actions()
+
+    def on_operation_changed(self, button):
+        bpy.context.scene.bool_mode = button.text
+        self.close_input()
+        self.build_actions()
+
+    def open_operation_input(self, context, shape_action, unitinfo)              :
+        if self.is_created():
+            self.clear_action_panel()
+            self._panel_action = BL_UI_Drag_Panel(0, 0, 120, 190)
+            self._panel_action.bg_color = (0.1, 0.1, 0.1, 0.9)
+            self._panel_action.init(context)
+
+            btn_c = BL_UI_Button(10, 10, 100, 25)
+            btn_c.bg_color = (0.3, 0.56, 0.94, 1.0)
+            btn_c.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+            btn_c.text_size = 14
+            btn_c.text = "Create"
+            btn_c.set_mouse_down(self.on_operation_changed)
+            btn_c.init(context)
+
+            btn_d = BL_UI_Button(10, 45, 100, 25)
+            btn_d.bg_color = (0.3, 0.56, 0.94, 1.0)
+            btn_d.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+            btn_d.text_size = 14
+            btn_d.text = "Difference"
+            btn_d.set_mouse_down(self.on_operation_changed)
+            btn_d.init(context)
+
+            btn_u = BL_UI_Button(10, 80, 100, 25)
+            btn_u.bg_color = (0.3, 0.56, 0.94, 1.0)
+            btn_u.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+            btn_u.text_size = 14
+            btn_u.text = "Union"
+            btn_u.set_mouse_down(self.on_operation_changed)
+            btn_u.init(context)
+
+            btn_i = BL_UI_Button(10, 115, 100, 25)
+            btn_i.bg_color = (0.3, 0.56, 0.94, 1.0)
+            btn_i.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+            btn_i.text_size = 14
+            btn_i.text = "Intersect"
+            btn_i.set_mouse_down(self.on_operation_changed)
+            btn_i.init(context)
+
+            btn_s = BL_UI_Button(10, 150, 100, 25)
+            btn_s.bg_color = (0.3, 0.56, 0.94, 1.0)
+            btn_s.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
+            btn_s.text_size = 14
+            btn_s.text = "Slice"
+            btn_s.set_mouse_down(self.on_operation_changed)
+            btn_s.init(context)
+
+            self._panel_action.add_widget(btn_c)
+            self._panel_action.add_widget(btn_d)
+            self._panel_action.add_widget(btn_u)
+            self._panel_action.add_widget(btn_i)
+            self._panel_action.add_widget(btn_s)
+
+            self._panel_action.layout_widgets()
+            return True
+        return False
 
     def open_mirror_input(self, context, shape_action, unitinfo)              :
         if self.is_created():

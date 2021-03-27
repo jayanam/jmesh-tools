@@ -1,7 +1,7 @@
 import gpu
 from gpu_extras.batch import batch_for_shader
 
-from .. utils.fc_draw_utils import draw_circle_2d
+from .. utils.fc_draw_utils import draw_circle_2d, set_poly_smooth
 
 from .. fc_preferences import get_preferences
 
@@ -40,18 +40,20 @@ class Shape_Action:
 class Shape_Size_Action(Shape_Action):
 
   def draw(self):
+    set_poly_smooth()
     self._shader.bind()
     self._shader.uniform_float("color", (0.9, 0.0, 0.0, 1.0))
     self._batch.draw(self._shader)
+    set_poly_smooth(False)
 
   def set_position(self, x, y):
     super().set_position(x, y)
 
     x_r = x + 14
-    y_r = y - 14
+    y_r = y - 12
 
     indices = ((0, 1, 2), (2, 0, 3))
-    coords_middle = [(x, y - 7), (x + 7,  y_r), (x_r, y - 7), (x + 7, y)]
+    coords_middle = [(x, y - 6), (x + 7,  y_r), (x_r, y - 6), (x + 7, y)]
     self._batch = batch_for_shader(self._shader, 'TRIS', {"pos" : coords_middle}, indices=indices)
 
 class Shape_Action_Symmetry(Shape_Action):
@@ -103,9 +105,9 @@ class Shape_Action_Symmetry(Shape_Action):
 
   def set_hover(self, is_hover):
     if is_hover:
-      self._color[3] = 0.5
-    else:
       self._color[3] = 1.0
+    else:
+      self._color[3] = 0.5
 
   def set_position(self, x, y):
     super().set_position(x, y)
@@ -121,7 +123,7 @@ class Shape_Action_Symmetry(Shape_Action):
     blf.color(1, 0, 0, 0, 1)
     dim = blf.dimensions(1, self._axis)
     blf.position(1, self._x - dim[0] / 2, self._y - dim[1] / 2, 0)
-    blf.draw(1, self._axis) 
+    blf.draw(1, self._axis)
 
 
 class Shape_Array_Action(Shape_Action):
@@ -143,9 +145,11 @@ class Shape_Array_Action(Shape_Action):
       self._offset = value
     
   def draw(self):
+    set_poly_smooth()
     self._shader.bind()
     self._shader.uniform_float("color", (1.0, 0.2, 0.0, 1.0))
     self._batch.draw(self._shader)
+    set_poly_smooth(False)
 
   def set_position(self, x, y):
     super().set_position(x, y)
@@ -167,18 +171,10 @@ class Shape_Array_Action(Shape_Action):
     self._batch = batch_for_shader(self._shader, 'LINES', {"pos": lines})
 
 class Shape_Mirror_Action(Shape_Action):
-
-  def __init__(self):
-    self._axis = 'X'
-    super().__init__()
-
-  def get_axis(self):
-    return self._axis
    
   def draw(self):
 
-    bgl.glEnable(bgl.GL_BLEND)
-    bgl.glEnable(bgl.GL_LINE_SMOOTH)
+    set_poly_smooth()
     bgl.glLineWidth(2)
 
     self._shader.bind()
@@ -187,8 +183,7 @@ class Shape_Mirror_Action(Shape_Action):
     self._batch.draw(self._shader)
 
     bgl.glLineWidth(1)
-    bgl.glDisable(bgl.GL_LINE_SMOOTH)
-    bgl.glDisable(bgl.GL_BLEND)
+    set_poly_smooth(False)
 
   def set_position(self, x, y):
     super().set_position(x, y)
@@ -207,3 +202,18 @@ class Shape_Mirror_Action(Shape_Action):
     points.append((x_m+6, y_t))
 
     self._batch = batch_for_shader(self._shader, 'LINE_STRIP', {"pos": points})
+
+class Shape_Operation_Action(Shape_Action):
+
+  def __init__(self):
+    super().__init__()
+    self._color=[0.8, 0.0, 0.2, 1.0]
+   
+  def draw(self):
+
+    circle_co = draw_circle_2d((self._x + 6, self._y - 6), self._color, 6, 16)
+
+  def set_position(self, x, y):
+    super().set_position(x, y)
+
+    

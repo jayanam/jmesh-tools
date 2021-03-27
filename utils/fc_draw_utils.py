@@ -1,5 +1,23 @@
 import bgl
 
+def set_line_smooth(enabled=True):
+    if enabled:
+        bgl.glEnable(bgl.GL_BLEND)
+        bgl.glEnable(bgl.GL_LINE_SMOOTH)
+    else:
+        bgl.glDisable(bgl.GL_LINE_SMOOTH)
+        bgl.glDisable(bgl.GL_BLEND)
+
+def set_poly_smooth(enabled=True):
+    if enabled:
+        bgl.glEnable(bgl.GL_BLEND)
+        bgl.glEnable(bgl.GL_LINE_SMOOTH)
+        bgl.glEnable(bgl.GL_POLYGON_SMOOTH)
+    else:
+        bgl.glDisable(bgl.GL_POLYGON_SMOOTH)
+        bgl.glDisable(bgl.GL_LINE_SMOOTH)
+        bgl.glDisable(bgl.GL_BLEND)
+
 def draw_circle_2d(position, color, radius, segments=32, batch_type='TRI_FAN'):
 
     from math import sin, cos, pi
@@ -13,8 +31,7 @@ def draw_circle_2d(position, color, radius, segments=32, batch_type='TRI_FAN'):
     if segments <= 0:
         raise ValueError("Amount of segments must be greater than 0.")
 
-    bgl.glEnable(bgl.GL_LINE_SMOOTH)
-    bgl.glEnable(bgl.GL_BLEND)
+    set_line_smooth()
     bgl.glDepthMask(False)
     
     with gpu.matrix.push_pop():
@@ -32,4 +49,4 @@ def draw_circle_2d(position, color, radius, segments=32, batch_type='TRI_FAN'):
         shader.uniform_float("color", color)
         batch.draw()
 
-        bgl.glDisable(bgl.GL_BLEND)
+    set_line_smooth(False)
