@@ -15,6 +15,8 @@ from . types.shape_action import Shape_Action_Symmetry
 from bpy_extras.view3d_utils import location_3d_to_region_2d
 from mathutils import Vector
 
+from . fc_preferences import get_preferences
+
 # Symmetry operator
 class FC_Symmetry_Operator(bpy.types.Operator):
     bl_idname = "object.fc_symmetry_op"
@@ -150,3 +152,17 @@ class FC_Symmetry_Operator(bpy.types.Operator):
         pos_2d = location_3d_to_region_2d(region, rv3d, action.get_offset())
         action.set_position(pos_2d[0], pos_2d[1])
         action.draw()
+
+      prefs = get_preferences()
+      sd = prefs.symmetrize_direction
+
+      header = "- Symmetrize (Mode: " + sd + ") -"
+
+      blf.color(1, 1, 1, 1, 1)
+      blf.size(1, 16, 72)
+
+      region = context.region
+      xt = int(region.width / 2.0)
+
+      blf.position(1, xt - blf.dimensions(0, header)[0] / 2, 30 , 0)
+      blf.draw(1, header)
