@@ -443,7 +443,7 @@ class Shape:
 
     def add_hint_label(self, context, y):
         lbl_hint = BL_UI_Label(10, y, 120, 24)
-        lbl_hint.text = "Esc: Close | Enter: Apply"
+        lbl_hint.text = "Esc or Enter: Close"
         lbl_hint.text_size = 11
         lbl_hint.init(context)
         self._panel_action.add_widget(lbl_hint)
