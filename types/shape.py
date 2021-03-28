@@ -224,6 +224,7 @@ class Shape:
             self._panel_action.init(context)
 
             txt_size = BL_UI_Textbox(10, 10, 100, 24)
+            txt_size.is_numeric = True
             txt_size.max_input_chars = 12
             txt_size.init(context)
             txt_size.label = unitinfo[0]
@@ -498,7 +499,10 @@ class Shape:
         self._current_array_action.offset = distance
 
     def on_input_changed(self, textbox, context, event):
-        if event.type == "ESC":
+        if event == None or (event.type != "RET" and event.type != "ESC"):
+            self.apply_size_action(textbox, context, False)   
+
+        elif event.type == "ESC":
             self.close_input()
         elif event.type == "RET":
             self.apply_size_action(textbox, context)
@@ -527,8 +531,10 @@ class Shape:
         self.clear_action_panel()
         self._panel_action = None
 
-    def apply_size_action(self, widget, context):
-        self.close_input()
+    def apply_size_action(self, widget, context, close_input = True):
+        if close_input:
+            self.close_input()
+
         self.create_batch()
 
     def can_start_from_center(self):

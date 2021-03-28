@@ -31,6 +31,7 @@ class BL_UI_Textbox(BL_UI_Widget):
         self._max_input_chars = 100
         self._label_width = 0
         self._is_numeric = False
+        self._x_start_value = 0
 
     @property
     def carret_color(self):
@@ -261,13 +262,27 @@ class BL_UI_Textbox(BL_UI_Widget):
         self.text_changed_func = text_changed_func
 
     def mouse_down(self, x, y):
-        if self.is_in_rect(x, y):
-            return True
+        self._mouse_down = self.is_in_rect(x,y)
+        if self._mouse_down:    
+            self._x_start_value = x
 
-        return False
+        return self._mouse_down
 
     def mouse_move(self, x, y):
-        pass
+        if self._mouse_down and self._is_numeric:
 
-    def mouse_up(self, x, y):
-        pass
+            try:
+                dist = x - self._x_start_value
+                val = float(self._text)
+                val += 1 if dist > 0 else -1
+
+                self._text = str(val)
+
+                self._x_start_value = x
+
+                self.text_changed_func(self, self.context, None)
+
+            except:
+                pass
+
+        

@@ -14,15 +14,16 @@ class Circle_Shape(Shape):
 
     def on_open_size_action(self, widget, unitinfo):
         unit_value = bu_to_unit(self._radius, unitinfo[1])
-        widget.text = "{:.2f}".format(unit_value)       
+        widget.text = "{:.2f}".format(unit_value)
+      
 
-    def apply_size_action(self, widget, context):
+    def apply_size_action(self, widget, context, close_input = True):
         value = float(widget.text)
         unitinfo = get_current_units()
 
         self.set_size(context, unit_to_bu(value, unitinfo[1]))
 
-        super().apply_size_action(widget, context)
+        super().apply_size_action(widget, context, close_input)
 
     def handle_mouse_wheel(self, inc, context):
         if self.is_processing():

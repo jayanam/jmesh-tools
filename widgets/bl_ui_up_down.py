@@ -276,4 +276,5 @@ class BL_UI_Up_Down(BL_UI_Widget):
             self.__state = 0
  
     def mouse_up(self, x, y):
+        super().mouse_up(x,y)
         self.__state = 0

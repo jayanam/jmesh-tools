@@ -172,6 +172,7 @@ class BL_UI_Checkbox(BL_UI_Widget):
 
     def mouse_down(self, x, y):
         if self.is_in_rect(x,y):
+            self._mouse_down = True
             self.toggle_state()
 
             self.call_state_changed()

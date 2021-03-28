@@ -92,10 +92,8 @@ class BL_UI_Widget:
 
         if(event.type == 'LEFTMOUSE'):
             if(event.value == 'PRESS'):
-                self._mouse_down = True
                 return self.mouse_down(x, y)
             else:
-                self._mouse_down = False
                 self.mouse_up(x, y)
                 
         
@@ -143,10 +141,11 @@ class BL_UI_Widget:
         return False
 
     def mouse_down(self, x, y):       
-        return self.is_in_rect(x,y)
+        self._mouse_down = self.is_in_rect(x,y)
+        return self._mouse_down
 
     def mouse_up(self, x, y):
-        pass
+        self._mouse_down = False
 
     def set_mouse_enter(self, mouse_enter_func):
         self.mouse_enter_func = mouse_enter_func  

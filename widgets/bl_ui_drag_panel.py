@@ -38,6 +38,7 @@ class BL_UI_Drag_Panel(BL_UI_Widget):
             return False
         
         if self.is_in_rect(x,y):
+            self._mouse_down = True
             height = self.get_area_height()
             self.is_drag = True
             self.drag_offset_x = x - self.x_screen
@@ -53,6 +54,7 @@ class BL_UI_Drag_Panel(BL_UI_Widget):
             self.layout_widgets()
 
     def mouse_up(self, x, y):
+        self._mouse_down = False
         self.is_drag = False
         self.drag_offset_x = 0
         self.drag_offset_y = 0
