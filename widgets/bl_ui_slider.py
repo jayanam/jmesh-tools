@@ -313,5 +313,6 @@ class BL_UI_Slider(BL_UI_Widget):
             self.update(self.x_screen, self.y_screen)
  
     def mouse_up(self, x, y):
+        super().mouse_up(x,y)
         self.__state = 0
         self.__is_drag = False
