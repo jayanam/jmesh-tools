@@ -273,10 +273,21 @@ class BL_UI_Textbox(BL_UI_Widget):
 
             try:
                 dist = x - self._x_start_value
+                sign = lambda x: (1, -1)[x<0]
+                s = sign(dist)
+                dist_abs = abs(dist)
                 val = float(self._text)
-                val += 1 if dist > 0 else -1
+                
+                if dist_abs > 10:
+                    val += 50 * s
+                elif dist_abs > 5:
+                    val += 10 * s
+                elif dist_abs > 3:
+                    val += 5 * s
+                elif dist_abs > 0:
+                    val += 1 * s
 
-                self._text = str(val)
+                self._text =  "{0:.2f}".format(val)
 
                 self._x_start_value = x
 
