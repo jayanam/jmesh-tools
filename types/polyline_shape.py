@@ -6,7 +6,7 @@ class Polyline_Shape(Shape):
         return "Polyline"
 
     def can_close(self):
-        return len(self._vertices) > 1
+        return self._vertex_ctr.vertex_count > 1
 
     def close(self):
             
@@ -67,13 +67,10 @@ class Polyline_Shape(Shape):
 
         return True
 
-    def get_vertices_copy(self, mouse_pos = None):
-        result = self._vertices.copy()
-
-        if mouse_pos is not None and self.is_processing():
-            result.append(mouse_pos)
-
-        return result
+    def connect_to_mouse_pos(self, mouse_pos):
+        if self.is_processing():
+            return mouse_pos
+        return None
 
     def get_vertices_mirror_copy(self, mouse_pos = None):
         result = self._vertices_m.copy()
@@ -138,7 +135,7 @@ class Polyline_Shape(Shape):
 
         if self.is_draw_input(context):
             if self.state == ShapeState.PROCESSING:
-                if len(self._vertices) == 2:
+                if self._vertex_ctr.vertex_count == 2:
                     self.build_actions()
 
                 self.add_vertex(mouse_pos_3d)
@@ -155,7 +152,7 @@ class Polyline_Shape(Shape):
         return result
 
     def get_gizmo_anchor_vertex(self):
-        return self._vertices[0]
+        return self._vertex_ctr.first_vertex
 
     def get_point_size(self, context):
         if self.is_draw_input(context):

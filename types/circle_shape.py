@@ -95,12 +95,12 @@ class Circle_Shape(Shape):
             # rot_mat = self._normal.to_track_quat('Z', 'X').to_matrix()
             offset = self._normal.normalized() * context.scene.snap_offset
 
-        self._vertices = [rot_mat @ Vector(point) + 
+        self._vertex_ctr.vertices = [rot_mat @ Vector(point) + 
                           self._center + offset for point in points]
 
         self.create_mirror()
 
-        self._vertices_2d = [get_2d_vertex(context, vertex) for vertex in self._vertices]
+        self._vertices_2d = [get_2d_vertex(context, vertex) for vertex in self._vertex_ctr.vertices]
 
     def handle_mouse_press(self, mouse_pos_2d, mouse_pos_3d, event, context):
 

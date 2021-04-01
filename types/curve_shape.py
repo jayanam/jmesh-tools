@@ -10,7 +10,7 @@ class Curve_Shape(Shape):
         return "Curve"
 
     def can_close(self):
-        return len(self._vertices) >= 2
+        return self._vertex_ctr.vertex_count >= 2
 
     def close(self):
             
@@ -23,29 +23,26 @@ class Curve_Shape(Shape):
     def connected_shape(self):
         return False
 
-    def get_vertices_copy(self, mouse_pos = None):
-        result = self._vertices.copy()
-
-        if mouse_pos is not None and self.is_processing():
-            result.append(mouse_pos)
-
-        return result
+    def connect_to_mouse_pos(self, mouse_pos):
+        if self.is_processing():
+            return mouse_pos
+        return None
 
     def get_cuts(self):
         return len(self._vertices_2d) - 2
 
     def get_start_point(self):
         if(self.is_created()):
-            return self._vertices[0]
+            return self._vertex_ctr.first_vertex
         return None
 
     def get_end_point(self):
         if(self.is_created()):
-            return self._vertices[-1]
+            return self._vertex_ctr.last_vertex
         return None
 
     def get_points(self):
-        return self._vertices
+        return self._vertex_ctr.vertices
 
     def get_normal_start(self):
         return self._normals[0]

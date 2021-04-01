@@ -38,8 +38,9 @@ class Shape:
     def __init__(self):
         self._state = ShapeState.NONE
         self._vertices_2d = []
-        self._vertices = []
         self._vertices_extruded = []
+
+        self._vertex_ctr = VertexContainer()
 
         self._vertices_m = []
         self._vertices_extruded_m = []
@@ -93,32 +94,18 @@ class Shape:
             return get_selected_mesh_center(context, mouse_pos_3d)
 
     def create_batch(self, mouse_pos = None):
-        points = self.get_vertices_copy(mouse_pos)
 
+        # TODO: Mirror as vertex container
         points_mirror = self.get_vertices_mirror_copy(mouse_pos)
-
-        extrude_points = self.get_vertices_extruded_copy(mouse_pos)
-
         extrude_points_m = self.get_vertices_extruded_mirror_copy(mouse_pos)
-
-        extrude_lines = []
-        for index, vertex in enumerate(extrude_points):
-            extrude_lines.append(points[index])
-            extrude_lines.append(vertex)
 
         extrude_lines_m = []
         for index, vertex in enumerate(extrude_points_m):
             extrude_lines_m.append(points_mirror[index])
             extrude_lines_m.append(vertex)
 
-        self.batch = batch_for_shader(self.shader, 'LINE_LOOP', 
-            {"pos": points})
-
-        self.batch_extruded = batch_for_shader(self.shader, 'LINE_LOOP', 
-            {"pos": extrude_points})
-
-        self.batch_lines_extruded = batch_for_shader(self.shader, 'LINES', 
-            {"pos": extrude_lines})
+        pos = self.connect_to_mouse_pos(mouse_pos)
+        self._vertex_ctr.create_batch(pos)
 
         # Mirror batches
         self.batch_mirror = batch_for_shader(self.shader, 'LINE_LOOP', 
@@ -130,16 +117,13 @@ class Shape:
         self.batch_lines_extruded_m = batch_for_shader(self.shader, 'LINES', 
             {"pos": extrude_lines_m})
 
-        # Batch for points
-        self.batch_points = batch_for_shader(self.shader, 'POINTS', {"pos": points})
-
     @property
     def vertex_containers(self):
         return self._array
 
     def draw(self, context):
         self.shader.bind()
-
+        bgl.glPointSize(self.get_point_size(context))
         if self.connected_shape():
 
             # Draw lines
@@ -147,23 +131,21 @@ class Shape:
 
             self.shader.uniform_float("color", (0.2, 0.5, 0.8, 1.0))
             bgl.glLineWidth(2)
-            self.batch_extruded.draw(self.shader)
             self.batch_extruded_m.draw(self.shader)
 
             bgl.glLineWidth(1)
-            self.batch_lines_extruded.draw(self.shader)
             self.batch_lines_extruded_m.draw(self.shader)
 
             bgl.glLineWidth(3)
             self.shader.uniform_float("color", (0.1, 0.3, 0.7, 1.0))
-            self.batch.draw(self.shader)
             self.batch_mirror.draw(self.shader)
+
+            self._vertex_ctr.draw()
         else:
             self.shader.uniform_float("color", (0.1, 0.3, 0.7, 1.0))
-
-        bgl.glPointSize(self.get_point_size(context))
-        self.batch_points.draw(self.shader)
-
+            self._vertex_ctr.draw_points()
+            
+        # Draw arrays
         for vc in self._array:
             vc.draw()
 
@@ -248,7 +230,7 @@ class Shape:
         self._vertices_m.clear()
         self._vertices_extruded_m.clear()
         if self.has_mirror:
-            for vertex in self._vertices:
+            for vertex in self._vertex_ctr.vertices:
                 self.add_vertex_mirror(vertex)
 
             if self._is_extruded:
@@ -478,9 +460,8 @@ class Shape:
                 offset = rot_mat @ Vector((0, distance, 0))     
 
             vc = VertexContainer()
-            vc.add_vertices(self._vertices, offset * (i+1))
-            vc.create_batch()
-
+            vc.add_from_container(self._vertex_ctr, offset * (i+1))
+            
             self._array.append(vc)
 
         if self._is_extruded:
@@ -627,7 +608,7 @@ class Shape:
 
         min_dist = 1000
         idx = 0
-        for i, v in enumerate(self._vertices):
+        for i, v in enumerate(self._vertex_ctr.vertices):
             dist = (mouse_pos_3d - v).length
             if dist < min_dist:
                 min_dist = dist
@@ -664,7 +645,7 @@ class Shape:
 
     @property
     def vertices(self):
-        return self._vertices
+        return self._vertex_ctr.vertices
 
     @property
     def vertices_mirror(self):
@@ -684,7 +665,7 @@ class Shape:
 
     @vertices.setter
     def vertices(self, value):
-        self._vertices = value
+        self._vertex_ctr.vertices = value
 
     @property
     def state(self):
@@ -748,8 +729,8 @@ class Shape:
         return self._extrusion
 
     def add_vertex(self, vertex):
-        if vertex not in self._vertices:
-            self._vertices.append(vertex)
+        if vertex not in self._vertex_ctr.vertices:
+            self._vertex_ctr.add_vertex(vertex)
 
     @property
     def has_mirror(self):
@@ -780,7 +761,7 @@ class Shape:
 
     def reset_extrude(self):
         self._is_extruded = False
-        self._vertices_extruded.clear()
+        self._vertex_ctr.clear_extrude()
         self._vertices_extruded_m.clear()
 
     def get_array_center_offset(self, axis):
@@ -840,8 +821,7 @@ class Shape:
     def reset(self):
         
         if not self.is_shape_action_active():
-            self._vertices.clear()
-            self._vertices_extruded.clear()
+            self._vertex_ctr.clear()
             self._vertices_2d.clear()
             self._vertices_m.clear()
             self._vertices_extruded_m.clear()
@@ -855,11 +835,8 @@ class Shape:
     def close(self):
         return False
 
-    def get_vertices_copy(self, mouse_pos=None):
-        return self._vertices.copy()
-
-    def get_vertices_extruded_copy(self, mouse_pos=None):
-        return self._vertices_extruded.copy()
+    def connect_to_mouse_pos(self, mouse_pos):
+        return None
 
     def get_vertices_extruded_mirror_copy(self, mouse_pos=None):
         return self._vertices_extruded_m.copy()
@@ -897,8 +874,9 @@ class Shape:
         return False
 
     def vertices_3d_offset(self, vec_offset):
-        for vertex_3d in self._vertices:
-            vertex_3d += vec_offset
+        self._vertex_ctr.add_offset(vec_offset)
+        # for vertex_3d in self._vertices:
+        #     vertex_3d += vec_offset
 
     def vertex_3d_to_2d(self, context, v3d):
 
@@ -907,7 +885,7 @@ class Shape:
         return location_3d_to_region_2d(region, rv3d, v3d)       
 
     def vertices_3d_to_2d(self, context):
-        for index, vertex_3d in enumerate(self._vertices):
+        for index, vertex_3d in enumerate(self._vertex_ctr.vertices):
             rv3d = self._view_context.region_3d
             region = self._view_context.region
             self._vertices_2d[index] = location_3d_to_region_2d(
@@ -979,11 +957,12 @@ class Shape:
 
         dir = self._extrusion * self.get_dir()
 
-        for index, vertex3d in enumerate(self._vertices):
-            if not self._is_extruded:
-                self._vertices_extruded.append(vertex3d + dir)
-            else:
-                self._vertices_extruded[index] = vertex3d + dir
+        # for index, vertex3d in enumerate(self._vertex_ctr.vertices):
+        #     if not self._is_extruded:
+        #         self._vertices_extruded.append(vertex3d + dir)
+        #     else:
+        #         self._vertices_extruded[index] = vertex3d + dir
+        self._vertex_ctr.extrude(dir)
 
         # Extrude vertices of array
         for vc in self._array:
@@ -1019,12 +998,12 @@ class Shape:
             rv3d = context.space_data.region_3d
 
             mxy = event.mouse_region_x, event.mouse_region_y
-            mpos_3d = region_2d_to_location_3d(region, rv3d, mxy, self._vertices[0])
+            mpos_3d = region_2d_to_location_3d(region, rv3d, mxy, self._vertex_ctr.first_vertex)
 
             isect_pt, length = intersect_point_line(
                 mpos_3d,
-                self._vertices[0],
-                self._vertices[0] + dir)
+                self._vertex_ctr.first_vertex,
+                self._vertex_ctr.first_vertex + dir)
 
             self._extrusion = length
 
@@ -1032,19 +1011,21 @@ class Shape:
             return True
 
         if self._vertex_moving is not None:
-            self._vertices[self._vertex_moving] = mouse_pos_3d
+            self._vertex_ctr.vertices[self._vertex_moving] = mouse_pos_3d
             self.vertex_moved(context)
             return True
 
         if self.is_created() and self._is_moving:
             diff = mouse_pos_3d - self._move_offset
-            self._vertices = [vertex + diff for vertex in self._vertices]
+            # self._vertices = [vertex + diff for vertex in self._vertices]
+            self._vertex_ctr.add_offset(diff)
 
             for vc in self._array:
                 vc.add_offset(diff)
 
-            self._vertices_extruded = [
-                vertex + diff for vertex in self._vertices_extruded]
+            # self._vertices_extruded = [
+            #     vertex + diff for vertex in self._vertices_extruded]
+
 
             if self.has_mirror:
                 diff_m = self.get_mirror_diff(diff)

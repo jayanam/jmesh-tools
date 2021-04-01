@@ -139,7 +139,7 @@ class Rectangle_Shape(Shape):
         rv3d = context.space_data.region_3d
         view_rot = rv3d.view_rotation
 
-        self._vertices.clear()
+        self._vertex_ctr.clear()
 
         # get missing 3d vertices
         if self._snap_to_target and self._normal != None:
@@ -154,7 +154,7 @@ class Rectangle_Shape(Shape):
             self._vertex3 = get_3d_vertex(context, self._vertices_2d[2])
             vertex4 = get_3d_vertex(context, self._vertices_2d[3])
 
-        self._vertices.extend([self._vertex1, vertex2, self._vertex3, vertex4])
+        self._vertex_ctr.vertices.extend([self._vertex1, vertex2, self._vertex3, vertex4])
 
         self.create_mirror()
 
@@ -180,10 +180,10 @@ class Rectangle_Shape(Shape):
                 if not self._snap_to_target:
                     direction = get_view_direction_by_rot_matrix(
                         self._view_context.view_rotation)
-                    self._vertices[i] = get_3d_vertex_for_2d(
+                    self._vertex_ctr.vertices[i] = get_3d_vertex_for_2d(
                         self._view_context, (x, y), -direction)
                 else:
-                    self._vertices[i] = self.get_3d_for_2d((x, y), context)
+                    self._vertex_ctr.vertices[i] = self.get_3d_for_2d((x, y), context)
 
             self._vertices_2d = tmp_vertices_2d
 
@@ -192,10 +192,10 @@ class Rectangle_Shape(Shape):
         return False
 
     def get_width(self):
-        return (self._vertices[0] - self._vertices[3]).length
+        return (self._vertex_ctr.vertices[0] - self._vertex_ctr.vertices[3]).length
 
     def get_height(self):
-        return (self._vertices[0] - self._vertices[1]).length
+        return (self._vertex_ctr.vertices[0] - self._vertex_ctr.vertices[1]).length
 
     def to_center(self, axis):
         old_center = self._center_3d.copy()
