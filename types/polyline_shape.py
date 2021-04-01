@@ -72,14 +72,6 @@ class Polyline_Shape(Shape):
             return mouse_pos
         return None
 
-    def get_vertices_mirror_copy(self, mouse_pos = None):
-        result = self._vertices_m.copy()
-
-        if mouse_pos is not None and self.is_processing():
-            result.append(self.get_vertex_mirror(mouse_pos))
-
-        return result
-
     def is_draw_input(self, context):
         return context.scene.shape_input_method == "Draw"
 
