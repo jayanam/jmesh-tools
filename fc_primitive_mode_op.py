@@ -468,6 +468,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         new_collection.objects.link(obj)
 
     def create_mesh(self, context, extrude_mesh):
+        current_mode = None
         try:
             if context.object is not None:
                 current_mode = context.object.mode
@@ -567,6 +568,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         finally:
             if extrude_mesh and (current_mode is not None):
                 bpy.ops.object.mode_set(mode=current_mode)
+
 
     def get_bool_mode_id(self, bool_name):
         if bool_name == "Difference":
