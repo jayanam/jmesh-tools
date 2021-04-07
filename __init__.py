@@ -2,7 +2,7 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 8, 7, 3),
+    "version": (1, 9, 0, 1),
     "blender": (2, 80, 0),
     "location": "View3D",
     "category": "Object",
@@ -41,6 +41,7 @@ from . fc_circle_array_mode_op     import FC_Circle_Array_Mode_Operator
 from . fc_preferences       import FC_AddonPreferences
 from . fc_symmetry_op       import FC_Symmetry_Operator
 from . fc_mesh_snap_op      import FC_Mesh_Snap_Operator
+from . fc_solidify_op       import FC_SolidifyOperator
 
 from .types.enums import *
 
@@ -173,7 +174,8 @@ classes = (
     FC_AddonPreferences,
     FC_Symmetry_Operator,
     FC_JoinAndRemesh,
-    FC_Mesh_Snap_Operator
+    FC_Mesh_Snap_Operator,
+    FC_SolidifyOperator
 )
      
     

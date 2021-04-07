@@ -94,6 +94,10 @@ class FC_PT_Selected_Panel(Panel):
 
         # Mesh snap
         row = layout.row()
-        row.operator('object.fc_mesh_snap_op', text='Mesh Snap', icon='SNAP_ON')
+        col = row.column()
+        col.operator('object.solid_op', text="Solidify", icon='MOD_SOLIDIFY')
+
+        col = row.column()
+        col.operator('object.fc_mesh_snap_op', text='Mesh Snap', icon='SNAP_ON')
 
         
