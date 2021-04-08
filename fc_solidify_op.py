@@ -36,7 +36,7 @@ class FC_SolidifyOperator(BL_UI_OT_draw_operator):
         self.panel.bg_color = (0.1, 0.1, 0.1, 0.9)
 
         self.lbl_width = BL_UI_Label(20, y_top, 50, 15)
-        self.lbl_width.text = "Tickness:"
+        self.lbl_width.text = "Thickness:"
         self.lbl_width.text_size = 14
         self.lbl_width.text_color = (0.9, 0.9, 0.9, 1.0)
 
