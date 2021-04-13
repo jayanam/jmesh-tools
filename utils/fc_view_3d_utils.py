@@ -1,6 +1,7 @@
 import bpy
 import bmesh
 import mathutils
+import math
 from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 from mathutils.geometry import intersect_line_plane
@@ -64,6 +65,40 @@ def get_selected_mesh_center(context, default_pos):
                 return elem.calc_center_median()
 
     return default_pos
+
+def calculate_centroid(vertices):
+    pass
+
+    # pseudo code
+    # sx = sy = sz = sarea = 0
+    # n = len(vertices)
+
+    # x1 = px[0]
+    # y1 = py[0]
+    # z1 = pz[0]
+    # x2 = px[1]
+    # y2 = py[1]
+    # z2 = pz[1]
+    # for i in range(3, n):
+    #     x3 = px[i]
+    #     y3 = py[i]
+    #     z3 = pz[i]
+    #     dx1 = x3 - x1
+    #     dy1 = y3 - y1
+    #     dz1 = z3 - z1
+    #     dx2 = x3 - x2
+    #     dy2 = y3 - y2
+    #     dz2 = z3 - z2
+    #     cpx = dy1*dz2 - dz1*dy2
+    #     cpy = dz1*dx2 - dx1*dz2
+    #     cpz = dx1*dy2 - dy1*dx2
+    #     area = math.sqrt(cpx*cpx + cpy*cpy + cpz*cpz) / 2
+    #     sx = sx + (x1 + x2 + x3)/3*area
+    #     sy = sy + (y1 + y2 + y3)/3*area
+    #     sz = sz + (z1 + z2 + z3)/3*area
+    #     sarea = sarea + area
+
+    # return Vector(sx/sarea, sy/sarea, sz/sarea)
 
 def get_face_center(face_index, obj):
     center = Vector((0,0,0))

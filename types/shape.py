@@ -724,7 +724,7 @@ class Shape:
         return bpy.context.scene.mirror_primitive
 
     def get_vertex_mirror(self, vertex3d):
-        if vertex3d == None:
+        if vertex3d == None or not self.has_mirror:
             return None
 
         if self.mirror_type == "X":
