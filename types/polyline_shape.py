@@ -138,13 +138,12 @@ class Polyline_Shape(Shape):
             if self.is_processing():
                 return True
 
-
         result = super().handle_mouse_move(mouse_pos_2d, mouse_pos_3d, event, context)
 
         return result
 
     def get_gizmo_anchor_vertex(self):
-        return self._vertex_ctr.first_vertex
+        return calc_median_center(self._vertex_ctr.vertices)
 
     def get_point_size(self, context):
         if self.is_draw_input(context):
