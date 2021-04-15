@@ -58,6 +58,37 @@ class Rectangle_Shape(Shape):
 
     def handle_mouse_move(self, mouse_pos_2d, mouse_pos_3d, event, context):
 
+        if self.is_rotating():
+            diff = self._mouse_x - mouse_pos_2d[0]
+
+            tmp_vertices_2d = []
+            ox = self._center_2d[0]
+            oy = self._center_2d[1]
+
+            for i, vertex2d in enumerate(self._vertices_2d):
+                px = vertex2d[0]
+                py = vertex2d[1]
+
+                angle = radians(diff)
+
+                x = ox + cos(angle) * (px - ox) - sin(angle) * (py - oy)
+                y = oy + sin(angle) * (px - ox) + cos(angle) * (py - oy)
+
+                tmp_vertices_2d.append((x, y))
+
+                if not self._snap_to_target:
+                    direction = get_view_direction_by_rot_matrix(
+                        self._view_context.view_rotation)
+                    self._vertex_ctr.vertices[i] = get_3d_vertex_for_2d(
+                        self._view_context, (x, y), -direction)
+                else:
+                    self._vertex_ctr.vertices[i] = self.get_3d_for_2d((x, y), context)
+
+            self._vertices_2d = tmp_vertices_2d
+            self._mouse_x = mouse_pos_2d[0]
+            
+            return True
+
         if self.is_processing():
 
             # 0-------------1
@@ -108,8 +139,11 @@ class Rectangle_Shape(Shape):
 
     def calc_center_2d(self):
 
-        self._center_2d = (self._vertices_2d[0][0] + (self._vertices_2d[3][0] - self._vertices_2d[0][0]) / 2,
-                           self._vertices_2d[0][1] + (self._vertices_2d[1][1] - self._vertices_2d[0][1]) / 2)
+        # center = A + 1/2AC
+        x = self._vertices_2d[0][0] + 0.5 * (self._vertices_2d[2][0] - self._vertices_2d[0][0] )
+        y = self._vertices_2d[0][1] + 0.5 * (self._vertices_2d[2][1] - self._vertices_2d[0][1] )
+
+        self._center_2d = (x, y)
 
     def calc_center_3d(self, context):
         if self._snap_to_target and self._normal != None:
@@ -120,6 +154,7 @@ class Rectangle_Shape(Shape):
     def stop_move(self, context):
         super().stop_move(context)
         self.calc_center_2d()
+        self.calc_center_3d(context)
 
     def get_gizmo_anchor_vertex(self):
         return self._center_3d
@@ -158,34 +193,15 @@ class Rectangle_Shape(Shape):
 
         self.create_mirror()
 
-    def start_rotate(self, mouse_pos, context):
+    def stop_rotate(self, context):
+        super().stop_rotate(context)
+        
+
+    def start_rotate(self, mouse_pos_2d, mouse_pos_3d, context):
         if self.is_created():
 
-            tmp_vertices_2d = []
-            ox = self._center_2d[0]
-            oy = self._center_2d[1]
-
-            for i, vertex2d in enumerate(self._vertices_2d):
-                px = vertex2d[0]
-                py = vertex2d[1]
-
-                # 15 degree steps (TODO: parametrize?)
-                angle = radians(15)
-
-                x = ox + cos(angle) * (px - ox) - sin(angle) * (py - oy)
-                y = oy + sin(angle) * (px - ox) + cos(angle) * (py - oy)
-
-                tmp_vertices_2d.append((x, y))
-
-                if not self._snap_to_target:
-                    direction = get_view_direction_by_rot_matrix(
-                        self._view_context.view_rotation)
-                    self._vertex_ctr.vertices[i] = get_3d_vertex_for_2d(
-                        self._view_context, (x, y), -direction)
-                else:
-                    self._vertex_ctr.vertices[i] = self.get_3d_for_2d((x, y), context)
-
-            self._vertices_2d = tmp_vertices_2d
+            self._is_rotating = True
+            self._mouse_x = mouse_pos_2d[0]
 
             return True
 

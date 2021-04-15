@@ -54,6 +54,7 @@ class Shape:
         self._extrusion = 0.0
         self._view_context = None
         self._mouse_pos_2d = [0, 0]
+        self._mouse_x = 0.0
         self._is_extruded = False
         self._snap_to_target = False
         self._bvhtree = None
@@ -894,11 +895,12 @@ class Shape:
         else:
             self._move_axis = axis
 
-    def start_rotate(self, mouse_pos, context):
+    def start_rotate(self, mouse_pos_2d, mouse_pos_3d, context):
         return False
 
     def stop_rotate(self, context):
         self._is_rotating = False
+        self._mouse_x = 0.0
         self._rotation = 0.0
 
     def set_extrude_axis(self, axis):

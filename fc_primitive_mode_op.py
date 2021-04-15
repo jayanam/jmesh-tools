@@ -304,7 +304,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
 
                 mouse_pos_3d = self.get_3d_for_mouse(mouse_pos_2d, context)
 
-                if self.shape.start_rotate(mouse_pos_3d, context):
+                if self.shape.start_rotate(mouse_pos_2d, mouse_pos_3d, context):
                     self.shape.create_batch()
                     result = RM
 
