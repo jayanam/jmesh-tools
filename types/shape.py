@@ -901,7 +901,6 @@ class Shape:
     def stop_rotate(self, context):
         self._is_rotating = False
         self._mouse_x = 0.0
-        self._rotation = 0.0
 
     def set_extrude_axis(self, axis):
         if axis == "N":
@@ -1041,7 +1040,7 @@ class Shape:
 
     def init_text(self):
         blf.size(2, 16, 72)
-        blf.color(2, 0.1, 0.3, 0.7, 1.0)
+        blf.color(2, 1.0, 1.0, 1.0, 1.0)
 
     def draw_text(self):
         pass

@@ -61,6 +61,19 @@ class Rectangle_Shape(Shape):
         if self.is_rotating():
             diff = self._mouse_x - mouse_pos_2d[0]
 
+            if event.shift:
+                full_snap_rot = int(self._rotation + diff)
+                if full_snap_rot % 5 == 0:
+                    diff = full_snap_rot - self._rotation
+                    self._rotation = full_snap_rot
+                    self._mouse_x = mouse_pos_2d[0]
+                else:
+                    diff = 0.0
+
+            else:
+                self._rotation += diff
+                self._mouse_x = mouse_pos_2d[0]
+                
             tmp_vertices_2d = []
             ox = self._center_2d[0]
             oy = self._center_2d[1]
@@ -69,7 +82,7 @@ class Rectangle_Shape(Shape):
                 px = vertex2d[0]
                 py = vertex2d[1]
 
-                angle = radians(diff)
+                angle = radians(-diff)
 
                 x = ox + cos(angle) * (px - ox) - sin(angle) * (py - oy)
                 y = oy + sin(angle) * (px - ox) + cos(angle) * (py - oy)
@@ -85,8 +98,7 @@ class Rectangle_Shape(Shape):
                     self._vertex_ctr.vertices[i] = self.get_3d_for_2d((x, y), context)
 
             self._vertices_2d = tmp_vertices_2d
-            self._mouse_x = mouse_pos_2d[0]
-            
+
             return True
 
         if self.is_processing():
@@ -192,10 +204,7 @@ class Rectangle_Shape(Shape):
         self._vertex_ctr.vertices.extend([self._vertex1, vertex2, self._vertex3, vertex4])
 
         self.create_mirror()
-
-    def stop_rotate(self, context):
-        super().stop_rotate(context)
-        
+    
 
     def start_rotate(self, mouse_pos_2d, mouse_pos_3d, context):
         if self.is_created():
@@ -230,6 +239,15 @@ class Rectangle_Shape(Shape):
 
 
     def draw_text(self):
+
+        if self.is_rotating():
+                self.init_text()
+
+                pos = self.get_gizmo_pos()
+
+                blf.position(2, pos[0], pos[1] - 60, 0)
+                blf.draw(2, "Rotation: {0:.2f}".format(self._rotation))
+
         if self.is_processing():
 
             if self._vertices_2d[1] is not None:
@@ -238,7 +256,7 @@ class Rectangle_Shape(Shape):
                 x = self._vertices_2d[1][0]
                 y = self._vertices_2d[1][1]
 
-                blf.position(2, x, y - 25, 0)
+                blf.position(2, x + 5, y - 25, 0)
                 blf.draw(2, "Width: {0:.3f} | Height: {1:.3f}".format(
                     self.get_width(), self.get_height()))
 
