@@ -58,49 +58,6 @@ class Rectangle_Shape(Shape):
 
     def handle_mouse_move(self, mouse_pos_2d, mouse_pos_3d, event, context):
 
-        if self.is_rotating():
-            diff = self._mouse_x - mouse_pos_2d[0]
-
-            if event.shift:
-                full_snap_rot = int(self._rotation + diff)
-                if full_snap_rot % 5 == 0:
-                    diff = full_snap_rot - self._rotation
-                    self._rotation = full_snap_rot
-                    self._mouse_x = mouse_pos_2d[0]
-                else:
-                    diff = 0.0
-
-            else:
-                self._rotation += diff
-                self._mouse_x = mouse_pos_2d[0]
-                
-            tmp_vertices_2d = []
-            ox = self._center_2d[0]
-            oy = self._center_2d[1]
-
-            for i, vertex2d in enumerate(self._vertices_2d):
-                px = vertex2d[0]
-                py = vertex2d[1]
-
-                angle = radians(-diff)
-
-                x = ox + cos(angle) * (px - ox) - sin(angle) * (py - oy)
-                y = oy + sin(angle) * (px - ox) + cos(angle) * (py - oy)
-
-                tmp_vertices_2d.append((x, y))
-
-                if not self._snap_to_target:
-                    direction = get_view_direction_by_rot_matrix(
-                        self._view_context.view_rotation)
-                    self._vertex_ctr.vertices[i] = get_3d_vertex_for_2d(
-                        self._view_context, (x, y), -direction)
-                else:
-                    self._vertex_ctr.vertices[i] = self.get_3d_for_2d((x, y), context)
-
-            self._vertices_2d = tmp_vertices_2d
-
-            return True
-
         if self.is_processing():
 
             # 0-------------1
@@ -171,17 +128,6 @@ class Rectangle_Shape(Shape):
     def get_gizmo_anchor_vertex(self):
         return self._center_3d
 
-    def get_gizmo_pos(self):
-        if self.is_created():
-            rv3d = self._view_context.region_3d
-            region = self._view_context.region
-            pos_2d = location_3d_to_region_2d(
-                region, rv3d, self.get_gizmo_anchor_vertex())
-
-            return pos_2d
-
-        return None
-
     def create_rect(self, context):
         rv3d = context.space_data.region_3d
         view_rot = rv3d.view_rotation
@@ -240,14 +186,8 @@ class Rectangle_Shape(Shape):
 
     def draw_text(self):
 
-        if self.is_rotating():
-                self.init_text()
-
-                pos = self.get_gizmo_pos()
-
-                blf.position(2, pos[0], pos[1] - 60, 0)
-                blf.draw(2, "Rotation: {0:.2f}".format(self._rotation))
-
+        super().draw_text()
+        
         if self.is_processing():
 
             if self._vertices_2d[1] is not None:

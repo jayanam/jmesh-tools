@@ -142,6 +142,17 @@ class Polyline_Shape(Shape):
 
         return result
 
+    def start_rotate(self, mouse_pos_2d, mouse_pos_3d, context):
+        if self.is_created():
+
+            self._is_rotating = True
+            self._center_2d = self.get_gizmo_pos()
+            self._mouse_x = mouse_pos_2d[0]
+
+            return True
+
+        return False
+
     def get_gizmo_anchor_vertex(self):
         return calc_median_center(self._vertex_ctr.vertices)
 
