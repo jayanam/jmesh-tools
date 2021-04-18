@@ -108,20 +108,6 @@ class Shape:
         bgl.glPointSize(self.get_point_size(context))
         if self.connected_shape():
 
-            # Draw lines
-            # bgl.glEnable(bgl.GL_LINE_SMOOTH)
-
-            # self.shader.uniform_float("color", (0.2, 0.5, 0.8, 1.0))
-            # bgl.glLineWidth(2)
-            # self.batch_extruded_m.draw(self.shader)
-
-            # bgl.glLineWidth(1)
-            # self.batch_lines_extruded_m.draw(self.shader)
-
-            # bgl.glLineWidth(3)
-            # self.shader.uniform_float("color", (0.1, 0.3, 0.7, 1.0))
-            # self.batch_mirror.draw(self.shader)
-
             self._vertex_ctr_m.draw()
 
             self._vertex_ctr.draw()
@@ -212,7 +198,7 @@ class Shape:
         pass
 
     def create_mirror(self):
-        self._vertex_ctr_m .clear()
+        self._vertex_ctr_m.clear()
 
         if self.has_mirror:
             for vertex in self._vertex_ctr.vertices:
@@ -990,14 +976,14 @@ class Shape:
                 tmp_vertices_2d.append((x, y))
 
                 if not self._snap_to_target:
-                    direction = get_view_direction_by_rot_matrix(
-                        self._view_context.view_rotation)
-                    self._vertex_ctr.vertices[i] = get_3d_vertex_for_2d(
-                        self._view_context, (x, y), -direction)
+                    direction = get_view_direction_by_rot_matrix(self._view_context.view_rotation)
+                    self._vertex_ctr.vertices[i] = get_3d_vertex_for_2d(self._view_context, (x, y), -direction)
                 else:
                     self._vertex_ctr.vertices[i] = self.get_3d_for_2d((x, y), context)
 
             self._vertices_2d = tmp_vertices_2d
+
+            self.create_mirror()
 
             return True
 
