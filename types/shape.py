@@ -54,7 +54,7 @@ class Shape:
         self._extrusion = 0.0
         self._view_context = None
         self._mouse_pos_2d = [0, 0]
-        self._mouse_x = 0.0
+        self._mouse_y = 0.0
         self._is_extruded = False
         self._snap_to_target = False
         self._bvhtree = None
@@ -886,7 +886,7 @@ class Shape:
 
     def stop_rotate(self, context):
         self._is_rotating = False
-        self._mouse_x = 0.0
+        self._mouse_y = 0.0
 
     def set_extrude_axis(self, axis):
         if axis == "N":
@@ -945,20 +945,20 @@ class Shape:
     def handle_mouse_move(self, mouse_pos_2d, mouse_pos_3d, event, context):
 
         if self.is_rotating():
-            diff = self._mouse_x - mouse_pos_2d[0]
+            diff = self._mouse_y - mouse_pos_2d[1]
 
             if event.shift:
                 full_snap_rot = int(self._rotation + diff)
                 if full_snap_rot % 5 == 0:
                     diff = full_snap_rot - self._rotation
                     self._rotation = full_snap_rot
-                    self._mouse_x = mouse_pos_2d[0]
+                    self._mouse_y = mouse_pos_2d[1]
                 else:
                     diff = 0.0
 
             else:
                 self._rotation += diff
-                self._mouse_x = mouse_pos_2d[0]
+                self._mouse_y = mouse_pos_2d[1]
                 
             tmp_vertices_2d = []
             ox = self._center_2d[0]
