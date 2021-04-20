@@ -47,8 +47,8 @@ class Polyline_Shape(Shape):
         self.reset()
 
         for v in vertices:
-            self.add_vertex(v)
-            self._vertices_2d.append(get_2d_vertex(context, v))
+            self.add_v3(v)
+            self.add_v2(get_2d_vertex(context, v))
             
         self.close()
         self.build_actions()
@@ -93,17 +93,17 @@ class Polyline_Shape(Shape):
 
         if (self.is_none() and event.ctrl) or (self.is_processing() and not event.ctrl):
 
-            self.add_vertex(mouse_pos_3d)
-            self._vertices_2d.append(get_2d_vertex(context, mouse_pos_3d))
-            self.add_vertex_mirror(mouse_pos_3d)
+            self.add_v3(mouse_pos_3d)
+            self.add_v2(get_2d_vertex(context, mouse_pos_3d))
+            self.add_v3_mirror(mouse_pos_3d)
 
             self.state = ShapeState.PROCESSING
             return False
 
         elif self.is_processing() and event.ctrl and self.can_close():
-            self.add_vertex(mouse_pos_3d)
-            self._vertices_2d.append(get_2d_vertex(context, mouse_pos_3d))
-            self.add_vertex_mirror(mouse_pos_3d)
+            self.add_v3(mouse_pos_3d)
+            self.add_v2(get_2d_vertex(context, mouse_pos_3d))
+            self.add_v3_mirror(mouse_pos_3d)
 
             if self.close():
                 
@@ -130,8 +130,8 @@ class Polyline_Shape(Shape):
                 if self._vertex_ctr.vertex_count == 2:
                     self.build_actions()
 
-                self.add_vertex(mouse_pos_3d)
-                self._vertices_2d.append(get_2d_vertex(context, mouse_pos_3d))
+                self.add_v3(mouse_pos_3d)
+                self.add_v2(get_2d_vertex(context, mouse_pos_3d))
                 return True
 
         else:

@@ -100,7 +100,7 @@ class Circle_Shape(Shape):
 
         self.create_mirror()
 
-        self._vertices_2d = [get_2d_vertex(context, vertex) for vertex in self._vertex_ctr.vertices]
+        self._vertex_ctr.vertices_2d = [get_2d_vertex(context, vertex) for vertex in self._vertex_ctr.vertices]
 
     def handle_mouse_press(self, mouse_pos_2d, mouse_pos_3d, event, context):
 

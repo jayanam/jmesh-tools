@@ -5,9 +5,7 @@ class Rectangle_Shape(Shape):
 
     def __init__(self):
         super().__init__()
-        self._vertex1 = None
-        self._vertex3 = None
-        self._vertices_2d = [None, None, None, None]
+        self._vertex_ctr.vertices_2d.extend([None, None, None, None])
         self._center_2d = None
         self._center_3d = None
 
@@ -31,8 +29,8 @@ class Rectangle_Shape(Shape):
                 center_3d = self.get_center(mouse_pos_3d, context)
                 self._center_2d = self.vertex_3d_to_2d(context, center_3d)
             else:              
-                self._vertex1 = self.get_center(mouse_pos_3d, context)
-                self._vertices_2d[0] = self.vertex_3d_to_2d(context, self._vertex1)
+                v1 = self.get_center(mouse_pos_3d, context)
+                self.set_v2(0, self.vertex_3d_to_2d(context, v1))
 
             self.state = ShapeState.PROCESSING
             return False
@@ -71,19 +69,16 @@ class Rectangle_Shape(Shape):
                 w = mouse_pos_2d[0] - cx
                 h = mouse_pos_2d[1] - cy
 
-                self._vertices_2d[0] = (cx - w, cy + h)
-                self._vertices_2d[1] = (cx + w, cy + h)
-                self._vertices_2d[2] = (cx + w, cy - h)
-                self._vertices_2d[3] = (cx - w, cy - h)
+                self.set_v2(0, (cx - w, cy + h))
+                self.set_v2(1, (cx + w, cy + h))
+                self.set_v2(2, (cx + w, cy - h))
+                self.set_v2(3, (cx - w, cy - h))
 
             else:
-                self._vertex3 = mouse_pos_3d
-                self._vertices_2d[2] = mouse_pos_2d
 
-                self._vertices_2d[1] = (
-                    self._vertices_2d[0][0], self._vertices_2d[2][1])
-                self._vertices_2d[3] = (
-                    self._vertices_2d[2][0], self._vertices_2d[0][1])
+                self.set_v2(2, mouse_pos_2d)
+                self.set_v2(1, (self.get_v2(0)[0], self.get_v2(2)[1]))
+                self.set_v2(3, (self.get_v2(2)[0], self.get_v2(0)[1]))
 
                 self.calc_center_2d()
 
@@ -109,8 +104,8 @@ class Rectangle_Shape(Shape):
     def calc_center_2d(self):
 
         # center = A + 1/2AC
-        x = self._vertices_2d[0][0] + 0.5 * (self._vertices_2d[2][0] - self._vertices_2d[0][0] )
-        y = self._vertices_2d[0][1] + 0.5 * (self._vertices_2d[2][1] - self._vertices_2d[0][1] )
+        x = self.get_v2(0)[0] + 0.5 * (self.get_v2(2)[0] - self.get_v2(0)[0] )
+        y = self.get_v2(0)[1] + 0.5 * (self.get_v2(2)[1] - self.get_v2(0)[1] )
 
         self._center_2d = (x, y)
 
@@ -132,22 +127,15 @@ class Rectangle_Shape(Shape):
         rv3d = context.space_data.region_3d
         view_rot = rv3d.view_rotation
 
-        self._vertex_ctr.clear()
+        self._vertex_ctr.clear_3d()
 
         # get missing 3d vertices
         if self._snap_to_target and self._normal != None:
-            self._vertex1 = self.get_3d_for_2d(self._vertices_2d[0], context)
-            vertex2 = self.get_3d_for_2d(self._vertices_2d[1], context)
-            self._vertex3 = self.get_3d_for_2d(self._vertices_2d[2], context)
-            vertex4 = self.get_3d_for_2d(self._vertices_2d[3], context)
-
+            for i in range(4):
+                self._vertex_ctr.add_vertex(self.get_3d_for_2d(self.get_v2(i), context))
         else:
-            self._vertex1 = get_3d_vertex(context, self._vertices_2d[0])
-            vertex2 = get_3d_vertex(context, self._vertices_2d[1])
-            self._vertex3 = get_3d_vertex(context, self._vertices_2d[2])
-            vertex4 = get_3d_vertex(context, self._vertices_2d[3])
-
-        self._vertex_ctr.vertices.extend([self._vertex1, vertex2, self._vertex3, vertex4])
+            for i in range(4):
+                self._vertex_ctr.add_vertex(get_3d_vertex(context, self.get_v2(i)))
 
         self.create_mirror()
     
@@ -163,10 +151,10 @@ class Rectangle_Shape(Shape):
         return False
 
     def get_width(self):
-        return (self._vertex_ctr.vertices[0] - self._vertex_ctr.vertices[3]).length
+        return (self.get_v3(0) - self.get_v3(3)).length
 
     def get_height(self):
-        return (self._vertex_ctr.vertices[0] - self._vertex_ctr.vertices[1]).length
+        return (self.get_v3(0) - self.get_v3(1)).length
 
     def to_center(self, axis):
         old_center = self._center_3d.copy()
@@ -190,11 +178,11 @@ class Rectangle_Shape(Shape):
         
         if self.is_processing():
 
-            if self._vertices_2d[1] is not None:
+            if self.get_v2(1) is not None:
                 self.init_text()
 
-                x = self._vertices_2d[1][0]
-                y = self._vertices_2d[1][1]
+                x = self.get_v2(1)[0]
+                y = self.get_v2(1)[1]
 
                 blf.position(2, x + 5, y - 25, 0)
                 blf.draw(2, "Width: {0:.3f} | Height: {1:.3f}".format(

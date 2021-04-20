@@ -9,6 +9,7 @@ class VertexContainer:
   def __init__(self):
     self._shader = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
     self._vertices = []
+    self._vertices_2d = []
     self._vertices_extruded = []
 
   def create_batch(self, mouse_pos = None):
@@ -68,6 +69,11 @@ class VertexContainer:
 
     self.create_batch()
 
+  def clear_3d(self):
+    self._vertices.clear()
+    self._vertices_extruded.clear()
+    self.create_batch()
+
   def clear_extrude(self):
     self._vertices_extruded.clear()
     self.create_batch()
@@ -94,6 +100,7 @@ class VertexContainer:
   def clear(self):
     self._vertices.clear()
     self._vertices_extruded.clear()
+    self._vertices_2d.clear()
     self.create_batch()
 
   @property
@@ -115,6 +122,14 @@ class VertexContainer:
   @property
   def vertices(self):
       return self._vertices
+
+  @property
+  def vertices_2d(self):
+      return self._vertices_2d
+
+  @vertices_2d.setter
+  def vertices_2d(self, value):
+      self._vertices_2d = value
 
   @property
   def vertices_copy(self):

@@ -29,7 +29,7 @@ class Curve_Shape(Shape):
         return None
 
     def get_cuts(self):
-        return len(self._vertices_2d) - 2
+        return len(self._vertex_ctr.vertices_2d) - 2
 
     def get_start_point(self):
         if(self.is_created()):
@@ -71,20 +71,20 @@ class Curve_Shape(Shape):
         if self.is_none() and event.ctrl:
 
             # Set startpoint
-            self.add_vertex(mouse_pos_3d)
-            self._vertices_2d.append(get_2d_vertex(context, mouse_pos_3d))
+            self.add_v3(mouse_pos_3d)
+            self.add_v2(get_2d_vertex(context, mouse_pos_3d))
             self.state = ShapeState.PROCESSING
             self._normals[0] = normal
 
         elif self.is_processing() and not event.ctrl and not self.is_2_points_input():
-            self.add_vertex(mouse_pos_3d)
-            self._vertices_2d.append(get_2d_vertex(context, mouse_pos_3d))          
+            self.add_v3(mouse_pos_3d)
+            self.add_v2(get_2d_vertex(context, mouse_pos_3d))          
 
         elif self.is_processing() and event.ctrl:
 
             # Set end point
-            self.add_vertex(mouse_pos_3d)
-            self._vertices_2d.append(get_2d_vertex(context, mouse_pos_3d))
+            self.add_v3(mouse_pos_3d)
+            self.add_v2(get_2d_vertex(context, mouse_pos_3d))
             self._normals[1] = normal
             return self.close()
 

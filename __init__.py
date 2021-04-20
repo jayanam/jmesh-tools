@@ -2,7 +2,7 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 9, 1, 2),
+    "version": (1, 9, 1, 3),
     "blender": (2, 80, 0),
     "location": "View3D",
     "category": "Object",

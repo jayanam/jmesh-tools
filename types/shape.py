@@ -37,7 +37,6 @@ class Shape:
 
     def __init__(self):
         self._state = ShapeState.NONE
-        self._vertices_2d = []
 
         self._vertex_ctr = VertexContainer()
         self._vertex_ctr_m = VertexContainer()
@@ -202,7 +201,7 @@ class Shape:
 
         if self.has_mirror:
             for vertex in self._vertex_ctr.vertices:
-                self.add_vertex_mirror(vertex)
+                self.add_v3_mirror(vertex)
 
             if self._is_extruded:
                 dir = self._extrusion * self.get_dir()
@@ -627,7 +626,7 @@ class Shape:
 
     @property
     def vertices_2d(self):
-        return self._vertices_2d
+        return self._vertex_ctr.vertices_2d
 
     @vertices.setter
     def vertices(self, value):
@@ -694,10 +693,6 @@ class Shape:
     def extrusion(self):
         return self._extrusion
 
-    def add_vertex(self, vertex):
-        if vertex not in self._vertex_ctr.vertices:
-            self._vertex_ctr.add_vertex(vertex)
-
     @property
     def has_mirror(self):
         return bpy.context.scene.mirror_primitive != "None"
@@ -721,12 +716,37 @@ class Shape:
         else:
             vm = Vector((vertex3d.x, vertex3d.y, -vertex3d.z))
 
-        return vm 
+        return vm
 
-    def add_vertex_mirror(self, vertex3d):
+    def add_v3(self, vertex):
+        if vertex not in self._vertex_ctr.vertices:
+            self._vertex_ctr.add_vertex(vertex) 
+
+    def add_v3_mirror(self, vertex3d):
         if self.has_mirror:
             vm = self.get_vertex_mirror(vertex3d)
             self._vertex_ctr_m.add_vertex(vm)
+
+    def get_v2(self, index):
+        if len(self._vertex_ctr.vertices_2d) > index:
+            return self._vertex_ctr.vertices_2d[index]
+        return (0,0)
+
+    def get_v3(self, index):
+        if len(self._vertex_ctr.vertices) > index:
+            return self._vertex_ctr.vertices[index]
+        return Vector()
+
+    def set_v2(self, index, value):
+        if len(self._vertex_ctr.vertices_2d) > index:
+            self._vertex_ctr.vertices_2d[index] = value
+
+    def set_v3(self, index, value):
+        if len(self._vertex_ctr.vertices) > index:
+            self._vertex_ctr.vertices[index] = value
+
+    def add_v2(self, value):
+        self._vertex_ctr.vertices_2d.append(value)
 
     def reset_extrude(self):
         self._is_extruded = False
@@ -792,7 +812,6 @@ class Shape:
         if not self.is_shape_action_active():
             self._vertex_ctr.clear()
             self._vertex_ctr_m.clear()
-            self._vertices_2d.clear()
             
             self._shape_actions.clear()
             self.state = ShapeState.NONE
@@ -850,7 +869,7 @@ class Shape:
         for index, vertex_3d in enumerate(self._vertex_ctr.vertices):
             rv3d = self._view_context.region_3d
             region = self._view_context.region
-            self._vertices_2d[index] = location_3d_to_region_2d(
+            self._vertex_ctr.vertices_2d[index] = location_3d_to_region_2d(
                 region, rv3d, vertex_3d)
 
     def stop_move(self, context):
@@ -964,7 +983,7 @@ class Shape:
             ox = self._center_2d[0]
             oy = self._center_2d[1]
 
-            for i, vertex2d in enumerate(self._vertices_2d):
+            for i, vertex2d in enumerate(self._vertex_ctr.vertices_2d):
                 px = vertex2d[0]
                 py = vertex2d[1]
 
@@ -977,11 +996,11 @@ class Shape:
 
                 if not self._snap_to_target:
                     direction = get_view_direction_by_rot_matrix(self._view_context.view_rotation)
-                    self._vertex_ctr.vertices[i] = get_3d_vertex_for_2d(self._view_context, (x, y), -direction)
+                    self.set_v3(i, get_3d_vertex_for_2d(self._view_context, (x, y), -direction))
                 else:
-                    self._vertex_ctr.vertices[i] = self.get_3d_for_2d((x, y), context)
+                    self.set_v3(i, self.get_3d_for_2d((x, y), context))
 
-            self._vertices_2d = tmp_vertices_2d
+            self._vertex_ctr.vertices_2d = tmp_vertices_2d
 
             self.create_mirror()
 
