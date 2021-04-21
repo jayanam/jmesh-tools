@@ -19,7 +19,8 @@ class Polyline_Shape(Shape):
     def create_from_mesh(self, context):
 
         obj = context.active_object
-        current_mode = obj.mode
+
+        self.set_view_context(ViewContext(context))
 
         bpy.ops.object.mode_set(mode='EDIT', toggle=False)
 
@@ -62,8 +63,14 @@ class Polyline_Shape(Shape):
 
         self.add_shape_action(Shape_Operation_Action())
 
-        if current_mode is not None:
-            bpy.ops.object.mode_set(mode=current_mode, toggle=False)
+        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+        bpy.ops.object.delete(use_global=False, confirm=False)
+
+        target_obj = bpy.context.scene.carver_target
+
+        if target_obj:
+            bpy.context.view_layer.objects.active = target_obj
 
         return True
 

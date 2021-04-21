@@ -1004,6 +1004,11 @@ class Shape:
 
             self.create_mirror()
 
+            array_count = self.get_array_count()
+
+            if array_count > 1:
+                self.create_array(array_count, self.get_array_distance())
+
             return True
 
         if self.is_extruding():
