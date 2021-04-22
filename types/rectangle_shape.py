@@ -146,6 +146,10 @@ class Rectangle_Shape(Shape):
             self._is_rotating = True
             self._mouse_y = mouse_pos_2d[1]
 
+            self.vertices_3d_to_2d(context)
+            self.calc_center_2d()
+            self.calc_center_3d(context)
+
             return True
 
         return False

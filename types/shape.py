@@ -856,8 +856,6 @@ class Shape:
 
     def vertices_3d_offset(self, vec_offset):
         self._vertex_ctr.add_offset(vec_offset)
-        # for vertex_3d in self._vertices:
-        #     vertex_3d += vec_offset
 
     def vertex_3d_to_2d(self, context, v3d):
 
@@ -1100,9 +1098,9 @@ class Shape:
             self.init_text()
 
             pos = self.get_gizmo_pos()
-
-            blf.position(2, pos[0], pos[1] - 60, 0)
-            blf.draw(2, "Rotation: {0:.2f}".format(self._rotation))
+            if pos:
+                blf.position(2, pos[0], pos[1] - 60, 0)
+                blf.draw(2, "Rotation: {0:.2f}".format(self._rotation))
 
     def get_gizmo_anchor_vertex(self):
         return None
@@ -1112,6 +1110,7 @@ class Shape:
 
             rv3d = self._view_context.region_3d
             region = self._view_context.region
+
             pos_2d = location_3d_to_region_2d(region, rv3d, self.get_gizmo_anchor_vertex())
 
             return pos_2d

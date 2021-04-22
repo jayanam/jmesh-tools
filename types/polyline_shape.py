@@ -153,6 +153,8 @@ class Polyline_Shape(Shape):
         if self.is_created():
 
             self._is_rotating = True
+
+            self.vertices_3d_to_2d(context)
             self._center_2d = self.get_gizmo_pos()
             self._mouse_y = mouse_pos_2d[1]
 
