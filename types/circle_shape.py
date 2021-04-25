@@ -4,7 +4,6 @@ class Circle_Shape(Shape):
 
     def __init__(self):
         super().__init__()
-        self._center = None
         self._radius = 0
         self._mouse_start_3d = None
         self._segments = 32       
@@ -64,8 +63,8 @@ class Circle_Shape(Shape):
 
         if self.is_moving():
             diff = mouse_pos_3d - self._move_offset
-            self._center += diff
-            self._mouse_start_3d = self._center.copy()
+            self._center_3d += diff
+            self._mouse_start_3d = self._center_3d.copy()
 
         result = super().handle_mouse_move(mouse_pos_2d, mouse_pos_3d, event, context)
 
@@ -96,7 +95,7 @@ class Circle_Shape(Shape):
             offset = self._normal.normalized() * context.scene.snap_offset
 
         self._vertex_ctr.vertices = [rot_mat @ Vector(point) + 
-                          self._center + offset for point in points]
+                          self._center_3d + offset for point in points]
 
         self.create_mirror()
 
@@ -109,7 +108,7 @@ class Circle_Shape(Shape):
 
         if self.is_none() and event.ctrl:
 
-            self._center = self.get_center(mouse_pos_3d, context)
+            self._center_3d = self.get_center(mouse_pos_3d, context)
 
             self._mouse_start_3d = mouse_pos_3d.copy()
 
@@ -139,7 +138,7 @@ class Circle_Shape(Shape):
         return False
 
     def get_gizmo_anchor_vertex(self):
-        return self._center
+        return self._center_3d
 
     def get_gizmo_pos(self):
         if self.is_created():
@@ -153,13 +152,13 @@ class Circle_Shape(Shape):
 
     def to_center(self, axis):
 
-        old_center = self._center.copy()
+        old_center = self._center_3d.copy()
 
-        self.set_center(axis, self._center)
+        self.set_center(axis, self._center_3d)
         self.create_circle(bpy.context)
 
         # Bring the array to the center as well
-        self.array_offset(self._center - old_center)
+        self.array_offset(self._center_3d - old_center)
 
     def draw_text(self):
         if self.is_processing() or self.is_sizing():
@@ -167,7 +166,7 @@ class Circle_Shape(Shape):
             
             rv3d = self._view_context.region_3d
             region = self._view_context.region
-            pos_text = location_3d_to_region_2d(region, rv3d, self._center)
+            pos_text = location_3d_to_region_2d(region, rv3d, self._center_3d)
 
             blf.position(2, pos_text[0] + 16, pos_text[1] + 5, 0)
             blf.draw(2, "r: {0:.3f}".format(self._radius))

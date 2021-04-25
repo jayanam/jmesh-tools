@@ -11,6 +11,8 @@ class Polyline_Shape(Shape):
     def close(self):
             
         if self.can_close():
+            self._center_3d = calc_median_center(self._vertex_ctr.vertices)
+            self._center_2d = self.get_gizmo_pos()
             self.state = ShapeState.CREATED
             return True
             
@@ -162,8 +164,26 @@ class Polyline_Shape(Shape):
 
         return False
 
+    def to_center(self, axis):
+        old_center = self._center_3d.copy()
+        self.set_center(axis, self._center_3d)
+
+        self.vertices_3d_offset(self._center_3d - old_center)
+        self.vertices_3d_to_2d(bpy.context)
+
+        self._center_2d = self.get_gizmo_pos()
+
+        # Bring the array to the center as well
+        self.array_offset(self._center_3d - old_center)
+
+    def vertex_moved(self, context):
+        self._center_3d = calc_median_center(self._vertex_ctr.vertices)
+
+    def vertices_moved(self, diff):
+        self._center_3d = calc_median_center(self._vertex_ctr.vertices)
+
     def get_gizmo_anchor_vertex(self):
-        return calc_median_center(self._vertex_ctr.vertices)
+        return self._center_3d
 
     def get_point_size(self, context):
         if self.is_draw_input(context):

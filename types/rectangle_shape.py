@@ -6,8 +6,6 @@ class Rectangle_Shape(Shape):
     def __init__(self):
         super().__init__()
         self._vertex_ctr.vertices_2d.extend([None, None, None, None])
-        self._center_2d = None
-        self._center_3d = None
 
     def __str__(self):
         return "Rect"
@@ -26,8 +24,8 @@ class Rectangle_Shape(Shape):
         if self.is_none() and event.ctrl:
 
             if self.get_start_from_center(context):
-                center_3d = self.get_center(mouse_pos_3d, context)
-                self._center_2d = self.vertex_3d_to_2d(context, center_3d)
+                self._center_3d = self.get_center(mouse_pos_3d, context)
+                self._center_2d = self.vertex_3d_to_2d(context, self._center_3d)
             else:              
                 v1 = self.get_center(mouse_pos_3d, context)
                 self.set_v2(0, self.vertex_3d_to_2d(context, v1))

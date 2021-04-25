@@ -77,6 +77,8 @@ class Shape:
 
         self.shader = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
         self.create_batch()
+        self._center_2d = None
+        self._center_3d = None
 
     def get_center(self, mouse_pos_3d, context):
         if context.scene.center_type == "Mouse":
@@ -1004,7 +1006,7 @@ class Shape:
 
             array_count = self.get_array_count()
 
-            if array_count > 1:
+            if len(self._array) >= 1:
                 self.create_array(array_count, self.get_array_distance())
 
             return True
