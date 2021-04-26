@@ -18,7 +18,7 @@ class BL_UI_Slider(BL_UI_Widget):
         self.x_screen = x
         self.y_screen = y
         
-        self._text_size = 14
+        self._text_size = 12
         self._decimals = 2
 
         self._show_min_max = True

@@ -29,11 +29,11 @@ class FC_ClothOperator(BL_UI_OT_draw_operator):
     def __init__(self):
 
         y_top = 35
-        x_left = 90
+        x_left = 100
         self._current = ""
 
         super().__init__()
-        self.panel = BL_UI_Drag_Panel(0, 0, 280, 120)
+        self.panel = BL_UI_Drag_Panel(0, 0, 280, 170)
         self.panel.bg_color = (0.1, 0.1, 0.1, 0.9)
 
         self.lbl_Pressure = BL_UI_Label(20, y_top, 50, 15)
@@ -41,15 +41,30 @@ class FC_ClothOperator(BL_UI_OT_draw_operator):
         self.lbl_Pressure.text_size = 14
         self.lbl_Pressure.text_color = (0.9, 0.9, 0.9, 1.0)
 
-        unitinfo = get_current_units()
-        self.txt_pressure = BL_UI_Textbox(x_left, y_top - 2, 50, 24)
+        self.txt_pressure = BL_UI_Textbox(x_left, y_top - 2, 100, 24)
         self.txt_pressure.is_numeric = True
         input_keys = self.txt_pressure.get_input_keys()
         input_keys.remove('RET')
         input_keys.remove('ESC')
         self.txt_pressure.set_text_changed(self.on_pressure_changed)
 
-        self.lbl_close = BL_UI_Label(195, y_top - 35, 50, 15)
+        y_top += 50
+        self.lbl_shrink = BL_UI_Label(20, y_top, 50, 15)
+        self.lbl_shrink.text = "Shrinking:"
+        self.lbl_shrink.text_size = 14
+        self.lbl_shrink.text_color = (0.9, 0.9, 0.9, 1.0)
+
+        self.sl_shrink = BL_UI_Slider(x_left, y_top, 100, 24)
+        self.sl_shrink.color = (0.3, 0.56, 0.94, 1.0)
+        self.sl_shrink.hover_color = (0.3, 0.56, 0.94, 0.8)
+        self.sl_shrink.min = -1.0
+        self.sl_shrink.max = 1.0
+        self.sl_shrink.decimals = 3
+        self.sl_shrink.show_min_max = False
+        self.sl_shrink.tag = 0
+        self.sl_shrink.set_value_change(self.on_shrinking_changed)
+
+        self.lbl_close = BL_UI_Label(195, y_top - 85, 50, 15)
         self.lbl_close.text = "Escape to Close"
         self.lbl_close.text_size = 10
         self.lbl_close.text_color = (0.9, 0.9, 0.9, 1.0)
@@ -87,6 +102,9 @@ class FC_ClothOperator(BL_UI_OT_draw_operator):
 
     def get_pressure(self):
         return float(self.txt_pressure.text)
+
+    def get_shrinking(self):
+        return float(self.sl_shrink.get_value())
 
     def on_btn_close_down(self, widget):
         self.finish()
@@ -127,9 +145,14 @@ class FC_ClothOperator(BL_UI_OT_draw_operator):
 
     def apply_changes(self):
         pressure = self.get_pressure()
+        shrinking = self.get_shrinking()
         mod_cloth = self.get_cloth_modifier()
         if mod_cloth is not None:
             mod_cloth.settings.uniform_pressure_force = pressure       
+            mod_cloth.settings.shrink_min = shrinking 
+
+    def on_shrinking_changed(self, slider, value):
+      self.apply_changes()
 
     def on_pressure_changed(self, textbox, context, event):
       self.apply_changes()
@@ -145,7 +168,7 @@ class FC_ClothOperator(BL_UI_OT_draw_operator):
         self.add_cloth(context)
 
         # Add new widgets here
-        widgets_panel = [self.lbl_Pressure, self.txt_pressure, self.lbl_close]
+        widgets_panel = [self.lbl_Pressure, self.txt_pressure, self.lbl_shrink, self.sl_shrink, self.lbl_close]
         widgets_panel.append(self.btn_start_stop)
         widgets_panel.append(self.btn_apply)
         widgets_panel.append(self.btn_close)
@@ -176,6 +199,9 @@ class FC_ClothOperator(BL_UI_OT_draw_operator):
         if mod_cloth is not None: 
             pressure = mod_cloth.settings.uniform_pressure_force
             self.txt_pressure.text  = "{:.2f}".format(pressure)
+
+            shrinking = mod_cloth.settings.shrink_min
+            self.sl_shrink.set_value(shrinking)
 
     def add_cloth(self, context):
         

@@ -6,6 +6,8 @@ def execute_cloth(obj):
 
   bpy.context.view_layer.objects.active = obj
 
+  bpy.ops.object.shade_smooth()
+
   # Apply the scale before solidify
   bpy.ops.object.transform_apply(scale=True, location=False, rotation=False)
 
