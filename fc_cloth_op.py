@@ -85,7 +85,7 @@ class FC_ClothOperator(BL_UI_OT_draw_operator):
         
         btn = self.btn_start_stop
         btn._textoffset = [0,0]
-        
+
         if bpy.context.screen.is_animation_playing:
             btn.text = "Stop"
             btn._textoffset = [0,2]
@@ -101,6 +101,7 @@ class FC_ClothOperator(BL_UI_OT_draw_operator):
             bpy.ops.screen.animation_cancel()
             scn.frame_set(frame)
         else:
+            self.apply_changes()
             scn.frame_set(0)
             bpy.ops.screen.animation_play()
 
@@ -114,11 +115,14 @@ class FC_ClothOperator(BL_UI_OT_draw_operator):
 
         self.finish()
 
+    def apply_changes(self):
+        pressure = self.get_pressure()
+        mod_cloth = self.get_cloth_modifier()
+        if mod_cloth is not None:
+            mod_cloth.settings.uniform_pressure_force = pressure       
+
     def on_pressure_changed(self, textbox, context, event):
-      pressure = self.get_pressure()
-      mod_cloth = self.get_cloth_modifier()
-      if mod_cloth is not None:
-         mod_cloth.settings.uniform_pressure_force = pressure
+      self.apply_changes()
 
     def on_finish(self, context):
         context.window_manager.modal_running = False
