@@ -57,8 +57,8 @@ class FC_ClothOperator(BL_UI_OT_draw_operator):
         self.btn_start_stop.bg_color = (0.3, 0.56, 0.94, 1.0)
         self.btn_start_stop.hover_bg_color = (0.3, 0.56, 0.94, 0.8)
         self.btn_start_stop.text_size = 14
-        self.btn_start_stop.text = "Start"
         self.btn_start_stop.set_mouse_down(self.on_btn_start_stop_down)
+        self.set_start_stop_text()
 
         self.btn_apply = BL_UI_Button(105, y_top + 45, 80, 25)
         self.btn_apply.bg_color = (0.3, 0.56, 0.94, 1.0)
