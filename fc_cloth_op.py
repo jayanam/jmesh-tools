@@ -30,6 +30,7 @@ class FC_ClothOperator(BL_UI_OT_draw_operator):
 
         y_top = 35
         x_left = 90
+        self._current = ""
 
         super().__init__()
         self.panel = BL_UI_Drag_Panel(0, 0, 280, 120)
@@ -74,6 +75,15 @@ class FC_ClothOperator(BL_UI_OT_draw_operator):
         self.btn_close.text_size = 14
         self.btn_close.text = "Close"
         self.btn_close.set_mouse_down(self.on_btn_close_down)
+
+    def modal(self, context, event):
+        if(self._current != "" and self._current != context.view_layer.objects.active.name):
+            self.init_widget_values()
+
+        self._current = context.view_layer.objects.active.name
+
+        return super().modal(context, event)
+
 
     def get_pressure(self):
         return float(self.txt_pressure.text)
