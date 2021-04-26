@@ -75,12 +75,13 @@ class FC_PT_Selected_Panel(Panel):
             col.operator('view3d.snap_active', text='Cursor to Active', icon='PIVOT_CURSOR')
 
             row = layout.row()
-            row.operator('view3d.curve_convert', text='Curve to mesh & fill', icon='LINENUMBERS_OFF')
+            col = row.column()
+            col.operator('view3d.curve_convert', text='Curve to mesh', icon='LINENUMBERS_OFF')
 
-            row = layout.row()
             col = row.column()
             col.operator('view3d.mesh_to_curve', text='Mesh to curve', icon='LINENUMBERS_OFF')
 
+            row = layout.row()
             col = row.column()
             col.operator('view3d.curve_adjust', text='Adjust curve', icon='LINENUMBERS_OFF')
         
@@ -92,12 +93,17 @@ class FC_PT_Selected_Panel(Panel):
         col = row.column()
         col.operator('object.fc_symmetry_op', text="Symmetrize", icon='MOD_MESHDEFORM')
 
-        # Mesh snap
+        # Solidify
         row = layout.row()
         col = row.column()
         col.operator('object.solid_op', text="Solidify", icon='MOD_SOLIDIFY')
 
+        # Mesh snap
         col = row.column()
         col.operator('object.fc_mesh_snap_op', text='Mesh Snap', icon='SNAP_ON')
 
-        
+        row = layout.row()   
+        col = row.split(factor=0.5)     
+        col.operator('object.cloth_op', text="Clothify", icon='MOD_CLOTH')
+
+        col = row.split(factor=0.5)      
