@@ -24,8 +24,7 @@ def execute_cloth(obj):
 
   # Add outline as pin group
   vg_name = "JM_Pin_Cloth"
-  mod_cloth.settings.vertex_group_mass = vg_name
-  v_group = obj.vertex_groups.new( name = vg_name)
+  v_group = obj.vertex_groups.new(name = vg_name)
 
   bpy.ops.object.mode_set(mode='EDIT', toggle=False)
 
@@ -53,3 +52,4 @@ def execute_cloth(obj):
   bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
   v_group.add( vertices, 1.0, 'REPLACE' )
+  mod_cloth.settings.vertex_group_mass = vg_name
