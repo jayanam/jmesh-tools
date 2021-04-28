@@ -26,30 +26,11 @@ def execute_cloth(obj):
   vg_name = "JM_Pin_Cloth"
   v_group = obj.vertex_groups.new(name = vg_name)
 
-  bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-
-  vertices = []
-
+  bpy.ops.object.mode_set(mode='EDIT')
   bm = bmesh.from_edit_mesh(obj.data)
   bm.verts.ensure_lookup_table()
+  verts = [v.index for v in bm.verts if v.is_boundary]
+  bpy.ops.object.mode_set(mode='OBJECT') 
 
-  vert = bm.verts[0]
-  prev = None
-
-  for i in range(len(bm.verts)):
-      next = None
-      for v in [e.other_vert(vert) for e in vert.link_edges if e.is_boundary]:
-          if (v != prev):
-              next = v
-
-      vertices.append(vert.index)
-
-      if next == None:
-          break
-      
-      prev, vert = vert, next
- 
-  bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-
-  v_group.add( vertices, 1.0, 'REPLACE' )
+  v_group.add(index=verts, weight=1.0, type='REPLACE')
   mod_cloth.settings.vertex_group_mass = vg_name
