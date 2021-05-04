@@ -92,10 +92,13 @@ class FC_ClothOperator(BL_UI_OT_draw_operator):
         self.btn_close.set_mouse_down(self.on_btn_close_down)
 
     def modal(self, context, event):
-        if(self._current != "" and self._current != context.view_layer.objects.active.name):
-            self.init_widget_values()
+        active = context.view_layer.objects.active
 
-        self._current = context.view_layer.objects.active.name
+        if active:
+            if(self._current != "" and self._current != active.name):
+                self.init_widget_values()
+
+            self._current = active.name
 
         return super().modal(context, event)
 
