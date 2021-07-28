@@ -2,7 +2,7 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 9, 2, 7),
+    "version": (1, 9, 2, 8),
     "blender": (2, 80, 0),
     "location": "View3D",
     "category": "Object",
@@ -57,6 +57,16 @@ bpy.types.Scene.apply_bool    = BoolProperty(
 bpy.types.Scene.delete_on_apply   = BoolProperty(
                                       name="Delete after apply", 
                                       description="Delete the object after apply",
+                                      default = True)
+
+bpy.types.Scene.self_interact = BoolProperty(
+                                      name="Self interact", 
+                                      description="Allow self-interaction",
+                                      default = True)
+
+bpy.types.Scene.hole_tolerant = BoolProperty(
+                                      name="Hole Tolerant", 
+                                      description="Better results when mesh has holes",
                                       default = True)
 
 bpy.types.Scene.use_snapping   = BoolProperty(name="Snap to grid", 

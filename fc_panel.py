@@ -45,12 +45,20 @@ class FC_PT_Panel(Panel):
             
             # Apply immediately
             row = layout.row()
-            layout.prop(context.scene, "apply_bool")
+            col = row.column()
+            col.prop(context.scene, "apply_bool")
 
             # Delete object after immediately
+            col = row.column()
+            col.prop(context.scene, "delete_on_apply")
+
             row = layout.row()
-            layout.prop(context.scene, "delete_on_apply")
-            
+            col = row.column()
+            col.prop(context.scene, "self_interact")
+
+            col = row.column()
+            col.prop(context.scene, "hole_tolerant")
+
             # Apply selected booleans
             row = layout.row()
             row.operator('object.apply_bool',icon='MOD_BOOLEAN')

@@ -36,6 +36,12 @@ def is_apply_immediate():
 def is_delete_after_apply():
     return (bpy.context.scene.delete_on_apply == True)
 
+def is_self_interact():
+    return (bpy.context.scene.self_interact == True)
+
+def is_hole_tolerant():
+    return (bpy.context.scene.hole_tolerant == True)
+
 def recalc_normals(mesh):
     bm = bmesh.new()
     bm.from_mesh(mesh)
@@ -59,7 +65,9 @@ def bool_mod_and_apply(obj, bool_method, allow_delete = True):
         method = 'INTERSECT'
     
     bool_mod.operation = method
-    #bool_mod.solver = 'CARVE'
+    bool_mod.use_self = is_self_interact()
+    bool_mod.use_hole_tolerant = is_hole_tolerant()
+
     bool_mod.object = obj
 
     recalc_normals(obj.data)
