@@ -84,7 +84,7 @@ class FC_PT_Selected_Panel(Panel):
             row = layout.row()
             col = row.column()
             col.operator('view3d.curve_adjust', text='Adjust curve', icon='LINENUMBERS_OFF')
-        
+
         # Mirror and symmetrize
         row = layout.row()
         col = row.column()

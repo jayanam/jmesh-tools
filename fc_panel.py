@@ -52,12 +52,14 @@ class FC_PT_Panel(Panel):
             col = row.column()
             col.prop(context.scene, "delete_on_apply")
 
-            row = layout.row()
-            col = row.column()
-            col.prop(context.scene, "self_interact")
+            # Self intersect
+            if bpy.app.version >= (3, 0, 0):
+                row = layout.row()
+                col = row.column()
+                col.prop(context.scene, "self_intersect")
 
-            col = row.column()
-            col.prop(context.scene, "hole_tolerant")
+                col = row.column()
+                col.prop(context.scene, "hole_tolerant")
 
             # Apply selected booleans
             row = layout.row()
