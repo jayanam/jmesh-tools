@@ -155,6 +155,8 @@ class Circle_Shape(Shape):
         old_center = self._center_3d.copy()
 
         self.set_center(axis, self._center_3d)
+        self.vertices_3d_offset(self._center_3d - old_center)
+
         self.create_circle(bpy.context)
 
         # Bring the array to the center as well

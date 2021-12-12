@@ -165,9 +165,6 @@ class Rectangle_Shape(Shape):
         self.vertices_3d_offset(self._center_3d - old_center)
         self.vertices_3d_to_2d(bpy.context)
         self.calc_center_2d()
-
-        self.create_rect(bpy.context)
-
         self.calc_center_3d(bpy.context)
 
         # Bring the array to the center as well
