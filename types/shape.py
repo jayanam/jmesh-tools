@@ -1112,7 +1112,7 @@ class Shape:
 
             rv3d = self._view_context.region_3d
             region = self._view_context.region
-
+ 
             pos_2d = location_3d_to_region_2d(region, rv3d, self.get_gizmo_anchor_vertex())
 
             return pos_2d

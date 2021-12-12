@@ -25,6 +25,10 @@ class FC_MT_Bool_Menu(Menu):
             
             mode = active_object.mode
 
+            selected_obj_count = len(context.selected_objects)
+
+            has_modifiers = len(active_object.modifiers) > 0
+
             if(mode == "OBJECT"):
 
                 if not is_curve:
@@ -38,14 +42,21 @@ class FC_MT_Bool_Menu(Menu):
 
                     if can_apply_bool(active_object, context):
                         pie.operator("object.apply_bool", icon="MOD_BOOLEAN")
- 
-            if active_object != context.scene.carver_target and not is_curve:
-                pie.operator("object.bool_target", icon="MOD_BOOLEAN")
 
-            pie.operator("view3d.join_and_remesh", icon='SELECT_EXTEND')
-            pie.operator("object.mirror", text="Mirror", icon='MOD_MIRROR')
-            pie.operator("object.fc_array_mode_op", icon='MOD_ARRAY')
+                    if has_modifiers:
+                        pie.operator('object.apply_all_mod_op', text="Apply All", icon='NLA_PUSHDOWN')
+
+ 
+            if active_object != context.scene.carver_target and not is_curve and selected_obj_count == 1:
+                pie.operator("object.bool_target", icon="MOD_BOOLEAN")           
+
+            if selected_obj_count == 1:
+                pie.operator("object.mirror", text="Mirror", icon='MOD_MIRROR')
+                pie.operator("object.fc_array_mode_op", icon='MOD_ARRAY')
 
             if not is_curve:
+                if selected_obj_count > 1:
+                    pie.operator("view3d.join_and_remesh", icon='SELECT_EXTEND')
+
                 pie.operator('object.fc_symmetry_op', text="Symmetrize", icon='MOD_MESHDEFORM')
                 pie.operator("object.bevel", text=bo.get_display(context.object.mode), icon="MOD_BEVEL")     

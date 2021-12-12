@@ -116,7 +116,7 @@ class Rectangle_Shape(Shape):
     def stop_move(self, context):
         super().stop_move(context)
         self.calc_center_2d()
-        self.calc_center_3d(context)
+        # self.calc_center_3d(context)
 
     def get_gizmo_anchor_vertex(self):
         return self._center_3d
