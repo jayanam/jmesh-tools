@@ -2,7 +2,7 @@ bl_info = {
     "name": "JMesh Tools",
     "description": "Hardsurface and mesh tools for Blender",
     "author": "Jayanam",
-    "version": (1, 9, 2, 9),
+    "version": (1, 9, 3, 0),
     "blender": (2, 80, 0),
     "location": "View3D",
     "category": "Object",
@@ -34,7 +34,7 @@ from . fc_utils_op          import FC_CenterActiveOperator
 from . fc_utils_op          import FC_DissolveEdgesOperator
 from . fc_utils_op          import FC_UnionSelectedOperator
 from . fc_menus             import FC_MT_Bool_Menu
-from . fc_apply_bool_op     import FC_ApplyBoolOperator, FC_ApplyAllBoolOperator
+from . fc_apply_bool_op     import FC_ApplyAllModifiersOperator, FC_ApplyBoolOperator, FC_ApplyAllBoolOperator
 from . fc_primitive_mode_op import FC_Primitive_Mode_Operator
 from . fc_array_mode_op     import FC_Array_Mode_Operator
 from . fc_circle_array_mode_op     import FC_Circle_Array_Mode_Operator
@@ -60,6 +60,7 @@ bpy.types.Scene.delete_on_apply   = BoolProperty(
                                       default = True)
 
 bpy.types.Scene.self_intersect = BoolProperty(
+    
                                       name="Self intersect", 
                                       description="Allow self-intersection",
                                       default = True)
@@ -187,7 +188,8 @@ classes = (
     FC_JoinAndRemesh,
     FC_Mesh_Snap_Operator,
     FC_SolidifyOperator,
-    FC_ClothOperator
+    FC_ClothOperator,
+    FC_ApplyAllModifiersOperator
 )
      
     

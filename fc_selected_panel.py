@@ -102,8 +102,11 @@ class FC_PT_Selected_Panel(Panel):
         col = row.column()
         col.operator('object.fc_mesh_snap_op', text='Mesh Snap', icon='SNAP_ON')
 
-        row = layout.row()   
-        col = row.split(factor=0.5)     
+        # Clothify
+        row = layout.row()  
+        col = row.column() 
         col.operator('object.cloth_op', text="Clothify", icon='MOD_CLOTH')
 
-        col = row.split(factor=0.5)      
+        # Apply all modifiers
+        col = row.column()
+        col.operator('object.apply_all_mod_op', text="Apply All", icon='NLA_PUSHDOWN')

@@ -45,10 +45,31 @@ class FC_ApplyBoolOperator(Operator):
 
         return {'FINISHED'}
 
+class FC_ApplyAllModifiersOperator(Operator):
+    bl_idname = "object.apply_all_mod_op"
+    bl_label = "Apply all modifiers for selected objects"
+    bl_description = "Apply all pending modifiers" 
+    bl_options = {'REGISTER', 'UNDO'} 
+
+    @classmethod
+    def poll(cls, context):
+        return len(context.selected_objects) > 0
+
+    def apply_all_modifiers(self, context):
+        for obj in context.selected_objects[:]:
+            for modifier in obj.modifiers[:]:
+                bpy.context.view_layer.objects.active = obj
+                bpy.ops.object.modifier_apply(modifier=modifier.name)
+
+    def execute(self, context):
+        self.apply_all_modifiers(context)
+        return {'FINISHED'}
+
+
 class FC_ApplyAllBoolOperator(Operator):
     bl_idname = "object.apply_all_bool"
     bl_label = "Apply all Booleans"
-    bl_description = "Apply all pending bool operators" 
+    bl_description = "Apply all pending bool modifiers" 
     bl_options = {'REGISTER', 'UNDO'} 
 
     @classmethod
