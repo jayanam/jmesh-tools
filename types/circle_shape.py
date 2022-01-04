@@ -51,7 +51,7 @@ class Circle_Shape(Shape):
         array_count = len(self._array)
         if array_count > 0:
             if type(self._current_array_action) is Shape_CircleArray_Action:
-                self.create_circle_array(array_count)
+                self.create_circle_array(self._slider_circle_count.get_value())
             else:
                 self.create_array(array_count, self._current_array_action.offset)     
 

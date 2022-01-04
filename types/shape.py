@@ -27,6 +27,7 @@ from ..widgets.bl_ui_textbox import *
 from ..widgets.bl_ui_slider import *
 from ..widgets.bl_ui_label import *
 from ..widgets.bl_ui_button import *
+from ..widgets.bl_ui_checkbox import *
 from ..widgets.bl_ui_drag_panel import *
 
 from ..utils.unit_util import *
@@ -342,7 +343,7 @@ class Shape:
         if self.is_created():
             self.clear_action_panel()
             self._current_array_action = shape_action 
-            self._panel_action = BL_UI_Drag_Panel(0, 0, 210, 80)
+            self._panel_action = BL_UI_Drag_Panel(0, 0, 210, 110)
             self._panel_action.bg_color = (0.1, 0.1, 0.1, 0.9)
             self._panel_action.init(context)
 
@@ -360,19 +361,30 @@ class Shape:
             self._slider_circle_count.show_min_max = False
             self._slider_circle_count.init(context)
 
-            self.add_hint_label(context, 45)
+            self._cb_center_cursor = BL_UI_Checkbox(12, 50, 120, 16)
+            self._cb_center_cursor.cross_color = (0.3, 0.56, 0.94, 1.0)
+            self._cb_center_cursor.text = "3d-Cursor as center"
+            self._cb_center_cursor.text_size = 14
+            self._cb_center_cursor.init(context)
+
+            self.add_hint_label(context, 75)
             
             self._panel_action.add_widget(lbl_array_count)
             self._panel_action.add_widget(self._slider_circle_count)
+            self._panel_action.add_widget(self._cb_center_cursor)
 
             self._panel_action.layout_widgets()
 
             self._slider_circle_count.set_value_change(self.on_circle_array_count_changed)
             self._slider_circle_count.set_value(self.get_array_count())
+            self._cb_center_cursor.set_state_changed(self.on_center_cursor_change)
 
             return True
         return False
-    
+
+    def on_center_cursor_change(self, checkbox, value):
+        self.create_circle_array(self._slider_circle_count.get_value())
+
     def open_array_input(self, context, shape_action, unitinfo) -> bool:
         if self.is_created():
             self.clear_action_panel()
@@ -431,7 +443,7 @@ class Shape:
 
     def add_hint_label(self, context, y):
         lbl_hint = BL_UI_Label(10, y, 120, 24)
-        lbl_hint.text = "Esc or Enter: Close"
+        lbl_hint.text = "Esc: Close, Enter: Confirm"
         lbl_hint.text_size = 11
         lbl_hint.init(context)
         self._panel_action.add_widget(lbl_hint)
@@ -442,7 +454,10 @@ class Shape:
     def create_circle_array(self, count: int):
         self._array.clear()
 
-        CF = get_face_center(self._hit_face, self._hit_obj)
+        if self._cb_center_cursor.is_checked:
+            CF = bpy.context.scene.cursor.location
+        else:
+            CF = get_face_center(self._hit_face, self._hit_obj)
 
         v1 = (self._center_3d - CF)
 
@@ -1086,7 +1101,7 @@ class Shape:
 
             if len(self._array) >= 1:
                 if type(self._current_array_action) is Shape_CircleArray_Action:
-                    self.create_circle_array(array_count)
+                    self.create_circle_array(self._slider_circle_count.get_value())
                 else:
                     self.create_array(array_count, self.get_array_distance())
 
