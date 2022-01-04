@@ -203,6 +203,7 @@ class Shape_Mirror_Action(Shape_Action):
 
     self._batch = batch_for_shader(self._shader, 'LINE_STRIP', {"pos": points})
 
+
 class Shape_Operation_Action(Shape_Action):
 
   def __init__(self):
@@ -216,4 +217,16 @@ class Shape_Operation_Action(Shape_Action):
   def set_position(self, x, y):
     super().set_position(x, y)
 
+class Shape_CircleArray_Action(Shape_Action):
+
+  def __init__(self):
+    super().__init__()
+    self._color=[0.2, 0.2, 0.8, 1.0]
+   
+  def draw(self):
+
+    circle_co = draw_circle_2d((self._x + 5, self._y - 6), self._color, 6, 5, 'POINTS')
+
+  def set_position(self, x, y):
+    super().set_position(x, y)
     

@@ -337,12 +337,47 @@ class Shape:
 
             return True
         return False
+
+    def open_circle_array_input(self, context, shape_action, unitinfo) -> bool:
+        if self.is_created():
+            self.clear_action_panel()
+            self._current_array_action = shape_action 
+            self._panel_action = BL_UI_Drag_Panel(0, 0, 210, 80)
+            self._panel_action.bg_color = (0.1, 0.1, 0.1, 0.9)
+            self._panel_action.init(context)
+
+            lbl_array_count = BL_UI_Label(10, 10, 60, 24)
+            lbl_array_count.text = "Count:"
+            lbl_array_count.text_size = 12
+            lbl_array_count.init(context)
+
+            self._slider_circle_count = BL_UI_Slider(90, 20, 100, 24)
+            self._slider_circle_count.color = (0.3, 0.56, 0.94, 1.0)
+            self._slider_circle_count.hover_color = (0.3, 0.56, 0.94, 0.8)
+            self._slider_circle_count.min = 1
+            self._slider_circle_count.max = 20
+            self._slider_circle_count.decimals = 0
+            self._slider_circle_count.show_min_max = False
+            self._slider_circle_count.init(context)
+
+            self.add_hint_label(context, 45)
+            
+            self._panel_action.add_widget(lbl_array_count)
+            self._panel_action.add_widget(self._slider_circle_count)
+
+            self._panel_action.layout_widgets()
+
+            self._slider_circle_count.set_value_change(self.on_circle_array_count_changed)
+            self._slider_circle_count.set_value(self.get_array_count())
+
+            return True
+        return False
     
     def open_array_input(self, context, shape_action, unitinfo) -> bool:
         if self.is_created():
             self.clear_action_panel()
             self._current_array_action = shape_action 
-            self._panel_action = BL_UI_Drag_Panel(0, 0, 200, 120)
+            self._panel_action = BL_UI_Drag_Panel(0, 0, 210, 120)
             self._panel_action.bg_color = (0.1, 0.1, 0.1, 0.9)
             self._panel_action.init(context)
 
@@ -400,6 +435,46 @@ class Shape:
         lbl_hint.text_size = 11
         lbl_hint.init(context)
         self._panel_action.add_widget(lbl_hint)
+
+    def on_circle_array_count_changed(self, slider, value):
+        self.create_circle_array(value)
+
+    def create_circle_array(self, count: int):
+        self._array.clear()
+
+        CF = get_face_center(self._hit_face, self._hit_obj)
+
+        v1 = (self._center_3d - CF)
+
+        count = int(count + 1) 
+
+        v1 -= v1.dot(self._normal) * self._normal
+
+        # Radius result vector for circle array
+        r = v1.length
+
+        # Normalized vectors and cross product for circle
+        v1_n = v1.normalized()
+
+        v2 = v1_n.cross(self._normal)
+
+        verts = []
+
+        t = 0
+
+        while t < 2 * pi:
+            verts.append(-v1 + r * cos(t) * v1_n + r * sin(t) * v2)
+            t += 2 * pi / count
+    
+        for cc in verts[1:]:
+
+            vc = VertexContainer()
+            vc.add_from_container(self._vertex_ctr, cc)
+            
+            self._array.append(vc)
+
+        if self._is_extruded:
+            self.extrude_vertices(bpy.context)
 
     def get_array_distance(self):
         if self._current_array_action is None:
@@ -532,8 +607,8 @@ class Shape:
             result = intersect_line_plane(
                 origin, origin + direction, self._hit, self._normal)
 
-        if result is not None:
-            result += self._normal.normalized() * scene.snap_offset
+        # if result is not None:
+        #     result += self._normal.normalized() * scene.snap_offset
 
         return result
 
@@ -758,6 +833,9 @@ class Shape:
     def get_array_center_offset(self, axis):
         array_count = len(self._array)
         if array_count == 0:
+            return 0
+
+        if type(self._current_array_action) is Shape_CircleArray_Action:
             return 0
 
         if self._current_array_action.get_axis() != axis:
@@ -1007,7 +1085,10 @@ class Shape:
             array_count = self.get_array_count()
 
             if len(self._array) >= 1:
-                self.create_array(array_count, self.get_array_distance())
+                if type(self._current_array_action) is Shape_CircleArray_Action:
+                    self.create_circle_array(array_count)
+                else:
+                    self.create_array(array_count, self.get_array_distance())
 
             return True
 

@@ -50,7 +50,10 @@ class Circle_Shape(Shape):
 
         array_count = len(self._array)
         if array_count > 0:
-            self.create_array(array_count, self._current_array_action.offset)     
+            if type(self._current_array_action) is Shape_CircleArray_Action:
+                self.create_circle_array(array_count)
+            else:
+                self.create_array(array_count, self._current_array_action.offset)     
 
     def handle_mouse_move(self, mouse_pos_2d, mouse_pos_3d, event, context):
 
@@ -92,10 +95,9 @@ class Circle_Shape(Shape):
             rot_mat = self._view_context._view_mat.to_3x3().inverted()
             
             # rot_mat = self._normal.to_track_quat('Z', 'X').to_matrix()
-            offset = self._normal.normalized() * context.scene.snap_offset
+            # offset = self._normal.normalized() * context.scene.snap_offset
 
-        self._vertex_ctr.vertices = [rot_mat @ Vector(point) + 
-                          self._center_3d + offset for point in points]
+        self._vertex_ctr.vertices = [rot_mat @ Vector(point) + self._center_3d for point in points]
 
         self.create_mirror()
 
@@ -124,6 +126,8 @@ class Circle_Shape(Shape):
             self.add_shape_action(Shape_Array_Action("X"))
 
             self.add_shape_action(Shape_Array_Action())
+
+            self.add_shape_action(Shape_CircleArray_Action())
 
             self.add_shape_action(Shape_Mirror_Action())
 

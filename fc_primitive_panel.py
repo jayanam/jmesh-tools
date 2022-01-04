@@ -15,8 +15,8 @@ class FC_PT_Primitive_Panel(Panel):
         col = row.column()
         col.prop(context.scene, "snap_to_target", text="Snap to mesh")
 
-        col = row.column()
-        col.prop(context.scene, "snap_offset", text="Offset")
+        # col = row.column()
+        # col.prop(context.scene, "snap_offset", text="Offset")
 
         row = layout.row()
         col = row.column()

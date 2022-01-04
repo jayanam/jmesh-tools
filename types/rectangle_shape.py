@@ -40,6 +40,8 @@ class Rectangle_Shape(Shape):
 
             self.add_shape_action(Shape_Array_Action())
 
+            self.add_shape_action(Shape_CircleArray_Action())
+
             self.add_shape_action(Shape_Mirror_Action())
 
             self.add_shape_action(Shape_Operation_Action())

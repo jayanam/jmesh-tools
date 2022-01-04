@@ -217,6 +217,9 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
                         elif type(shape_action) is Shape_Array_Action:
                             if self.shape.open_array_input(context, shape_action, unitinfo):
                                result = RM
+                        elif type(shape_action) is Shape_CircleArray_Action:
+                            if self.shape.open_circle_array_input(context, shape_action, unitinfo):
+                               result = RM
                         elif type(shape_action) is Shape_Mirror_Action:
                             if self.shape.open_mirror_input(context, shape_action, unitinfo):
                                result = RM
