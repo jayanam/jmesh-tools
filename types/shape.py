@@ -868,14 +868,14 @@ class Shape:
     def set_center(self, axis, vec_center):
      
         if axis == "N":
-            face_center = get_face_center(self._hit_face, self._hit_obj)
+            sel_center = get_selection_center(self._hit_face, self._hit_obj)
             array_center_offset_x = self.get_array_center_offset('X')
             array_center_offset_y = self.get_array_center_offset('Y')
             
             rot_mat = self._view_context._view_mat.to_3x3()
             diff_vec = rot_mat.inverted() @ Vector((array_center_offset_x, array_center_offset_y, 0))
-            face_center -= diff_vec
-            vec_center.xyz = face_center.xyz
+            sel_center -= diff_vec
+            vec_center.xyz = sel_center.xyz
             
         else:
             rot_mat = self._view_context._view_mat.to_3x3()

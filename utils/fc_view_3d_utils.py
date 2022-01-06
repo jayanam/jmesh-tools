@@ -6,6 +6,8 @@ from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 from mathutils.geometry import intersect_line_plane
 
+from . fc_select_util import *
+
 from bpy_extras.view3d_utils import (
     region_2d_to_origin_3d,
     region_2d_to_location_3d, 
@@ -69,11 +71,23 @@ def get_selected_mesh_center(context, default_pos):
 def calc_median_center(verts):
     return sum(verts, Vector()) / len(verts)
 
+def get_selection_center(face_index, obj):
+
+    center = Vector((0,0,0))
+
+    current_mode = bpy.context.mode
+
+    if current_mode == "OBJECT":
+        center = get_face_center(face_index, obj)
+    elif current_mode == "EDIT_MESH":
+        return get_selected_mesh_center(bpy.context, center)
+
+    return center
+
 def get_face_center(face_index, obj):
     center = Vector((0,0,0))
 
     current_mode = bpy.context.object.mode
-    is_obj  = (current_mode == "OBJECT")
 
     if(face_index != -1):
 
