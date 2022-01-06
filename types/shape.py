@@ -457,7 +457,7 @@ class Shape:
         if self._cb_center_cursor.is_checked:
             CF = bpy.context.scene.cursor.location
         else:
-            CF = get_face_center(self._hit_face, self._hit_obj)
+            CF = bpy.context.scene.carver_target.location
 
         v1 = (self._center_3d - CF)
 
