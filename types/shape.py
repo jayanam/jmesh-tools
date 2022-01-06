@@ -622,8 +622,8 @@ class Shape:
             result = intersect_line_plane(
                 origin, origin + direction, self._hit, self._normal)
 
-        # if result is not None:
-        #     result += self._normal.normalized() * scene.snap_offset
+        if result is not None:
+            result += self._normal.normalized() * 0.01
 
         return result
 

@@ -95,9 +95,9 @@ class Circle_Shape(Shape):
             rot_mat = self._view_context._view_mat.to_3x3().inverted()
             
             # rot_mat = self._normal.to_track_quat('Z', 'X').to_matrix()
-            # offset = self._normal.normalized() * context.scene.snap_offset
+            offset = self._normal.normalized() * 0.01
 
-        self._vertex_ctr.vertices = [rot_mat @ Vector(point) + self._center_3d for point in points]
+        self._vertex_ctr.vertices = [rot_mat @ Vector(point) + offset + self._center_3d for point in points]
 
         self.create_mirror()
 
