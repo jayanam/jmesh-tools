@@ -99,7 +99,7 @@ class FC_Boolean_Mode_Operator(bpy.types.Operator):
         if event.value == "PRESS" and event.type == "LEFTMOUSE":
           if event.ctrl:
             self.execute_boolean(mouse_pos_2d, context)
-          pass
+            result = RM
 
         return { result }
 
@@ -166,9 +166,9 @@ class FC_Boolean_Mode_Operator(bpy.types.Operator):
 
           bool_mode = context.scene.bool_mode
           current_mode = context.object.mode 
-          bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-
           cutter = context.view_layer.objects.active
+
+          bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
           new_target = get_hit_object(pos_2d, context)
           if new_target:
