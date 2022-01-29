@@ -131,8 +131,8 @@ class Shape:
 
     def set_shape_actions_position(self):
         gizmo_pos = self.get_gizmo_pos()
-
         for i, shape_action in enumerate(self._shape_actions):    
+
             shape_action.set_position(gizmo_pos[0] + (i * 20), gizmo_pos[1] - 22)
 
         if self._panel_action is not None:

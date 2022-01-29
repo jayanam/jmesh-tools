@@ -51,6 +51,17 @@ def recalc_normals(mesh):
     mesh.update()
     bm.free()
 
+def get_bool_mode_id(bool_name):
+    if bool_name == "Difference":
+        return 0
+    elif bool_name == "Union":
+        return 1
+    elif bool_name == "Intersect":
+        return 2
+    elif bool_name == "Slice":
+        return 3
+    return -1
+
 def bool_mod_and_apply(obj, bool_method, allow_delete = True):
     
     active_obj = bpy.context.active_object

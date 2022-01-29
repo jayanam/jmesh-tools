@@ -63,8 +63,12 @@ class FC_PT_Panel(Panel):
 
             # Apply selected booleans
             row = layout.row()
-            row.operator('object.apply_bool',icon='MOD_BOOLEAN')
+            col = row.column()
+            col.operator('object.apply_bool',icon='MOD_BOOLEAN', text="Apply selected")
 
             # Apply all pending booleans
+            col = row.column()
+            col.operator('object.apply_all_bool',icon='MOD_BOOLEAN', text="Apply all")
+
             row = layout.row()
-            row.operator('object.apply_all_bool',icon='MOD_BOOLEAN')
+            row.operator('object.fc_boolean_mode_op',icon='MOD_BOOLEAN', text="Boolean Mode")

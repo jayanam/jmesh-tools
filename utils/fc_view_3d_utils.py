@@ -128,6 +128,18 @@ def get_origin_and_direction(pos_2d, context):
 
     return origin, direction
 
+def get_raycast_param(view_layer):        
+    if bpy.app.version >= (2, 91, 0):
+        return view_layer.depsgraph
+    else:
+        return view_layer   
+
+def get_hit_object(pos_2d, context):
+    origin, direction = get_origin_and_direction(pos_2d, context)
+    ray_cast_param = get_raycast_param(context.view_layer)
+    hit, hit_loc, norm, face, hit_obj, *_ = context.scene.ray_cast(ray_cast_param, origin, direction)
+    return hit_obj
+
 def get_3d_on_mesh(pos_2d, bvhtree, context):
     
     origin, direction = get_origin_and_direction(pos_2d, context)
