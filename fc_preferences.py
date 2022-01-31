@@ -81,8 +81,15 @@ class FC_AddonPreferences(AddonPreferences):
         layout.prop(self, "keyboard_section", icon='DISCLOSURE_TRI_DOWN' if self.keyboard_section else 'DISCLOSURE_TRI_RIGHT')
         if self.keyboard_section:
 
-            km_items = wm.keyconfigs.user.keymaps['3D View'].keymap_items         
+            km_items = wm.keyconfigs.user.keymaps['3D View'].keymap_items   
+
             km_item = km_items['object.fc_primitve_mode_op']
+
+            row = self.layout.row()
+            row.label(text=km_item.name)
+            row.prop(km_item, 'type', text='', full_event=True)
+
+            km_item = km_items['object.fc_boolean_mode_op']
 
             row = self.layout.row()
             row.label(text=km_item.name)

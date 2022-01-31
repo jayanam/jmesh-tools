@@ -33,7 +33,8 @@ class FC_Boolean_Mode_Operator(bpy.types.Operator):
         self._actions = []
         bool_mode = bpy.context.scene.bool_mode
         self._actions.append(Action("O",                  "Operation",          bool_mode))
-        self._actions.append(Action("Ctrl + Left Click",  "Execute Bool",       ""))
+        self._actions.append(Action("Ctrl + Left Click",  "Execute",       ""))
+        self._actions.append(Action("Ctrl + Shift + Left Click",  "Execut & delete",       ""))
 
     def finish(self):
         self.unregister_handlers(bpy.context)
@@ -98,7 +99,13 @@ class FC_Boolean_Mode_Operator(bpy.types.Operator):
 
         if event.value == "PRESS" and event.type == "LEFTMOUSE":
           if event.ctrl:
+            delete_after = is_delete_after_apply()
+
+            context.scene.delete_on_apply = event.shift
+
             self.execute_boolean(mouse_pos_2d, context)
+
+            context.scene.delete_on_apply = delete_after
             result = RM
 
         return { result }
@@ -134,6 +141,7 @@ class FC_Boolean_Mode_Operator(bpy.types.Operator):
     def draw_actions(self):
         fsize = get_preferences().osd_font_size
         off_x = get_preferences().osd_offset_x
+        pos_y = 150
         blf.size(1, fsize, 72)
 
         line_height = 18
@@ -142,14 +150,13 @@ class FC_Boolean_Mode_Operator(bpy.types.Operator):
         if fsize >= 20:
           line_height = 23
           pos_x = [200, 380]
-          pos_y = 110
         elif fsize >= 17:
           line_height = 22
           pos_x = [160, 285]
-          pos_y = 100
+          pos_y -= 20
         elif fsize >= 14:
           pos_x = [155, 270]
-          pos_y = 70
+          pos_y -= 40
 
         pos_x[0] += off_x
         pos_x[1] += off_x
@@ -171,23 +178,17 @@ class FC_Boolean_Mode_Operator(bpy.types.Operator):
           bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
           new_target = get_hit_object(pos_2d, context)
-          if new_target:
+          if new_target and new_target != cutter:
             bpy.context.scene.carver_target = new_target  
 
-          target = bpy.context.scene.carver_target
+            target = bpy.context.scene.carver_target
 
-          bool_id = get_bool_mode_id(bool_mode)
+            bool_id = get_bool_mode_id(bool_mode)
 
-          if bool_id == 3:
-            execute_slice_op(context, target)
-          else:
-            execute_boolean_op(context, target, get_bool_mode_id(bool_mode))
-
-          if is_delete_after_apply():
-            bpy.ops.object.delete()
-            select_active(target)
-          else:
-            select_active(cutter)
+            if bool_id == 3:
+              execute_slice_op(context, target)
+            else:
+              execute_boolean_op(context, target, get_bool_mode_id(bool_mode))
 
           bpy.ops.object.mode_set(mode=current_mode, toggle=False)
 
