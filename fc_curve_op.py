@@ -243,21 +243,12 @@ class FC_CurveConvertOperator(Operator):
         # Get all selected curves
         selected_curves = [c for c in context.selected_objects if c.type == "CURVE" and c.visible_get()]
 
+        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
         for curve in selected_curves:
           curve.data.use_fill_caps = True
 
-        if len(selected_curves) > 0:
-          bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-          bpy.ops.object.convert(target='MESH')
-
-          bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-
-          for obj in selected_curves:
-            me = obj.data
-            bm = bmesh.from_edit_mesh(me)
-            bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.01)
-
-          bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+        bpy.ops.object.convert(target='MESH')
 
         return {'FINISHED'}
         
