@@ -13,6 +13,7 @@ from . types.action import Action
 
 from . utils.fc_bool_util import execute_slice_op, is_delete_after_apply, select_active, execute_boolean_op, get_bool_mode_id
 from . utils.fc_bevel_util import *
+from . utils.textutils import *
 
 # Boolean mode operator
 class FC_Boolean_Mode_Operator(bpy.types.Operator):
@@ -142,7 +143,7 @@ class FC_Boolean_Mode_Operator(bpy.types.Operator):
         fsize = get_preferences().osd_font_size
         off_x = get_preferences().osd_offset_x
         pos_y = 150
-        blf.size(1, fsize, 72)
+        blf_set_size(1, fsize)
 
         line_height = 18
         pos_x = [115, 200]

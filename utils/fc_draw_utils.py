@@ -1,22 +1,18 @@
-import bgl
+import gpu
+
+from .. utils.shader_utils import *
 
 def set_line_smooth(enabled=True):
     if enabled:
-        bgl.glEnable(bgl.GL_BLEND)
-        bgl.glEnable(bgl.GL_LINE_SMOOTH)
+        gpu.state.blend_set('ALPHA')
     else:
-        bgl.glDisable(bgl.GL_LINE_SMOOTH)
-        bgl.glDisable(bgl.GL_BLEND)
+        gpu.state.blend_set('NONE')
 
 def set_poly_smooth(enabled=True):
     if enabled:
-        bgl.glEnable(bgl.GL_BLEND)
-        bgl.glEnable(bgl.GL_LINE_SMOOTH)
-        bgl.glEnable(bgl.GL_POLYGON_SMOOTH)
+        gpu.state.blend_set('ALPHA')
     else:
-        bgl.glDisable(bgl.GL_POLYGON_SMOOTH)
-        bgl.glDisable(bgl.GL_LINE_SMOOTH)
-        bgl.glDisable(bgl.GL_BLEND)
+        gpu.state.blend_set('NONE')
 
 def draw_circle_2d(position, color, radius, segments=32, batch_type='TRI_FAN'):
 
@@ -32,7 +28,7 @@ def draw_circle_2d(position, color, radius, segments=32, batch_type='TRI_FAN'):
         raise ValueError("Amount of segments must be greater than 0.")
 
     set_line_smooth()
-    bgl.glDepthMask(False)
+    gpu.state.depth_mask_set(False)
     
     with gpu.matrix.push_pop():
         gpu.matrix.translate(position)
@@ -44,7 +40,7 @@ def draw_circle_2d(position, color, radius, segments=32, batch_type='TRI_FAN'):
         vbo = GPUVertBuf(len=len(verts), format=fmt)
         vbo.attr_fill(id=pos_id, data=verts)
         batch = GPUBatch(type=batch_type, buf=vbo)
-        shader = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
+        shader = get_builtin_shader('UNIFORM_COLOR', '2D')
         batch.program_set(shader)
         shader.uniform_float("color", color)
         batch.draw()

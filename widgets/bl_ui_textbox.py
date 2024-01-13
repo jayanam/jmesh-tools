@@ -3,6 +3,7 @@ from . bl_ui_widget import *
 import blf
 import bpy
 
+from .. utils.textutils import *
 
 class BL_UI_Textbox(BL_UI_Widget):
 
@@ -171,13 +172,13 @@ class BL_UI_Textbox(BL_UI_Widget):
 
         self.shader.bind()
         self.shader.uniform_float("color", self._carret_color)
-        bgl.glEnable(bgl.GL_LINE_SMOOTH)
-        bgl.glLineWidth(2)
+        gpu.state.blend_set('ALPHA')
+        gpu.state.line_width_set(2)
         self.batch_carret.draw(self.shader)
 
         if self.has_label:
             self.shader.uniform_float("color", self._label_color)
-            bgl.glLineWidth(1)
+            gpu.state.line_width_set(1)
             self.batch_outline.draw(self.shader)
 
             self.batch_label_bg.draw(self.shader)
@@ -199,7 +200,7 @@ class BL_UI_Textbox(BL_UI_Widget):
         self.shader.uniform_float("color", color)
 
     def draw_text(self, area_height):
-        blf.size(0, self._text_size, 72)
+        blf_set_size(0, self._text_size)
         size = blf.dimensions(0, self._text)
 
         textpos_y = area_height - self._textpos[1] - (self.height + size[1]) / 2.0

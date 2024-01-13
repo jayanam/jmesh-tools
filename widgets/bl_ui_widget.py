@@ -1,7 +1,8 @@
 import gpu
-import bgl
 
 from gpu_extras.batch import batch_for_shader
+
+from .. utils.shader_utils import *
 
 class BL_UI_Widget:
     
@@ -57,9 +58,9 @@ class BL_UI_Widget:
         self.shader.bind()
         self.shader.uniform_float("color", self._bg_color)
         
-        bgl.glEnable(bgl.GL_BLEND)
+        gpu.state.blend_set('ALPHA')
         self.batch_panel.draw(self.shader) 
-        bgl.glDisable(bgl.GL_BLEND)
+        gpu.state.blend_set('NONE')
 
     def init(self, context):
         self.context = context
@@ -83,7 +84,7 @@ class BL_UI_Widget:
                     (self.x_screen + self.width, y_screen_flip - self.height),
                     (self.x_screen + self.width, y_screen_flip))
                     
-        self.shader = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
+        self.shader = get_builtin_shader('UNIFORM_COLOR', '2D')
         self.batch_panel = batch_for_shader(self.shader, 'TRIS', {"pos" : vertices}, indices=indices)
     
     def handle_event(self, event):

@@ -3,6 +3,9 @@ from . bl_ui_widget import *
 import blf
 import bpy
 
+from .. utils.textutils import *
+from .. utils.shader_utils import *
+
 class BL_UI_Button(BL_UI_Widget):
     
     def __init__(self, x, y, width, height):
@@ -91,13 +94,13 @@ class BL_UI_Button(BL_UI_Widget):
         
         self.set_colors()
         
-        bgl.glEnable(bgl.GL_BLEND)
+        gpu.state.blend_set('ALPHA')
 
         self.batch_panel.draw(self.shader) 
 
         self.draw_image()   
 
-        bgl.glDisable(bgl.GL_BLEND)
+        gpu.state.blend_set('NONE')
 
         # Draw text
         self.draw_text(area_height)
@@ -117,7 +120,7 @@ class BL_UI_Button(BL_UI_Widget):
         self.shader.uniform_float("color", color)
 
     def draw_text(self, area_height):
-        blf.size(0, self._text_size, 72)
+        blf_set_size(0, self._text_size)
         size = blf.dimensions(0, self._text)
 
         textpos_y = area_height - self._textpos[1] - (self.height + size[1]) / 2.0
@@ -145,17 +148,17 @@ class BL_UI_Button(BL_UI_Widget):
                             (self.x_screen + off_x + sx, y_screen_flip - sy - off_y),
                             (self.x_screen + off_x + sx, y_screen_flip - off_y))
                 
-                self.shader_img = gpu.shader.from_builtin('2D_IMAGE')
+                self.shader_img = get_builtin_shader('IMAGE', '2D')
                 self.batch_img = batch_for_shader(self.shader_img, 'TRI_FAN', 
                 { "pos" : vertices, 
                 "texCoord": ((0, 1), (0, 0), (1, 0), (1, 1)) 
                 },)
 
-                bgl.glActiveTexture(bgl.GL_TEXTURE0)
-                bgl.glBindTexture(bgl.GL_TEXTURE_2D, self.__image.bindcode)
+                texture = gpu.texture.from_image(self.__image)
 
                 self.shader_img.bind()
-                self.shader_img.uniform_int("image", 0)
+                self.shader.uniform_sampler("image", texture)
+
                 self.batch_img.draw(self.shader_img) 
                 return True
             except:

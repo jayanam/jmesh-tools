@@ -2,6 +2,9 @@ from . bl_ui_widget import *
 
 import blf
 
+from .. utils.textutils import *
+from .. utils.shader_utils import *
+
 class BL_UI_Up_Down(BL_UI_Widget):
     
     def __init__(self, x, y):
@@ -136,7 +139,7 @@ class BL_UI_Up_Down(BL_UI_Widget):
         
         # Draw value text
         sFormat = "{:0." + str(self._decimals) + "f}"
-        blf.size(0, self._text_size, 72)
+        blf_set_size(0, self._text_size)
         
         sValue = sFormat.format(self.__up_down_value)
         size = blf.dimensions(0, sValue)
@@ -181,7 +184,7 @@ class BL_UI_Up_Down(BL_UI_Widget):
                     
                    )
                     
-        self.shader = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
+        self.shader = get_builtin_shader('UNIFORM_COLOR', '2D')
         self.batch_up = batch_for_shader(self.shader, 'TRIS', {"pos" : vertices_up})
         self.batch_down = batch_for_shader(self.shader, 'TRIS', {"pos" : vertices_down})
         

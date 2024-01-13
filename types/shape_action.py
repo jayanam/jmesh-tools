@@ -5,15 +5,18 @@ from .. utils.fc_draw_utils import draw_circle_2d, set_poly_smooth
 
 from .. fc_preferences import get_preferences
 
-import bgl
+from .. utils.shader_utils import *
+
 import blf
+
+from .. utils.textutils import *
 
 class Shape_Action:
 
   def __init__(self):
     self._x = 0
     self._y = 0
-    self._shader = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
+    self._shader = get_builtin_shader('UNIFORM_COLOR', '2D')
 
   def mouse_inside(self, context, event, mouse_pos_2d, mouse_pos_3d) -> bool:
     x = mouse_pos_2d[0]
@@ -119,7 +122,7 @@ class Shape_Action_Symmetry(Shape_Action):
 
     circle_co = draw_circle_2d((self._x, self._y), self._color, self._radius, 32)
     
-    blf.size(1, 14, 72)
+    blf_set_size(1, 14)
     blf.color(1, 0, 0, 0, 1)
     dim = blf.dimensions(1, self._axis)
     blf.position(1, self._x - dim[0] / 2, self._y - dim[1] / 2, 0)
@@ -175,14 +178,14 @@ class Shape_Mirror_Action(Shape_Action):
   def draw(self):
 
     set_poly_smooth()
-    bgl.glLineWidth(2)
+    gpu.state.line_width_set(2)
 
     self._shader.bind()
     self._shader.uniform_float("color", (0.8, 0.30, 1.0, 1.0))
 
     self._batch.draw(self._shader)
 
-    bgl.glLineWidth(1)
+    gpu.state.line_width_set(1)
     set_poly_smooth(False)
 
   def set_position(self, x, y):

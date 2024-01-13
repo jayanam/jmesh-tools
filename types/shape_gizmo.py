@@ -1,13 +1,14 @@
-import bgl
 import gpu
 
 from gpu_extras.batch import batch_for_shader
+
+from .. utils.shader_utils import *
 
 class Shape_Gizmo:
 
   def __init__(self):
     self.__is_drag = False    
-    self.shader_2d = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
+    self.shader_2d = get_builtin_shader('UNIFORM_COLOR', '2D')
 
   def get_axis(self, x, y):
     gp = self.shape.get_gizmo_pos()
@@ -62,9 +63,7 @@ class Shape_Gizmo:
     x_r = x + 15
     y_r = y - 15
 
-    bgl.glEnable(bgl.GL_BLEND)
-    bgl.glEnable(bgl.GL_LINE_SMOOTH)
-    bgl.glEnable(bgl.GL_POLYGON_SMOOTH)
+    gpu.state.blend_set('ALPHA')
 
     self.shader_2d.bind()
 
@@ -96,6 +95,4 @@ class Shape_Gizmo:
     self.shader_2d.uniform_float("color", (0.9, 0.9, 0.9, 1.0))
     batch_gizmo_middle.draw(self.shader_2d)
 
-    bgl.glDisable(bgl.GL_POLYGON_SMOOTH)
-    bgl.glDisable(bgl.GL_LINE_SMOOTH)
-    bgl.glDisable(bgl.GL_BLEND)
+    gpu.state.blend_set('NONE')

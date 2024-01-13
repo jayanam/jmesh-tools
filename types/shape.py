@@ -1,5 +1,4 @@
 import blf
-import bgl
 import gpu
 import bmesh
 from gpu_extras.batch import batch_for_shader
@@ -11,6 +10,9 @@ from mathutils import Vector, geometry
 from mathutils.geometry import intersect_line_plane, intersect_point_line
 
 from ..utils.fc_view_3d_utils import *
+
+from .. utils.textutils import *
+from .. utils.shader_utils import *
 
 from bpy_extras.view3d_utils import (
     region_2d_to_location_3d,
@@ -76,7 +78,7 @@ class Shape:
         # vertex containers with vertices for arrays
         self._array = []
 
-        self.shader = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+        self.shader = get_builtin_shader('UNIFORM_COLOR', '3D')
         self.create_batch()
         self._center_2d = None
         self._center_3d = None
@@ -107,7 +109,8 @@ class Shape:
 
     def draw(self, context):
         self.shader.bind()
-        bgl.glPointSize(self.get_point_size(context))
+        gpu.state.point_size_set(self.get_point_size(context))
+
         if self.connected_shape():
 
             self._vertex_ctr_m.draw()
@@ -1188,7 +1191,7 @@ class Shape:
         return False
 
     def init_text(self):
-        blf.size(2, 16, 72)
+        blf_set_size(2, 16)
         blf.color(2, 1.0, 1.0, 1.0, 1.0)
 
     def draw_text(self):

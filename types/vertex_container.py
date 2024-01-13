@@ -1,13 +1,13 @@
 import gpu
-import bgl
 from gpu_extras.batch import batch_for_shader
 
 from mathutils import Vector
+from .. utils.shader_utils import *
 
 class VertexContainer:
 
   def __init__(self):
-    self._shader = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+    self._shader = get_builtin_shader('UNIFORM_COLOR', '3D')
     self._vertices = []
     self._vertices_2d = []
     self._vertices_extruded = []
@@ -34,23 +34,21 @@ class VertexContainer:
     self._shader.bind()
 
     # Draw lines
-    bgl.glEnable(bgl.GL_BLEND)
-    bgl.glEnable(bgl.GL_LINE_SMOOTH)
+    gpu.state.blend_set('ALPHA')
 
     self._shader.uniform_float("color", (0.2, 0.5, 0.8, 1.0))
-    bgl.glLineWidth(2)
+    gpu.state.line_width_set(2)
     self._batch_extruded.draw(self._shader)
 
-    bgl.glLineWidth(1)
+    gpu.state.line_width_set(1)
     self._batch_lines_extruded.draw(self._shader)
 
-    bgl.glLineWidth(3)
+    gpu.state.line_width_set(3)
     self._shader.uniform_float("color", (0.1, 0.3, 0.7, 1.0))
     self._batch.draw(self._shader)
     self._batch_points.draw(self._shader)
 
-    bgl.glDisable(bgl.GL_LINE_SMOOTH)
-    bgl.glDisable(bgl.GL_BLEND)
+    gpu.state.blend_set('NONE')
 
   def draw_points(self):
     self._batch_points.draw(self._shader)  

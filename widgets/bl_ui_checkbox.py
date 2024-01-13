@@ -3,6 +3,9 @@ from . bl_ui_widget import *
 import blf
 import bpy
 
+from .. utils.textutils import *
+from .. utils.shader_utils import *
+
 class BL_UI_Checkbox(BL_UI_Widget):
     
     def __init__(self, x, y, width, height):
@@ -85,7 +88,7 @@ class BL_UI_Checkbox(BL_UI_Widget):
                     (self.x_screen + off_x + sx, y_screen_flip - off_y),
                     (self.x_screen + off_x,      y_screen_flip - off_y))
 
-        self.shader = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
+        self.shader = get_builtin_shader('UNIFORM_COLOR', '2D')
         self.batch_box = batch_for_shader(self.shader, 'LINE_LOOP', {"pos": vertices_box})
 
         inset = 4
@@ -104,19 +107,18 @@ class BL_UI_Checkbox(BL_UI_Widget):
         if not self.visible:
             return
         
-        bgl.glEnable(bgl.GL_BLEND)
-        bgl.glEnable(bgl.GL_LINE_SMOOTH)
+        gpu.state.blend_set('ALPHA')
 
         area_height = self.get_area_height()
 
         self.shader.bind()
 
         if self.is_checked:
-            bgl.glLineWidth(3)
+            gpu.state.line_width_set(3)
             self.shader.uniform_float("color", self._cross_color)
             self.batch_cross.draw(self.shader) 
 
-        bgl.glLineWidth(2)
+        gpu.state.line_width_set(2)
         self.shader.uniform_float("color", self._box_color)
 
         self.batch_box.draw(self.shader) 
@@ -124,12 +126,11 @@ class BL_UI_Checkbox(BL_UI_Widget):
         # Draw text
         self.draw_text(area_height)
 
-        bgl.glDisable(bgl.GL_LINE_SMOOTH)
-        bgl.glDisable(bgl.GL_BLEND)
+        gpu.state.blend_set('NONE')
 
 
     def draw_text(self, area_height):
-        blf.size(0, self._text_size, 72)
+        blf_set_size(0, self._text_size)
         size = blf.dimensions(0, self._text)
 
         textpos_y = area_height - self._textpos[1] - (self.height + size[1]) / 2.0

@@ -3,7 +3,6 @@ from bpy.types import Operator
 
 from bpy.props import *
 
-import bgl
 import blf
 
 import bmesh
@@ -32,6 +31,8 @@ from .types.shape_gizmo import *
 from .widgets.bl_ui_textbox import *
 
 from .fc_preferences import get_preferences
+
+from . utils.textutils import *
 
 # Primitive mode operator
 class FC_Primitive_Mode_Operator(bpy.types.Operator):
@@ -648,7 +649,7 @@ class FC_Primitive_Mode_Operator(bpy.types.Operator):
         # Draw text for primitive mode
         fsize = get_preferences().osd_font_size
         off_x = get_preferences().osd_offset_x
-        blf.size(1, fsize, 72)
+        blf_set_size(1, fsize)
 
         line_height = 18
         pos_x = [115, 200]

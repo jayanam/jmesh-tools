@@ -2,6 +2,8 @@ from . bl_ui_widget import *
 
 import blf
 
+from .. utils.textutils import *
+
 class BL_UI_Label(BL_UI_Widget):
     
     def __init__(self, x, y, width, height):
@@ -44,7 +46,7 @@ class BL_UI_Label(BL_UI_Widget):
             
         area_height = self.get_area_height()
 
-        blf.size(0, self._text_size, 72)
+        blf_set_size(0, self._text_size)
         size = blf.dimensions(0, self._text)
     
         textpos_y = area_height - self.y_screen - self.height

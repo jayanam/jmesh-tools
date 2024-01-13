@@ -3,7 +3,6 @@ from bpy.types import Operator
 
 from bpy.props import *
 
-import bgl
 import blf
 
 from gpu_extras.batch import batch_for_shader
@@ -16,6 +15,8 @@ from bpy_extras.view3d_utils import location_3d_to_region_2d
 from mathutils import Vector
 
 from . fc_preferences import get_preferences
+
+from . utils.textutils import *
 
 # Symmetry operator
 class FC_Symmetry_Operator(bpy.types.Operator):
@@ -159,7 +160,7 @@ class FC_Symmetry_Operator(bpy.types.Operator):
       header = "- Symmetrize (Mode: " + sd + ") -"
 
       blf.color(1, 1, 1, 1, 1)
-      blf.size(1, 16, 72)
+      blf_set_size(1, 16)
 
       region = context.region
       xt = int(region.width / 2.0)

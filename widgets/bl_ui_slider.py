@@ -2,6 +2,9 @@ from . bl_ui_widget import *
 
 import blf
 
+from .. utils.textutils import *
+from .. utils.shader_utils import *
+
 class BL_UI_Slider(BL_UI_Widget):
     
     def __init__(self, x, y, width, height):
@@ -125,18 +128,18 @@ class BL_UI_Slider(BL_UI_Widget):
 
         # Draw background
         self.shader.uniform_float("color", self._bg_color)
-        bgl.glEnable(bgl.GL_BLEND)
+        gpu.state.blend_set('ALPHA')
         self.batch_bg.draw(self.shader)
 
         # Draw slider   
         self.shader.uniform_float("color", color)
         
         self.batch_slider.draw(self.shader) 
-        bgl.glDisable(bgl.GL_BLEND)      
+        gpu.state.blend_set('NONE')    
         
         # Draw value text
         sFormat = "{:0." + str(self._decimals) + "f}"
-        blf.size(0, self._text_size, 72)
+        blf_set_size(0, self._text_size)
         
         sValue = sFormat.format(self.__slider_value)
         size = blf.dimensions(0, sValue)
@@ -194,7 +197,7 @@ class BL_UI_Slider(BL_UI_Widget):
                     (pos_x + w, pos_y - h)
                    )
                     
-        self.shader = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
+        self.shader = get_builtin_shader('UNIFORM_COLOR','2D')
         self.batch_slider = batch_for_shader(self.shader, 'TRIS', 
         {"pos" : vertices}, indices=indices)
         
