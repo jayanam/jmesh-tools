@@ -66,8 +66,10 @@ def execute_bevel(bevel_objects):
         bpy.ops.object.transform_apply(scale=True, location=False, rotation=False)
                
         # Set the data to autosmooth
-        bpy.context.object.data.use_auto_smooth = True
-        bpy.context.object.data.auto_smooth_angle = 1.0472
+        mesh = bpy.context.object.data
+        if bpy.app.version < (4, 2, 0):
+            mesh.use_auto_smooth = True  # or other logic for older versions
+            bpy.context.object.data.auto_smooth_angle = 1.0472
         
         # Remove the bevel modifier if exists
         modifier_to_remove = target_obj.modifiers.get("Bevel")

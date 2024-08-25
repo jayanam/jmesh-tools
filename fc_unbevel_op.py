@@ -38,7 +38,8 @@ class FC_UnBevelOperator(Operator):
                 bpy.ops.object.shade_flat()
                 
                 # Reset the data from autosmooth
-                bpy.context.object.data.use_auto_smooth = False
+                if bpy.app.version < (4, 2, 0):
+                    bpy.context.object.data.use_auto_smooth = False
                 
                 # Remove the bevel modifier if exists
                 modifier_to_remove = target_obj.modifiers.get("Bevel")
