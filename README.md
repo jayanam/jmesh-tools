@@ -1,5 +1,5 @@
 # JMesh Tools
-Blender 2.8 / 2.9 / 3.0 mesh and hard surface utilities addon (formerly Fast Carve).
+Blender 2.8 - 4.2 mesh and hard surface utilities addon (formerly Fast Carve).
 
 The addon is also available on the Blender market if you like to get special support and support the Blender devfund:
 https://blendermarket.com/products/jmesh-tools
